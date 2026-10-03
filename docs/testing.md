@@ -262,6 +262,9 @@ export function createMockApp(initialFiles: Record<string, string> = {}) {
 |----------|---------|
 | No config file on disk (first launch) | creates `.penny-wallet.json` with locale cash name |
 | Config at `.penny-wallet.json` | loads and returns it |
+| With a config store (plugin `data.json`) | loads from it, ignoring the legacy file |
+| Store empty, legacy `.penny-wallet.json` present | migrates it into the store, leaves the file in place |
+| Store empty, nothing on disk | writes defaults to the store, not the vault root |
 | Malformed JSON | falls back to `DEFAULT_CONFIG` |
 | `saveConfig` after `updateConfig` | persists patch to in-memory vault |
 | `getConfig` after `updateConfig` | returns latest in-memory value |

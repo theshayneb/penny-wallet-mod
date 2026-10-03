@@ -17,7 +17,12 @@ export default class PennyWalletPlugin extends Plugin {
   async onload() {
     initI18n()
 
-    this.walletFile = new WalletFile(this.app)
+    // Settings live in the plugin's data.json so Obsidian Sync carries them
+    // ("Installed community plugins" sync); see onExternalSettingsChange.
+    this.walletFile = new WalletFile(this.app, {
+      load: () => this.loadData(),
+      save: (config) => this.saveData(config),
+    })
 
     // ── All synchronous registrations FIRST (so ribbon/commands survive restart) ──
     this.registerView(DASHBOARD_VIEW_TYPE, (leaf) => new DashboardView(leaf, this.walletFile))
@@ -65,6 +70,12 @@ export default class PennyWalletPlugin extends Plugin {
       console.error('PennyWallet: failed to load config', e)
       new Notice(t('notice.loadFailed'))
     }
+  }
+
+  // Called by Obsidian when data.json changes on disk, e.g. synced from another device.
+  async onExternalSettingsChange() {
+    await this.walletFile.loadConfig()
+    this.refreshViews()
   }
 
   // ── Validation ──────────────────────────────────────────────────────────────

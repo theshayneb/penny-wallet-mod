@@ -8,7 +8,7 @@ PennyWallet 將所有資料以純文字檔案存放在你的 vault 中。無專�
 
 ```
 <vault>/
-├── .penny-wallet.json       ← 外掛設定
+├── .obsidian/plugins/penny-wallet-mod/data.json   ← 外掛設定（可由 Obsidian Sync 同步）
 └── PennyWallet/             ← 每月交易檔案（資料夾名稱可設定）
     ├── 2026-04.md
     ├── 2026-03.md
@@ -65,9 +65,9 @@ netAsset: 0
 
 ---
 
-## 設定檔：`.penny-wallet.json`
+## 設定檔：`data.json`
 
-存放於 **vault 根目錄**（不在交易資料夾內）。
+存放於外掛資料夾 `.obsidian/plugins/penny-wallet-mod/data.json`。開啟 **設定 → 同步 → 儲存庫設定同步 → 已安裝的社群外掛** 後，Obsidian Sync 會將其同步到其他裝置，外掛也會在同步更新時自動重新載入。舊版本將設定存放在儲存庫根目錄的 `.penny-wallet.json`（以點開頭的檔案不會被 Obsidian Sync 同步）；首次啟動時會將其複製到 `data.json`，原檔案保留不動。
 
 ```json
 {

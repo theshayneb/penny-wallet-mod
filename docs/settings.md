@@ -2,6 +2,10 @@
 
 Open via **Settings → PennyWallet** in Obsidian.
 
+## Syncing settings between devices
+
+All settings on this page (accounts, categories, tags, budgets, folder name, default account, decimal places) are stored in the plugin's `data.json`. To sync them with **Obsidian Sync**, turn on **Settings → Sync → Vault configuration sync → Installed community plugins** on every device. Changes made on one device are picked up automatically on the others, even while Obsidian is open. Transactions are regular Markdown files in your PennyWallet folder and sync like any other note.
+
 ---
 
 ## General

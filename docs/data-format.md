@@ -8,7 +8,7 @@ PennyWallet stores all data as plain text files in your vault. No proprietary da
 
 ```
 <vault>/
-├── .penny-wallet.json       ← plugin config
+├── .obsidian/plugins/penny-wallet-mod/data.json   ← plugin config (synced by Obsidian Sync)
 └── PennyWallet/             ← monthly transaction files (folder name configurable)
     ├── 2026-04.md
     ├── 2026-03.md
@@ -68,9 +68,11 @@ The `income`, `expense`, and `netAsset` fields at the top are a cache used for f
 
 ---
 
-## Config File: `.penny-wallet.json`
+## Config File: `data.json`
 
-Stored at the **vault root** (not inside the transactions folder).
+Stored in the plugin's own folder, `.obsidian/plugins/penny-wallet-mod/data.json`, like other plugins' settings. Obsidian Sync carries it to your other devices when **Settings → Sync → Vault configuration sync → Installed community plugins** is on, and the plugin reloads it automatically when Sync updates it.
+
+Older versions stored the config in `.penny-wallet.json` at the vault root, which Obsidian Sync never syncs (it skips files starting with a dot). On first launch, the plugin copies that file into `data.json` and leaves the old file untouched; after that it is no longer read.
 
 ```json
 {

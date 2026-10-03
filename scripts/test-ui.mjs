@@ -33,10 +33,13 @@ const vaultArg = args.find(a => a.startsWith('--vault='))?.split('=')[1]
 const VAULT = vaultArg ?? 'demo-vault'
 const vaultRoot = join(rootDir, VAULT)
 
-/** Read .penny-wallet.json directly from disk (Obsidian CLI cannot read dotfiles). */
+/** Read the plugin config from disk: data.json, else the legacy .penny-wallet.json. */
 function readConfig() {
-  try { return readFileSync(join(vaultRoot, '.penny-wallet.json'), 'utf8') }
-  catch { return null }
+  for (const p of [join(vaultRoot, '.obsidian', 'plugins', 'penny-wallet-mod', 'data.json'), join(vaultRoot, '.penny-wallet.json')]) {
+    try { return readFileSync(p, 'utf8') }
+    catch { /* try next */ }
+  }
+  return null
 }
 
 function getWalletStatus(configText, walletName) {

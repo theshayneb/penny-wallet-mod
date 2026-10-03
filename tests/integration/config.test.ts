@@ -145,3 +145,80 @@ describe('addTag', () => {
     expect(JSON.parse(raw).tags).toContain('coffee')
   })
 })
+
+// ── Plugin data store (data.json, synced by Obsidian Sync) ───────────────────
+
+describe('loadConfig with a config store', () => {
+  const makeStore = (initial: unknown = null) => {
+    let data = initial
+    const saves: unknown[] = []
+    return {
+      store: {
+        load: async () => data,
+        save: async (config: unknown) => { data = JSON.parse(JSON.stringify(config)); saves.push(data) },
+      },
+      get data() { return data },
+      saves,
+    }
+  }
+  const bankConfig = (name: string) => ({ ...DEFAULT_CONFIG, defaultWallet: name, wallets: [
+    { name, type: 'bank' as const, initialBalance: 1, status: 'active' as const, includeInNetAsset: true },
+  ], budgets: [{ name: 'Groceries', amount: 500 }] })
+
+  it('loads from plugin data and ignores the legacy file', async () => {
+    const s = makeStore(bankConfig('Synced'))
+    const { app } = createMockApp({ '.penny-wallet.json': JSON.stringify(bankConfig('Legacy')) })
+    const config = await new WalletFile(app, s.store).loadConfig()
+    expect(config.defaultWallet).toBe('Synced')
+    expect(config.budgets).toEqual([{ name: 'Groceries', amount: 500 }])
+    expect(s.saves).toHaveLength(0)
+  })
+
+  it('migrates the legacy .penny-wallet.json into plugin data once, leaving the file in place', async () => {
+    const s = makeStore(null)
+    const { app, store } = createMockApp({ '.penny-wallet.json': JSON.stringify(bankConfig('Legacy')) })
+    const config = await new WalletFile(app, s.store).loadConfig()
+    expect(config.defaultWallet).toBe('Legacy')
+    expect((s.data as { defaultWallet: string }).defaultWallet).toBe('Legacy')
+    expect(store.has('.penny-wallet.json')).toBe(true)
+  })
+
+  it('first launch writes defaults to plugin data, not the vault root', async () => {
+    const s = makeStore(null)
+    const { app, store } = createMockApp()
+    const wf = new WalletFile(app, s.store)
+    await wf.loadConfig()
+    expect(wf.didCreateDefaultConfigOnLastLoad()).toBe(true)
+    expect(s.saves).toHaveLength(1)
+    expect(store.has('.penny-wallet.json')).toBe(false)
+  })
+
+  it('saveConfig writes to plugin data', async () => {
+    const s = makeStore(bankConfig('A'))
+    const { app, store } = createMockApp()
+    const wf = new WalletFile(app, s.store)
+    await wf.loadConfig()
+    wf.updateConfig({ decimalPlaces: 2 })
+    await wf.saveConfig()
+    expect((s.data as { decimalPlaces: number }).decimalPlaces).toBe(2)
+    expect(store.has('.penny-wallet.json')).toBe(false)
+  })
+
+  it('malformed legacy file → defaults, nothing written', async () => {
+    const s = makeStore(null)
+    const { app } = createMockApp({ '.penny-wallet.json': '{ nope' })
+    const config = await new WalletFile(app, s.store).loadConfig()
+    expect(config.wallets).toEqual(DEFAULT_CONFIG.wallets)
+    expect(s.saves).toHaveLength(0)
+  })
+
+  it('reloading picks up settings changed by sync', async () => {
+    const s = makeStore(bankConfig('Before'))
+    const { app } = createMockApp()
+    const wf = new WalletFile(app, s.store)
+    await wf.loadConfig()
+    await s.store.save(bankConfig('After'))  // e.g. data.json replaced by Obsidian Sync
+    await wf.loadConfig()
+    expect(wf.getConfig().defaultWallet).toBe('After')
+  })
+})

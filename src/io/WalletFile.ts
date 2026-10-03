@@ -194,13 +194,22 @@ function txDateOrder(a: Transaction, b: Transaction): number {
   return d !== 0 ? d : (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
 }
 
+/** Where settings are persisted; the plugin passes its loadData/saveData (data.json). */
+export interface ConfigStore {
+  load(): Promise<unknown>
+  save(config: PennyWalletConfig): Promise<void>
+}
+
 export class WalletFile {
   private app: App
+  private configStore: ConfigStore | null
   private config: PennyWalletConfig = { ...DEFAULT_CONFIG }
   private createdDefaultConfigOnLastLoad = false
 
-  constructor(app: App) {
+  /** Without a store, settings live in the legacy .penny-wallet.json (used by tests). */
+  constructor(app: App, configStore: ConfigStore | null = null) {
     this.app = app
+    this.configStore = configStore
   }
 
   get folderName(): string {
@@ -212,44 +221,62 @@ export class WalletFile {
   async loadConfig(): Promise<PennyWalletConfig> {
     this.createdDefaultConfigOnLastLoad = false
 
-    const path = ROOT_CONFIG_PATH
-    const file = this.app.vault.getFileByPath(path)
-
-    if (!file) {
-      // Root dotfiles may be omitted from Obsidian's vault index; adapter access keeps existing configs readable.
-      const existsOnDisk = await this.app.vault.adapter.exists(path)
-      if (existsOnDisk) {
-        try {
-          const raw = await this.app.vault.adapter.read(path)
-          const parsed = JSON.parse(raw) as Partial<PennyWalletConfig>
-          this.config = { ...DEFAULT_CONFIG, ...parsed, options: this.normalizeOptions(parsed) }
-        } catch {
-          this.config = { ...DEFAULT_CONFIG }
-        }
+    // 1. Plugin data (data.json) — the synced location.
+    if (this.configStore) {
+      const stored = await this.configStore.load()
+      if (stored && typeof stored === 'object' && Object.keys(stored).length > 0) {
+        this.config = this.fromParsed(stored as Partial<PennyWalletConfig>)
         return this.config
       }
+    }
 
-      // Truly first launch: create locale-aware default config
-      await this.ensureFolder()
-      const cashName = this.getLocaleCashName()
-      this.config = {
-        ...DEFAULT_CONFIG,
-        wallets: [{ ...DEFAULT_CONFIG.wallets[0], name: cashName }],
-        defaultWallet: cashName,
+    // 2. Legacy .penny-wallet.json at the vault root. Obsidian Sync skips dotfiles,
+    //    so with a config store this is migrated into plugin data once.
+    const legacy = await this.readLegacyConfig()
+    if (legacy !== null) {
+      if (legacy === 'malformed') {
+        this.config = { ...DEFAULT_CONFIG }
+        return this.config
       }
-      await this.saveConfig()
-      this.createdDefaultConfigOnLastLoad = true
+      this.config = this.fromParsed(legacy)
+      if (this.configStore) await this.saveConfig()
       return this.config
     }
 
-    try {
-      const raw = await this.app.vault.read(file)
-      const parsed = JSON.parse(raw) as Partial<PennyWalletConfig>
-      this.config = { ...DEFAULT_CONFIG, ...parsed, options: this.normalizeOptions(parsed) }
-    } catch {
-      this.config = { ...DEFAULT_CONFIG }
+    // 3. Truly first launch: create locale-aware default config
+    await this.ensureFolder()
+    const cashName = this.getLocaleCashName()
+    this.config = {
+      ...DEFAULT_CONFIG,
+      wallets: [{ ...DEFAULT_CONFIG.wallets[0], name: cashName }],
+      defaultWallet: cashName,
     }
+    await this.saveConfig()
+    this.createdDefaultConfigOnLastLoad = true
     return this.config
+  }
+
+  private fromParsed(parsed: Partial<PennyWalletConfig>): PennyWalletConfig {
+    return { ...DEFAULT_CONFIG, ...parsed, options: this.normalizeOptions(parsed) }
+  }
+
+  /** Parsed legacy config, 'malformed' if it exists but isn't valid JSON, null if absent. */
+  private async readLegacyConfig(): Promise<Partial<PennyWalletConfig> | 'malformed' | null> {
+    const path = ROOT_CONFIG_PATH
+    let raw: string
+    const file = this.app.vault.getFileByPath(path)
+    if (file) {
+      raw = await this.app.vault.read(file)
+    } else {
+      // Root dotfiles may be omitted from Obsidian's vault index; adapter access keeps existing configs readable.
+      if (!(await this.app.vault.adapter.exists(path))) return null
+      raw = await this.app.vault.adapter.read(path)
+    }
+    try {
+      return JSON.parse(raw) as Partial<PennyWalletConfig>
+    } catch {
+      return 'malformed'
+    }
   }
 
   didCreateDefaultConfigOnLastLoad(): boolean {
@@ -304,9 +331,12 @@ export class WalletFile {
   }
 
   async saveConfig(): Promise<void> {
-    const path = ROOT_CONFIG_PATH
+    if (this.configStore) {
+      await this.configStore.save(this.config)
+      return
+    }
     const content = JSON.stringify(this.config, null, 2)
-    await this.vaultWrite(path, content, true)
+    await this.vaultWrite(ROOT_CONFIG_PATH, content, true)
   }
 
   getConfig(): PennyWalletConfig {

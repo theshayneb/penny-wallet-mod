@@ -2,6 +2,12 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.24] - 2026-10-03
+
+### Changed
+- Settings now sync with Obsidian Sync. They are stored in the plugin's `data.json` (synced when "Installed community plugins" is on under Vault configuration sync) instead of `.penny-wallet.json` at the vault root, which Obsidian Sync never syncs because it starts with a dot. On first launch the old file is copied into `data.json` and left in place. Settings changed on another device are reloaded automatically.
+- The fork no longer shares settings with the original PennyWallet plugin (transaction files are still shared).
+
 ## [0.0.23] - 2026-10-03
 
 ### Added
