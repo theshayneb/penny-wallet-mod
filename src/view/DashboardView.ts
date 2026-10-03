@@ -55,7 +55,7 @@ export class DashboardView extends ItemView {
     contentEl.empty()
     contentEl.addClass('pw-dashboard')
 
-    const months = getMonthRangeEndingAt(this.currentYearMonth, 6)
+    const months = getMonthRangeEndingAt(this.currentYearMonth, 3)
 
     const [transactions, summaries, netTimeline] = await Promise.all([
       this.walletFile.readMonth(this.currentYearMonth),
@@ -73,7 +73,7 @@ export class DashboardView extends ItemView {
 
     const dp = this.walletFile.getConfig().decimalPlaces ?? 0
 
-    // ── 6-month bar chart ────────────────────────────────────────────────────
+    // ── 3-month bar chart ────────────────────────────────────────────────────
     const data: MonthData[] = months.map(ym => ({
       monthLabel: formatMonthLabel(ym),
       tooltipLabel: formatYearMonth(ym, 'short'),
@@ -82,22 +82,20 @@ export class DashboardView extends ItemView {
       net: netTimeline.get(ym) ?? null,
     }))
 
-    // ── 2-column grid: budgets (or, without budgets, the bar chart) left,
-    //    pie charts right; with budgets the bar chart goes full width below ──
+    // ── 2-column grid: budgets + bar chart left, pie charts right ───────────
     const grid2 = contentEl.createDiv('pw-grid-2')
-    const hasBudgets = (this.walletFile.getConfig().budgets ?? []).length > 0
+    const gridLeft = grid2.createDiv('pw-grid-left')
 
-    const renderIncExp = (parent: HTMLElement) => {
-      const incExpCard = renderCard(parent, {
-        title: t('trend.monthlyIncomeExpense'),
-        className: 'pw-inc-exp-card',
-      })
-      const incExpChartWrap = incExpCard.createDiv('pw-chart-wrap')
-      this.charts.push(drawIncExpChart(incExpChartWrap, data, dp))
+    if ((this.walletFile.getConfig().budgets ?? []).length > 0) {
+      this.renderBudgets(gridLeft, transactions, dp)
     }
 
-    if (hasBudgets) this.renderBudgets(grid2, transactions, dp)
-    else renderIncExp(grid2)
+    const incExpCard = renderCard(gridLeft, {
+      title: t('trend.monthlyIncomeExpense'),
+      className: 'pw-inc-exp-card',
+    })
+    const incExpChartWrap = incExpCard.createDiv('pw-chart-wrap')
+    this.charts.push(drawIncExpChart(incExpChartWrap, data, dp))
 
     // ── Category pies ────────────────────────────────────────────────────────
     const gridRight = grid2.createDiv('pw-grid-right')
@@ -117,7 +115,6 @@ export class DashboardView extends ItemView {
       tagCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
     }
 
-    if (hasBudgets) renderIncExp(contentEl.createDiv('pw-dashboard-section'))
   }
 
   private renderBudgets(parent: HTMLElement, transactions: Transaction[], dp: 0 | 2) {

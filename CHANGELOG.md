@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.32] - 2026-10-03
+
+### Changed
+- Overview: the Monthly income & expense chart moved to the left column under Budgets and now shows the last three months (ending at the selected month) instead of six.
+
 ## [0.0.31] - 2026-10-03
 
 ### Added

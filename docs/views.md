@@ -21,7 +21,7 @@ Use `‹` / `›` to move between months. Future months are disabled.
 
 ### Layout
 
-The Overview has no summary chips at the top. With budgets set up, the **Budgets** card is on the left, the expense pie charts on the right, and the **Monthly income & expense** bar chart runs full width below. Without budgets, the bar chart takes the left column instead.
+The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) with the **Monthly income & expense** bar chart for the last three months (ending at the selected month) under it; the expense pie charts are on the right.
 
 ### Account Balances
 
