@@ -755,16 +755,18 @@ export class DetailView extends ItemView {
 
     const line3 = stack.createDiv('pw-tx-row-line3')
     const display = buildLine3Display(tx)
-    if (display.kind === 'tags') {
+    if (display.tags.length > 0) {
       const tagsEl = line3.createSpan('pw-tx-tags')
       for (const tag of display.tags) {
         const chip = tagsEl.createSpan({ text: `#${tag}`, cls: 'pw-tx-tag-chip' })
         chip.dataset['testid'] = 'tx-tag-chip'
         chip.dataset['tag'] = tag
       }
-    } else if (display.kind === 'note') {
-      line3.createEl('span', { text: display.text, cls: 'pw-tx-note' })
-    } else {
+    }
+    if (display.note !== '') {
+      line3.createEl('span', { text: display.note, cls: 'pw-tx-note' })
+    }
+    if (display.tags.length === 0 && display.note === '') {
       line3.createEl('span', { text: '—', cls: 'pw-tx-empty' })
     }
 

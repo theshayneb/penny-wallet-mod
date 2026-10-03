@@ -1,10 +1,10 @@
 import type { Transaction } from '../types'
 import { formatAmount } from '../utils'
 
-export type Line3Display =
-  | { kind: 'tags'; tags: string[] }
-  | { kind: 'note'; text: string }
-  | { kind: 'empty' }
+export interface Line3Display {
+  tags: string[]
+  note: string   // trimmed; '' when absent
+}
 
 export function isRefund(tx: Transaction): boolean {
   return tx.type === 'expense' && tx.amount < 0
@@ -36,7 +36,8 @@ export function buildAmountDisplay(
 }
 
 export function buildLine3Display(tx: Transaction): Line3Display {
-  if (tx.tags && tx.tags.length > 0) return { kind: 'tags', tags: tx.tags }
-  if (tx.note && tx.note.trim() !== '') return { kind: 'note', text: tx.note.trim() }
-  return { kind: 'empty' }
+  return {
+    tags: tx.tags ?? [],
+    note: tx.note?.trim() ?? '',
+  }
 }

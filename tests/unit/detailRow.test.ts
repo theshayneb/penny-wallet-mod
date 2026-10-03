@@ -72,28 +72,28 @@ describe('buildAmountDisplay', () => {
 })
 
 describe('buildLine3Display', () => {
-  it('tags present → kind tags', () => {
+  it('tags only → tags + empty note', () => {
     const tx = { ...base, tags: ['晚餐', '7-11'], note: '' }
-    expect(buildLine3Display(tx)).toEqual({ kind: 'tags', tags: ['晚餐', '7-11'] })
+    expect(buildLine3Display(tx)).toEqual({ tags: ['晚餐', '7-11'], note: '' })
   })
-  it('tags + note → tags wins', () => {
+  it('tags + note → both returned', () => {
     const tx = { ...base, tags: ['晚餐'], note: '備註內容' }
-    expect(buildLine3Display(tx)).toEqual({ kind: 'tags', tags: ['晚餐'] })
+    expect(buildLine3Display(tx)).toEqual({ tags: ['晚餐'], note: '備註內容' })
   })
-  it('no tags + note present → kind note (trimmed)', () => {
+  it('no tags + note present → note trimmed', () => {
     const tx = { ...base, tags: [], note: '  餃匠  ' }
-    expect(buildLine3Display(tx)).toEqual({ kind: 'note', text: '餃匠' })
+    expect(buildLine3Display(tx)).toEqual({ tags: [], note: '餃匠' })
   })
-  it('whitespace-only note + no tags → kind empty', () => {
+  it('whitespace-only note + no tags → both empty', () => {
     const tx = { ...base, tags: [], note: '   ' }
-    expect(buildLine3Display(tx)).toEqual({ kind: 'empty' })
+    expect(buildLine3Display(tx)).toEqual({ tags: [], note: '' })
   })
-  it('empty note + no tags → kind empty', () => {
+  it('empty note + no tags → both empty', () => {
     const tx = { ...base, tags: [], note: '' }
-    expect(buildLine3Display(tx)).toEqual({ kind: 'empty' })
+    expect(buildLine3Display(tx)).toEqual({ tags: [], note: '' })
   })
-  it('undefined tags + empty note → kind empty', () => {
+  it('undefined tags + empty note → both empty', () => {
     const tx = { ...base, tags: undefined, note: '' }
-    expect(buildLine3Display(tx as Transaction)).toEqual({ kind: 'empty' })
+    expect(buildLine3Display(tx as Transaction)).toEqual({ tags: [], note: '' })
   })
 })
