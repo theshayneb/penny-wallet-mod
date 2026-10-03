@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.19] - 2026-10-03
+
+### Fixed
+- Add Transaction: tags longer than 10 characters (e.g. `friends_family`) could not be added. Tags without Chinese characters can now be up to 30 characters; the 5-character limit for Chinese tags is unchanged.
+
 ## [0.0.18] - 2026-10-03
 
 ### Changed
