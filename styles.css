@@ -2671,8 +2671,28 @@ select.pw-add-wallet-input {
 
 /* ── Budgets ── */
 
-.pw-budget-section {
+/* No metric chips on the Overview: give the grid its own top spacing */
+.pw-dashboard > .pw-grid-2 {
+  padding-top: 16px;
+}
+
+/* Full-width section below the dashboard grid (holds the bar chart when budgets take its place) */
+.pw-dashboard-section {
   padding: 0 20px 20px;
+}
+
+.pw-dashboard-section .pw-inc-exp-card .pw-chart-wrap {
+  height: 260px;
+  flex: none;
+}
+
+.is-mobile .pw-dashboard-section {
+  padding: 0 12px 20px;
+}
+
+.pw-dash-budget-card {
+  min-width: 0;
+  align-self: start;
 }
 
 .pw-budget-progress {

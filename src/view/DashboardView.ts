@@ -4,7 +4,7 @@ import { t, formatMonthLabel, formatYearMonth } from '../i18n'
 import { currentYearMonth } from '../utils'
 import { computeBudgetUsage, getMonthProgress } from '../budget'
 import { renderBudgetProgress } from './budgetComponents'
-import { createMetric, renderCard } from './components'
+import { renderCard } from './components'
 import { Transaction, TransactionType } from '../types'
 import { DETAIL_VIEW_TYPE } from './DetailView'
 import { renderSharedHeader } from './SharedHeader'
@@ -73,22 +73,6 @@ export class DashboardView extends ItemView {
 
     const dp = this.walletFile.getConfig().decimalPlaces ?? 0
 
-    // ── Monthly metrics ──────────────────────────────────────────────────────
-    let monthIncome = 0, monthExpense = 0
-    for (const tx of transactions) {
-      if (tx.type === 'income') monthIncome += tx.amount
-      if (tx.type === 'expense') monthExpense += tx.amount
-    }
-    const monthBalance = monthIncome - monthExpense
-
-    const metricsEl = contentEl.createDiv('pw-metrics')
-    createMetric(metricsEl, t('dash.income'),  monthIncome,  'income',  { dp })
-    createMetric(metricsEl, t('dash.expense'), monthExpense, 'expense', { dp })
-    createMetric(metricsEl, t('dash.balance'), monthBalance,
-      monthBalance >= 0 ? 'positive' : 'negative',
-      { dp, hero: true },
-    )
-
     // ── 6-month bar chart ────────────────────────────────────────────────────
     const data: MonthData[] = months.map(ym => ({
       monthLabel: formatMonthLabel(ym),
@@ -98,15 +82,22 @@ export class DashboardView extends ItemView {
       net: netTimeline.get(ym) ?? null,
     }))
 
-    // ── 2-column grid: bar chart left, pie charts right ─────────────────────
+    // ── 2-column grid: budgets (or, without budgets, the bar chart) left,
+    //    pie charts right; with budgets the bar chart goes full width below ──
     const grid2 = contentEl.createDiv('pw-grid-2')
+    const hasBudgets = (this.walletFile.getConfig().budgets ?? []).length > 0
 
-    const incExpCard = renderCard(grid2, {
-      title: t('trend.monthlyIncomeExpense'),
-      className: 'pw-inc-exp-card',
-    })
-    const incExpChartWrap = incExpCard.createDiv('pw-chart-wrap')
-    this.charts.push(drawIncExpChart(incExpChartWrap, data, dp))
+    const renderIncExp = (parent: HTMLElement) => {
+      const incExpCard = renderCard(parent, {
+        title: t('trend.monthlyIncomeExpense'),
+        className: 'pw-inc-exp-card',
+      })
+      const incExpChartWrap = incExpCard.createDiv('pw-chart-wrap')
+      this.charts.push(drawIncExpChart(incExpChartWrap, data, dp))
+    }
+
+    if (hasBudgets) this.renderBudgets(grid2, transactions, dp)
+    else renderIncExp(grid2)
 
     // ── Category pies ────────────────────────────────────────────────────────
     const gridRight = grid2.createDiv('pw-grid-right')
@@ -126,15 +117,12 @@ export class DashboardView extends ItemView {
       tagCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
     }
 
-    this.renderBudgets(contentEl, transactions, dp)
+    if (hasBudgets) renderIncExp(contentEl.createDiv('pw-dashboard-section'))
   }
 
-  private renderBudgets(contentEl: HTMLElement, transactions: Transaction[], dp: 0 | 2) {
+  private renderBudgets(parent: HTMLElement, transactions: Transaction[], dp: 0 | 2) {
     const budgets = this.walletFile.getConfig().budgets ?? []
-    if (budgets.length === 0) return
-
-    const section = contentEl.createDiv('pw-budget-section')
-    const card = renderCard(section, { title: t('dash.budgets'), className: 'pw-budget-card' })
+    const card = renderCard(parent, { title: t('dash.budgets'), className: 'pw-budget-card pw-dash-budget-card' })
     const progress = getMonthProgress(this.currentYearMonth)
     for (const usage of computeBudgetUsage(budgets, transactions)) {
       const row = renderBudgetProgress(card, usage, dp, progress)

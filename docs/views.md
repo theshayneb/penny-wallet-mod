@@ -19,13 +19,9 @@ The header also contains two navigation buttons:
 
 Use `‹` / `›` to move between months. Future months are disabled.
 
-### Summary Metrics
+### Layout
 
-| Metric | Description |
-|--------|-------------|
-| Income | Total income recorded this month |
-| Expense | Total expenses recorded this month |
-| Balance | Income minus Expense for this month |
+The Overview has no summary chips at the top. With budgets set up, the **Budgets** card is on the left, the expense pie charts on the right, and the **Monthly income & expense** bar chart runs full width below. Without budgets, the bar chart takes the left column instead.
 
 ### Account Balances
 

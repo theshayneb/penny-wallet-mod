@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.30] - 2026-10-03
+
+### Changed
+- Overview: the Budgets card and the Monthly income & expense chart swapped places. Budgets now sit in the left column beside the pie charts and the bar chart runs full width below. Without budgets, the bar chart stays in the left column.
+
+### Removed
+- Overview: the Income / Expense / Balance chips at the top.
+
 ## [0.0.29] - 2026-10-03
 
 ### Added
