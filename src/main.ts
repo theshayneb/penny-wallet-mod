@@ -116,6 +116,7 @@ export default class PennyWalletPlugin extends Plugin {
     if (data['wallet']) params.wallet = data['wallet']
     if (data['fromWallet']) params.fromWallet = data['fromWallet']
     if (data['toWallet']) params.toWallet = data['toWallet']
+    if (data['budget']) params.budget = data['budget']
     if (data['date']) params.date = data['date']
 
     this.openTransactionModal(params)

@@ -17,6 +17,7 @@ export interface TransactionFormState {
   tags: string[]
   amount: string       // raw input string (not parsed yet)
   isRefund: boolean
+  budget: string       // '' = no budget; only used for expense
 }
 
 /**
@@ -151,7 +152,18 @@ export function buildTransactionPayload(state: TransactionFormState): Transactio
     note: state.note,
     amount: state.isRefund ? -parseFloat(state.amount) : parseFloat(state.amount),
     tags: state.tags.length ? state.tags : undefined,
+    budget: state.type === 'expense' && state.budget ? state.budget : undefined,
   }
+}
+
+/**
+ * Budget dropdown options. Keeps the current value even when it no longer
+ * exists in config (e.g. budget deleted) so editing doesn't silently drop it.
+ */
+export function getBudgetOptions(config: PennyWalletConfig, current: string): { key: string; label: string }[] {
+  const names = (config.budgets ?? []).map(b => b.name)
+  if (current && !names.includes(current)) names.push(current)
+  return names.map(name => ({ key: name, label: name }))
 }
 
 /**

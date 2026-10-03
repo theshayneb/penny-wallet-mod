@@ -3,7 +3,8 @@ import Sortable from 'sortablejs'
 import { WalletFile } from '../io/WalletFile'
 import { ConfirmModal } from '../modal/ConfirmModal'
 import { WalletEditModal } from '../modal/WalletEditModal'
-import { Wallet, WalletBalance, WalletType } from '../types'
+import { Budget, Wallet, WalletBalance, WalletType } from '../types'
+import { validateBudgetName } from '../budget'
 import { t, tn } from '../i18n'
 
 export class PennyWalletSettingTab extends PluginSettingTab {
@@ -31,6 +32,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
       this.renderActiveWallets(walletBalances, walletsWithTransactions)
       this.renderArchivedWallets()
       this.renderAddWallet()
+      this.renderBudgets()
       this.renderCategories()
 
       if (restoreScrollTop !== undefined) {
@@ -382,6 +384,117 @@ export class PennyWalletSettingTab extends PluginSettingTab {
 
     addBtn.addEventListener('click', () => { void submitAddWallet() })
     form.bindSubmitKey(() => { void submitAddWallet() })
+  }
+
+  private async saveBudgets(budgets: Budget[]): Promise<void> {
+    this.walletFile.updateConfig({ budgets })
+    await this.walletFile.saveConfig()
+    this.app.workspace.trigger('penny-wallet-mod:refresh')
+  }
+
+  private renderBudgets() {
+    const { containerEl } = this
+    new Setting(containerEl)
+      .setName(t('settings.budgets'))
+      .setDesc(t('settings.budgetsDesc'))
+      .setHeading()
+
+    const budgets = this.walletFile.getConfig().budgets ?? []
+    const group = containerEl.createDiv('pw-settings-group pw-budget-list')
+    if (budgets.length === 0) {
+      group.createEl('p', { text: t('settings.noBudgets'), cls: 'pw-settings-empty' })
+    }
+
+    for (const budget of budgets) {
+      const setting = new Setting(group).setClass('pw-budget-row-setting')
+      setting.addText(text => {
+        text.setPlaceholder(t('settings.budgetName')).setValue(budget.name)
+        text.inputEl.addClass('pw-budget-name-input')
+        text.inputEl.addEventListener('change', () => {
+          const newName = text.getValue().trim()
+          if (newName === budget.name) return
+          const current = this.walletFile.getConfig().budgets ?? []
+          const err = validateBudgetName(newName, current.map(b => b.name))
+          if (err) {
+            new Notice(t(err))
+            text.setValue(budget.name)
+            return
+          }
+          void (async () => {
+            const scrollTop = this.getSettingsScrollTop()
+            await this.saveBudgets(current.map(b => b.name === budget.name ? { ...b, name: newName } : b))
+            await this.walletFile.renameBudgetInTransactions(budget.name, newName)
+            this.app.workspace.trigger('penny-wallet-mod:refresh')
+            this.display(scrollTop)
+          })()
+        })
+      })
+      setting.addText(text => {
+        text.inputEl.type = 'number'
+        text.inputEl.min = '0'
+        text.inputEl.addClass('pw-budget-amount-input')
+        text.setPlaceholder(t('settings.budgetAmount')).setValue(String(budget.amount))
+        text.inputEl.addEventListener('change', () => {
+          const amount = parseFloat(text.getValue())
+          if (!Number.isFinite(amount) || amount < 0) {
+            new Notice(t('err.budgetAmountInvalid'))
+            text.setValue(String(budget.amount))
+            return
+          }
+          const current = this.walletFile.getConfig().budgets ?? []
+          void this.saveBudgets(current.map(b => b.name === budget.name ? { ...b, amount } : b))
+          budget.amount = amount
+        })
+      })
+      setting.addButton(btn => btn
+        .setButtonText(t('ui.delete'))
+        .setWarning()
+        .onClick(() => {
+          new ConfirmModal(this.app, t('confirm.deleteBudget'), async () => {
+            const scrollTop = this.getSettingsScrollTop()
+            const current = this.walletFile.getConfig().budgets ?? []
+            await this.saveBudgets(current.filter(b => b.name !== budget.name))
+            this.display(scrollTop)
+          }).open()
+        }))
+    }
+
+    const cardEl = containerEl.createDiv('pw-card pw-add-wallet-card')
+    const formEl = cardEl.createDiv('pw-add-wallet-form')
+
+    const nameField = formEl.createDiv('pw-add-wallet-field')
+    nameField.createEl('label', { text: t('settings.budgetName'), cls: 'pw-setting-input-subtitle' })
+    const nameInput = nameField.createEl('input', {
+      type: 'text', placeholder: t('settings.budgetName'), cls: 'pw-add-wallet-input',
+    })
+
+    const amountField = formEl.createDiv('pw-add-wallet-field')
+    amountField.createEl('label', { text: t('settings.budgetAmount'), cls: 'pw-setting-input-subtitle' })
+    const amountInput = amountField.createEl('input', {
+      type: 'number', placeholder: '0', cls: 'pw-add-wallet-input', attr: { min: '0' },
+    })
+
+    const submitRow = cardEl.createDiv('pw-add-wallet-submit')
+    const addBtn = submitRow.createEl('button', { text: t('settings.addBudget'), cls: 'mod-cta' })
+
+    const submit = async () => {
+      const name = nameInput.value.trim()
+      const amount = parseFloat(amountInput.value || '0')
+      const current = this.walletFile.getConfig().budgets ?? []
+      const err = validateBudgetName(name, current.map(b => b.name))
+      if (err) { new Notice(t(err)); return }
+      if (!Number.isFinite(amount) || amount < 0) { new Notice(t('err.budgetAmountInvalid')); return }
+      const scrollTop = this.getSettingsScrollTop()
+      await this.saveBudgets([...current, { name, amount }])
+      new Notice(tn('notice.budgetAdded', { name }))
+      this.display(scrollTop)
+    }
+    addBtn.addEventListener('click', () => { void submit() })
+    for (const el of [nameInput, amountInput]) {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); void submit() }
+      })
+    }
   }
 
   private renderCategories() {

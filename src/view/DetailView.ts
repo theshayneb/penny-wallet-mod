@@ -3,7 +3,7 @@ import { WalletFile } from '../io/WalletFile'
 import { TransactionModal } from '../modal/TransactionModal'
 import { MobileTransactionModal } from '../modal/MobileTransactionModal'
 import { openFilterSheet } from '../modal/BottomSheetPicker'
-import { t, translateCategory } from '../i18n'
+import { t, tn, translateCategory } from '../i18n'
 import { Transaction, TransactionType } from '../types'
 import { currentYearMonth, formatAmount } from '../utils'
 import { renderSharedHeader } from './SharedHeader'
@@ -20,6 +20,7 @@ export class DetailView extends ItemView {
   private filterDateFrom: string | null = null            // YYYY-MM-DD; null = no lower bound
   private filterDateTo: string | null = null              // YYYY-MM-DD; null = no upper bound
   private filterSearch: string = ''
+  private filterBudget: string | null = null                // set from the overview's budget card
   private catPanelOpen: boolean = false
   private accountPanelOpen: boolean = false
 
@@ -50,10 +51,12 @@ export class DetailView extends ItemView {
       this.filterDateFrom = null
       this.filterDateTo = null
       this.filterSearch = ''
+      this.filterBudget = null
     }
     if (state?.yearMonth) this.currentYearMonth = state.yearMonth as string
     if (state?.filterType) this.filterTypes = new Set([state.filterType as TransactionType])
     if (state?.filterCategory) this.filterCategories = new Set([state.filterCategory as string])
+    if (state?.filterBudget) this.filterBudget = state.filterBudget as string
     await super.setState(state, result)
     await this.render()
   }
@@ -115,6 +118,7 @@ export class DetailView extends ItemView {
       this.renderDateRangeRow(filtersWrap)
       this.renderSearchRow(filtersWrap, false)
     }
+    this.renderBudgetFilterChip(filtersWrap)
 
     const listWrap = contentEl.createDiv('pw-detail-list-wrap')
     this.listWrapEl = listWrap
@@ -284,6 +288,18 @@ export class DetailView extends ItemView {
 
     this.renderCategoryDropdown(typePills)
     this.renderAccountDropdown(typePills)
+  }
+
+  private renderBudgetFilterChip(header: HTMLElement): void {
+    if (this.filterBudget === null) return
+    const chip = header.createDiv('pw-budget-filter-chip')
+    chip.createSpan({ text: tn('detail.budgetFilter', { name: this.filterBudget }) })
+    const clearBtn = chip.createEl('button', { text: '✕', cls: 'pw-budget-filter-clear' })
+    clearBtn.setAttribute('aria-label', t('ui.cancel'))
+    clearBtn.addEventListener('click', () => {
+      this.filterBudget = null
+      void this.render()
+    })
   }
 
   private renderSearchRow(header: HTMLElement, includeFilterButton: boolean): void {
@@ -466,6 +482,7 @@ export class DetailView extends ItemView {
     this.filterDateFrom = null
     this.filterDateTo = null
     this.filterSearch = ''
+    this.filterBudget = null
     void this.render()
   }
 
@@ -692,6 +709,7 @@ export class DetailView extends ItemView {
        && !this.filterWallets.has(tx.wallet ?? '')
        && !this.filterWallets.has(tx.fromWallet ?? '')
        && !this.filterWallets.has(tx.toWallet ?? '')) return false
+      if (this.filterBudget !== null && tx.budget !== this.filterBudget) return false
       if (this.filterDateFrom || this.filterDateTo) {
         const txDay = tx.date.split('/')[1] ?? ''
         const txFullDate = `${this.currentYearMonth}-${txDay}`
@@ -702,7 +720,8 @@ export class DetailView extends ItemView {
         const q = this.filterSearch.toLowerCase()
         const matchNote = tx.note?.toLowerCase().includes(q) ?? false
         const matchTags = tx.tags?.some(tag => tag.toLowerCase().includes(q)) ?? false
-        if (!matchNote && !matchTags) return false
+        const matchBudget = tx.budget?.toLowerCase().includes(q) ?? false
+        if (!matchNote && !matchTags && !matchBudget) return false
       }
       return true
     })
@@ -751,7 +770,10 @@ export class DetailView extends ItemView {
       text: translateCategory(tx.category ?? ''),
       cls: 'pw-tx-category',
     })
-    stack.createEl('div', { text: buildWalletText(tx), cls: 'pw-tx-wallet' })
+    const walletLine = stack.createEl('div', { text: buildWalletText(tx), cls: 'pw-tx-wallet' })
+    if (tx.budget) {
+      walletLine.createSpan({ text: tx.budget, cls: 'pw-tx-budget-chip' }).dataset['testid'] = 'tx-budget-chip'
+    }
 
     const display = buildLine3Display(tx)
     if (display.note !== '') {

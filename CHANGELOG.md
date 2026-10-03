@@ -2,6 +2,17 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.20] - 2026-10-03
+
+### Added
+- Budgets: create budgets with a monthly amount in Settings → Budgets (rename, change amount, or delete them inline).
+- Add/Edit Transaction: expenses can be assigned to a budget (desktop and mobile). The `obsidian://penny-wallet-mod` URI also accepts `budget=`.
+- Overview: a Budgets card shows, for the selected month, how much of each budget is spent and how much is left or over. Refunds give money back to the budget, and budgets reset every month. Clicking a budget opens its transactions.
+- Transactions list: budgeted rows show the budget name, search matches budget names, and the list can be filtered by budget.
+
+### Changed
+- Month files gain an optional 11th `Budget` column, written only for budgeted rows so unbudgeted rows stay readable by the original PennyWallet plugin.
+
 ## [0.0.19] - 2026-10-03
 
 ### Fixed

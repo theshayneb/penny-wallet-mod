@@ -3,7 +3,7 @@ import { TransactionType, PennyWalletConfig } from '../types'
 import { t } from '../i18n'
 import { TransactionModal } from './TransactionModal'
 import { formatMobileHeroAmount } from '../utils'
-import { getTransferWalletCandidates } from './transactionState'
+import { getBudgetOptions, getTransferWalletCandidates } from './transactionState'
 import { openBottomSheetPicker, openBottomSheetShell, type BottomSheetOption } from './BottomSheetPicker'
 import { openTagPicker } from './TagPicker'
 import { MobileCalculatorPad } from './MobileCalculatorPad'
@@ -235,6 +235,18 @@ export class MobileTransactionModal extends TransactionModal {
         (key) => { this.wallet = key },
         true,
       )
+
+      const budgetOptions = getBudgetOptions(config, this.budget)
+      if (this.type === 'expense' && budgetOptions.length > 0) {
+        this.addMobileBottomSheetRow(
+          this.mobileRowsEl,
+          t('modal.budget'),
+          this.budget || '—',
+          this.withEmptyOption(budgetOptions),
+          () => this.budget,
+          (key) => { this.budget = key },
+        )
+      }
     }
 
     // Tags — chips-or-placeholder row, taps anywhere to open multi-select picker

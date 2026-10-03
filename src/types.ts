@@ -12,6 +12,12 @@ export interface Transaction {
   tags?: string[]
   amount: number
   createdAt?: string  // ISO 8601 timestamp; absent in data written before this field was added
+  budget?: string     // expense only; name of a Budget in config.budgets
+}
+
+export interface Budget {
+  name: string
+  amount: number  // monthly amount; resets every month
 }
 
 export interface Wallet {
@@ -54,6 +60,7 @@ export interface PennyWalletConfig {
   decimalPlaces: 0 | 2
   options: PennyWalletOptions
   tags: string[]
+  budgets: Budget[]
   autoValidateOnLoad: boolean
 }
 
@@ -66,6 +73,7 @@ export interface TransactionModalParams {
   wallet?: string
   fromWallet?: string
   toWallet?: string
+  budget?: string
   date?: string  // yyyy-mm-dd
 }
 
@@ -121,6 +129,7 @@ export const DEFAULT_CONFIG: PennyWalletConfig = {
     },
   },
   tags: [],
+  budgets: [],
   autoValidateOnLoad: true,
 }
 

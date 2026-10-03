@@ -282,3 +282,41 @@ describe('buildMonthContent', () => {
     expect(parsed[1].amount).toBe(60000)
   })
 })
+
+// ── Budget column ────────────────────────────────────────────────────────────
+
+describe('budget column', () => {
+  const base: Transaction = {
+    date: '04/15', type: 'expense', wallet: 'Bank', category: 'food',
+    note: 'groceries', amount: 120, createdAt: '2026-04-15T10:00:00.000Z',
+  }
+
+  it('formatRow omits the budget column when unset (10 columns)', () => {
+    const row = formatRow(base)
+    expect(row.split('|').length - 2).toBe(10)
+  })
+
+  it('formatRow appends the budget as the 11th column and round-trips', () => {
+    const row = formatRow({ ...base, budget: 'Groceries' })
+    expect(row.split('|').length - 2).toBe(11)
+    expect(row.endsWith('| Groceries |')).toBe(true)
+    expect(parseRow(row)).toEqual({ ...base, budget: 'Groceries' })
+  })
+
+  it('parseRow treats "-" in the budget column as no budget', () => {
+    const row = '| 04/15 | expense | Bank | - | - | food | x | - | 120 | - | - |'
+    expect(parseRow(row)?.budget).toBeUndefined()
+  })
+
+  it('parseRow rejects rows with more than 11 columns', () => {
+    const row = '| 04/15 | expense | Bank | - | - | food | x | - | 120 | - | B | extra |'
+    expect(parseRow(row)).toBeNull()
+  })
+
+  it('header includes Budget and month file parses budgeted and plain rows', () => {
+    const content = buildMonthContent('2026-04', [base, { ...base, date: '04/16', budget: 'Fun' }], { income: 0, expense: 240, netAsset: 0 })
+    expect(content).toContain('| CreatedAt | Budget |')
+    const parsed = parseMonthFile(content)
+    expect(parsed.map(tx => tx.budget)).toEqual([undefined, 'Fun'])
+  })
+})

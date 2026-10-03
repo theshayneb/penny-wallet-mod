@@ -1,9 +1,10 @@
 import { Events, ItemView, WorkspaceLeaf } from 'obsidian'
 import { WalletFile } from '../io/WalletFile'
-import { t, formatMonthLabel, formatYearMonth } from '../i18n'
-import { currentYearMonth } from '../utils'
+import { t, tn, formatMonthLabel, formatYearMonth } from '../i18n'
+import { currentYearMonth, formatAmount } from '../utils'
+import { computeBudgetUsage } from '../budget'
 import { createMetric, renderCard } from './components'
-import { TransactionType } from '../types'
+import { Transaction, TransactionType } from '../types'
 import { DETAIL_VIEW_TYPE } from './DetailView'
 import { renderSharedHeader } from './SharedHeader'
 import { Chart } from 'chart.js'
@@ -119,6 +120,57 @@ export class DashboardView extends ItemView {
     const incCard = renderCard(gridRight, { title: t('dash.incomeByCategory') })
     if (incomeMap.size > 0) this.charts.push(drawPie(incCard, incomeMap, dp, (cat) => { void this.openDetailWithFilter('income', cat) }, 200))
     else incCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
+
+    this.renderBudgets(contentEl, transactions, dp)
+  }
+
+  private renderBudgets(contentEl: HTMLElement, transactions: Transaction[], dp: 0 | 2) {
+    const budgets = this.walletFile.getConfig().budgets ?? []
+    if (budgets.length === 0) return
+
+    const section = contentEl.createDiv('pw-budget-section')
+    const card = renderCard(section, { title: t('dash.budgets'), className: 'pw-budget-card' })
+    for (const usage of computeBudgetUsage(budgets, transactions)) {
+      const over = usage.remaining < 0
+      const row = card.createDiv('pw-budget-row' + (over ? ' is-over' : ''))
+      row.dataset['testid'] = 'budget-row'
+      row.setAttribute('role', 'button')
+      row.tabIndex = 0
+
+      const head = row.createDiv('pw-budget-row-head')
+      head.createSpan({ text: usage.budget.name, cls: 'pw-budget-name' })
+      head.createSpan({
+        text: tn('dash.budgetSpentOf', {
+          spent: formatAmount(usage.spent, dp),
+          amount: formatAmount(usage.budget.amount, dp),
+        }),
+        cls: 'pw-budget-spent',
+      })
+
+      const bar = row.createDiv('pw-budget-bar')
+      bar.createDiv('pw-budget-bar-fill').style.width = `${(usage.ratio * 100).toFixed(1)}%`
+
+      row.createDiv({
+        text: over
+          ? tn('dash.budgetOver', { amount: formatAmount(-usage.remaining, dp) })
+          : tn('dash.budgetRemaining', { amount: formatAmount(usage.remaining, dp) }),
+        cls: 'pw-budget-remaining',
+      })
+
+      const open = () => { void this.openDetailWithBudget(usage.budget.name) }
+      row.addEventListener('click', open)
+      row.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return
+        e.preventDefault()
+        open()
+      })
+    }
+  }
+
+  private async openDetailWithBudget(budget: string) {
+    await this.openOrRevealView(DETAIL_VIEW_TYPE, {
+      state: { yearMonth: this.currentYearMonth, filterBudget: budget, resetFilters: true },
+    })
   }
 
   private async openDetailWithFilter(type: TransactionType, category: string) {

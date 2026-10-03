@@ -56,6 +56,9 @@ netAsset: 0
 | Tags | comma-separated tags or `-` | comma-separated tags or `-` |
 | Amount | positive number; refund expenses use a negative number | positive number |
 | CreatedAt | ISO 8601 UTC timestamp | ISO 8601 UTC timestamp |
+| Budget | optional (expense only): budget name, e.g. `Groceries` | not used |
+
+The **Budget** column is an optional 11th column. It is only written for rows that are assigned to a budget; other rows keep 10 columns, so they stay readable by the original PennyWallet plugin (which ignores rows with more than 10 columns).
 
 ### Frontmatter Cache
 
@@ -99,6 +102,7 @@ Stored at the **vault root** (not inside the transactions folder).
     }
   },
   "tags": [],
+  "budgets": [{ "name": "Groceries", "amount": 500 }],
   "autoValidateOnLoad": true
 }
 ```

@@ -3,7 +3,7 @@ import { Transaction, TransactionType, TransactionModalParams, PennyWalletConfig
 import { WalletFile } from '../io/WalletFile'
 import { dateToYearMonth } from '../utils'
 import { t } from '../i18n'
-import { parseAmountForEdit, getCategoryOptions as getCategoryOptionsFromState, validateTransactionForm, buildTransactionPayload, getTransferWalletCandidates, type TransactionFormState } from './transactionState'
+import { parseAmountForEdit, getCategoryOptions as getCategoryOptionsFromState, validateTransactionForm, buildTransactionPayload, getTransferWalletCandidates, getBudgetOptions, type TransactionFormState } from './transactionState'
 import { buildTagInput } from './TagInput'
 import { ConfirmModal } from './ConfirmModal'
 
@@ -26,6 +26,7 @@ export class TransactionModal extends Modal {
   protected tags: string[] = []
   protected amount: string = ''
   protected isRefund: boolean = false
+  protected budget: string = ''
 
   // DOM refs
   private typeTabsEl!: HTMLElement
@@ -73,6 +74,7 @@ export class TransactionModal extends Modal {
       this.category = tx.category ?? ''
       this.note = tx.note
       this.tags = tx.tags ? [...tx.tags] : []
+      this.budget = tx.budget ?? ''
       const parsed = parseAmountForEdit(tx.amount)
       this.amount = parsed.display
       this.isRefund = parsed.isRefund
@@ -88,6 +90,7 @@ export class TransactionModal extends Modal {
       this.category = this.params.category ?? ''
       this.note = this.params.note ?? ''
       this.tags = this.params.tags ? [...this.params.tags] : []
+      this.budget = this.params.budget ?? ''
       this.amount = this.params.amount != null ? String(this.params.amount) : ''
     }
   }
@@ -230,6 +233,16 @@ export class TransactionModal extends Modal {
         )
       }, true)
 
+      const budgetOptions = getBudgetOptions(config, this.budget)
+      if (this.type === 'expense' && budgetOptions.length > 0) {
+        this.addField(this.fieldsEl, t('modal.budget'), () =>
+          this.buildSelect(
+            budgetOptions.map(b => ({ value: b.key, label: b.label })),
+            this.budget,
+            val => { this.budget = val }
+          ))
+      }
+
     } else {
       this.normalizeWalletForCategory(config)
 
@@ -368,7 +381,10 @@ export class TransactionModal extends Modal {
 
   protected resetStateForType(newType: TransactionType): void {
     this.type = newType
-    if (newType !== 'expense') this.isRefund = false
+    if (newType !== 'expense') {
+      this.isRefund = false
+      this.budget = ''
+    }
     if (newType === 'expense' || newType === 'income') {
       this.fromWallet = ''
       this.toWallet = ''
@@ -407,6 +423,7 @@ export class TransactionModal extends Modal {
       tags: this.tags,
       amount: this.amount,
       isRefund: this.isRefund,
+      budget: this.budget,
     }
   }
 

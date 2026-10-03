@@ -121,6 +121,7 @@ describe('validateTransactionForm', () => {
     tags: [],
     amount: '100',
     isRefund: false,
+    budget: '',
   }
 
   const config0dp: PennyWalletConfig = {
@@ -132,6 +133,7 @@ describe('validateTransactionForm', () => {
     defaultWallet: 'cash',
     decimalPlaces: 0,
     tags: [],
+    budgets: [],
     folderName: 'PennyWallet',
     autoValidateOnLoad: true,
     options: {} as never,
@@ -260,6 +262,7 @@ describe('buildTransactionPayload', () => {
     tags: [],
     amount: '100',
     isRefund: false,
+    budget: '',
   }
 
   it('expense → wallet set, fromWallet/toWallet undefined', () => {
@@ -362,5 +365,41 @@ describe('getTransferWalletCandidates', () => {
     const { fromCandidates, toCandidates } = getTransferWalletCandidates(wallets, '')
     expect(fromCandidates).toEqual(wallets)
     expect(toCandidates).toEqual(wallets)
+  })
+})
+
+import { getBudgetOptions } from '../../src/modal/transactionState'
+
+describe('buildTransactionPayload — budget', () => {
+  const state: TransactionFormState = {
+    date: '2026-05-03', type: 'expense', wallet: 'cash', fromWallet: '', toWallet: '',
+    category: 'food', note: '', tags: [], amount: '100', isRefund: false, budget: 'Groceries',
+  }
+
+  it('expense keeps budget', () => {
+    expect(buildTransactionPayload(state).budget).toBe('Groceries')
+  })
+  it('empty budget → undefined', () => {
+    expect(buildTransactionPayload({ ...state, budget: '' }).budget).toBeUndefined()
+  })
+  it('income drops budget', () => {
+    expect(buildTransactionPayload({ ...state, type: 'income' }).budget).toBeUndefined()
+  })
+})
+
+describe('getBudgetOptions', () => {
+  const config = { budgets: [{ name: 'Groceries', amount: 500 }, { name: 'Fun', amount: 100 }] } as unknown as PennyWalletConfig
+
+  it('lists configured budgets in order', () => {
+    expect(getBudgetOptions(config, '')).toEqual([
+      { key: 'Groceries', label: 'Groceries' },
+      { key: 'Fun', label: 'Fun' },
+    ])
+  })
+  it('keeps a current value that is no longer configured', () => {
+    expect(getBudgetOptions(config, 'Old').map(o => o.key)).toEqual(['Groceries', 'Fun', 'Old'])
+  })
+  it('handles config without budgets', () => {
+    expect(getBudgetOptions({} as PennyWalletConfig, '')).toEqual([])
   })
 })

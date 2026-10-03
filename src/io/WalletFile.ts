@@ -14,20 +14,21 @@ import {
 import type { Wallet, FrontmatterIssue, OrphanedWalletIssue, ValidationIssue } from '../types'
 
 const ROOT_CONFIG_PATH = normalizePath('.penny-wallet.json')
-const TABLE_HEADER = `| Date | Type | Wallet | From | To | Category | Note | Tags | Amount | CreatedAt |
-|------|------|--------|------|----|----------|------|------|--------|-----------|`
+const TABLE_HEADER = `| Date | Type | Wallet | From | To | Category | Note | Tags | Amount | CreatedAt | Budget |
+|------|------|--------|------|----|----------|------|------|--------|-----------|--------|`
 
 // ─── Markdown Table Parsing ───────────────────────────────────────────────────
 
 export function parseRow(line: string): Transaction | null {
   const cols = line.split('|').map(c => c.trim()).filter((_, i, a) => i > 0 && i < a.length - 1)
-  if (cols.length < 8 || cols.length > 10) return null
+  if (cols.length < 8 || cols.length > 11) return null
   const [date, type, wallet, fromWallet, toWallet, category, note] = cols
   if (!date || !type) return null
 
   let tagsStr: string | undefined
   let amountStr: string
   let createdAtStr: string | undefined
+  let budgetStr: string | undefined
 
   if (cols.length === 8) {
     // old: no tags, no createdAt
@@ -43,9 +44,11 @@ export function parseRow(line: string): Transaction | null {
     }
   } else {
     // 10 cols: date type wallet from to category note tags amount createdAt
+    // 11 cols: ... + budget
     tagsStr = cols[7]
     amountStr = cols[8]
     createdAtStr = cols[9]
+    budgetStr = cols[10]
   }
 
   const amount = parseFloat(amountStr)
@@ -70,6 +73,7 @@ export function parseRow(line: string): Transaction | null {
     tags:       (tagsStr && tagsStr !== '-') ? tagsStr.split(',').filter(t => t.length > 0) : undefined,
     amount,
     createdAt:  (createdAtStr && createdAtStr !== '-') ? createdAtStr : undefined,
+    ...(budgetStr && budgetStr !== '-' ? { budget: budgetStr } : {}),
   }
 }
 
@@ -84,7 +88,10 @@ export function formatRow(tx: Transaction): string {
   const tags = tx.tags?.length ? tx.tags.join(',') : '-'
   const amount = tx.amount
   const createdAt = tx.createdAt ?? '-'
-  return `| ${d} | ${type} | ${wallet} | ${from} | ${to} | ${cat} | ${note} | ${tags} | ${amount} | ${createdAt} |`
+  // Budget column is only written when set, so unbudgeted rows stay readable
+  // by the original PennyWallet plugin (which rejects rows with > 10 columns).
+  const budget = tx.budget ? ` ${tx.budget} |` : ''
+  return `| ${d} | ${type} | ${wallet} | ${from} | ${to} | ${cat} | ${note} | ${tags} | ${amount} | ${createdAt} |${budget}`
 }
 
 export function parseMonthFile(content: string): Transaction[] {
@@ -444,6 +451,19 @@ export class WalletFile {
     await this.deleteTransactionFromMonth(tx, yearMonth)
   }
 
+  async renameBudgetInTransactions(oldName: string, newName: string): Promise<void> {
+    const months = this.getAllYearMonths()
+    await Promise.all(months.map(async (ym) => {
+      const content = await this.readMonthFile(ym)
+      if (!content) return
+      const transactions = parseMonthFile(content)
+      if (!transactions.some(tx => tx.budget === oldName)) return
+      const updated = transactions.map(tx => tx.budget === oldName ? { ...tx, budget: newName } : tx)
+      const summary = this.computeSummary(updated)
+      await this.writeMonthFile(ym, buildMonthContent(ym, updated, summary))
+    }))
+  }
+
   async renameWalletInTransactions(oldName: string, newName: string): Promise<void> {
     const months = this.getAllYearMonths()
     await Promise.all(months.map(async (ym) => {
@@ -488,6 +508,7 @@ export class WalletFile {
       (tx.toWallet ?? '') === (target.toWallet ?? '') &&
       (tx.category ?? '') === (target.category ?? '') &&
       (tx.tags ?? []).join(',') === (target.tags ?? []).join(',') &&
+      (tx.budget ?? '') === (target.budget ?? '') &&
       (tx.createdAt === undefined || target.createdAt === undefined || tx.createdAt === target.createdAt),
     )
   }

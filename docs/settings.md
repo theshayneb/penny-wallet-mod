@@ -72,6 +72,18 @@ Click **Add Account** or press **Enter** in any field to confirm.
 
 ---
 
+## Budgets
+
+Create budgets with a monthly amount (e.g. *Groceries — 500*). When adding or editing an **expense**, pick a budget in the **Budget** field. Each month, the expenses assigned to a budget are deducted from its amount; refunds give money back. Budgets reset at the start of every month (no carry-over).
+
+The **Budgets** card on the Overview shows, for the selected month, how much of each budget is spent and how much is left (or how much it is over). Click a budget to see its transactions.
+
+- Edit a budget's name or amount directly in its row. Renaming updates every transaction assigned to it.
+- Deleting a budget keeps the budget name on existing transactions; they just stop counting toward any budget.
+- Budget names cannot contain `|`.
+
+---
+
 ## Custom Categories
 
 Add your own expense, income, and transfer categories.
