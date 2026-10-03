@@ -69,16 +69,18 @@ describe('getAddRowState', () => {
       .toEqual({ kind: 'invalid', name: 'a|b' })
   })
 
-  it('returns too-long when length exceeds 5 CJK / 10 non-CJK', () => {
+  it('returns too-long when length exceeds 5 CJK / 30 non-CJK', () => {
     expect(getAddRowState('一二三四五六', [], 0))
       .toEqual({ kind: 'too-long', name: '一二三四五六' })
-    expect(getAddRowState('abcdefghijk', [], 0))
-      .toEqual({ kind: 'too-long', name: 'abcdefghijk' })
+    expect(getAddRowState('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', [], 0))
+      .toEqual({ kind: 'too-long', name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' })
     // boundary: exactly at cap is still addable
     expect(getAddRowState('一二三四五', [], 0))
       .toEqual({ kind: 'addable', name: '一二三四五' })
-    expect(getAddRowState('abcdefghij', [], 0))
-      .toEqual({ kind: 'addable', name: 'abcdefghij' })
+    expect(getAddRowState('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', [], 0))
+      .toEqual({ kind: 'addable', name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' })
+    expect(getAddRowState('#friends_family', [], 0))
+      .toEqual({ kind: 'addable', name: 'friends_family' })
   })
 
   it('returns limit when staged count is already at the cap', () => {

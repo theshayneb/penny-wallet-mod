@@ -116,11 +116,14 @@ describe('validateTag', () => {
   it('accepts short ASCII tag', () => {
     expect(validateTag('food')).toBe(true)
   })
-  it('accepts 10-char ASCII tag', () => {
-    expect(validateTag('abcdefghij')).toBe(true)
+  it('accepts underscored tag longer than 10 chars', () => {
+    expect(validateTag('friends_family')).toBe(true)
   })
-  it('rejects 11-char ASCII tag', () => {
-    expect(validateTag('abcdefghijk')).toBe(false)
+  it('accepts 30-char ASCII tag', () => {
+    expect(validateTag('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')).toBe(true)
+  })
+  it('rejects 31-char ASCII tag', () => {
+    expect(validateTag('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')).toBe(false)
   })
   it('accepts 5-char CJK tag', () => {
     expect(validateTag('日常通勤飲')).toBe(true)      // 5 chars → true
