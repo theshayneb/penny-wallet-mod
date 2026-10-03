@@ -124,8 +124,6 @@ const translations = {
     'tagPicker.tooLong': '長度超過上限（中文 5 字 / 英數 30 字）無法新增',
     'tagPicker.rowPlaceholder': '選擇標籤',
     'modal.amount': '金額',
-    'modal.isRefund': '這是退款',
-    'modal.isRefund.hint': '金額會記為負支出（用於退貨、退款場景）',
 
     // Validation errors
     'err.amountRequired': '請輸入金額',
@@ -371,8 +369,6 @@ const translations = {
     'tagPicker.tooLong': 'Too long to add (max 5 CJK / 30 ASCII chars)',
     'tagPicker.rowPlaceholder': 'Select tags',
     'modal.amount': 'Amount',
-    'modal.isRefund': 'This is a refund',
-    'modal.isRefund.hint': 'Stored as a negative expense (for refunds and returns)',
 
     'err.amountRequired': 'Amount is required',
     'err.amountPositive': 'Amount must be greater than 0',

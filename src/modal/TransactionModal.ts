@@ -30,7 +30,6 @@ export class TransactionModal extends Modal {
   protected budget: string = ''
 
   // DOM refs
-  private typeTabsEl!: HTMLElement
   private fieldsEl!: HTMLElement
   protected errorEl!: HTMLElement
   private amountPrefixEl: HTMLElement | null = null
@@ -100,16 +99,11 @@ export class TransactionModal extends Modal {
     contentEl.addClass('pw-modal')
 
     const titleRow = contentEl.createDiv('pw-modal-title-row')
-    const titleEl = titleRow.createEl('h2', {
-      text: this.editingTx ? t('modal.editTitle') : t('modal.addTitle'),
-    })
+    const titleEl = titleRow.createEl('h2', { text: this.modalTitle() })
     if (this.editingTx) {
       const iconEl = titleEl.createSpan('pw-modal-title-icon')
       setIcon(iconEl, 'pencil')
     }
-
-    this.typeTabsEl = contentEl.createDiv('pw-type-tabs')
-    this.renderTypeTabs()
 
     this.fieldsEl = contentEl.createDiv('pw-fields')
     this.renderFields(config)
@@ -160,43 +154,18 @@ export class TransactionModal extends Modal {
     })
   }
 
-  private renderTypeTabs() {
-    this.typeTabsEl.empty()
-    const types: TransactionType[] = ['expense', 'income', 'transfer']
-    for (const tp of types) {
-      const tab = this.typeTabsEl.createEl('button', {
-        text: t(`label.type.${tp}`),
-        cls: 'pw-type-tab' + (this.type === tp ? ' is-active' : ''),
-      })
-      tab.dataset['type'] = tp
-    // Update active tab immediately on touch, rebuild after touch ends
-      tab.addEventListener('touchend', (e) => {
-        e.preventDefault()
-        this.containerEl.removeClass('pw-modal-keyboard-open')
-        this.resetStateForType(tp)
-        Array.from(this.typeTabsEl.children).forEach((el, i) => {
-          el.classList.toggle('is-active', types[i] === tp)
-        })
-        this.renderFields(this.walletFile.getConfig(), false)
-        // Defer full tab rebuild until after touch sequence ends
-        setTimeout(() => this.renderTypeTabs(), 50)
-      })
-      tab.addEventListener('click', () => {
-        this.resetStateForType(tp)
-        this.renderTypeTabs()
-        this.renderFields(this.walletFile.getConfig(), false)
-      })
-    }
+  /**
+   * No type selector: new transactions are expenses. An income or transfer
+   * (being edited, or passed in via the URI) shows its type in the title.
+   */
+  protected modalTitle(): string {
+    const base = this.editingTx ? t('modal.editTitle') : t('modal.addTitle')
+    return this.type === 'expense' ? base : `${base} · ${t(`label.type.${this.type}`)}`
   }
 
   private renderFields(config: PennyWalletConfig, autoFocus = true) {
     this.fieldsEl.empty()
     this.amountPrefixEl = null
-
-    // Refund row first (expense only) — sub-option of the type tab, visually adjacent.
-    if (this.type === 'expense') {
-      this.addRefundRow(this.fieldsEl)
-    }
 
     // Date field (always shown)
     this.addField(this.fieldsEl, t('modal.date'), () => {
@@ -332,23 +301,6 @@ export class TransactionModal extends Modal {
     row.appendChild(input)
   }
 
-  private addRefundRow(container: HTMLElement) {
-    const block = container.createDiv('pw-refund-block')
-    const row = block.createDiv('pw-field-row pw-refund-row')
-    row.setAttribute('title', t('modal.isRefund.hint'))
-    const checkboxId = 'pw-refund-checkbox'
-    row.createEl('label', { text: t('modal.isRefund'), cls: 'pw-field-label', attr: { for: checkboxId } })
-    const checkbox = createEl('input', { type: 'checkbox' })
-    checkbox.id = checkboxId
-    checkbox.checked = this.isRefund
-    checkbox.addClass('pw-field-input')
-    checkbox.addEventListener('change', () => {
-      this.isRefund = checkbox.checked
-      this.updateDesktopAmountPrefix()
-    })
-    row.appendChild(checkbox)
-  }
-
   private updateDesktopAmountPrefix() {
     if (!this.amountPrefixEl) return
     const shouldShow = this.isRefund && this.amount !== ''
@@ -387,29 +339,6 @@ export class TransactionModal extends Modal {
     const toType   = config.wallets.find(w => w.name === this.toWallet)?.type
     if (fromType === 'creditCard') this.fromWallet = ''
     if (toType && toType !== 'creditCard') this.toWallet = ''
-  }
-
-  protected resetStateForType(newType: TransactionType): void {
-    const config = this.walletFile.getConfig()
-    this.type = newType
-    if (newType !== 'expense') {
-      this.isRefund = false
-      this.budget = ''
-    }
-    if (newType === 'expense' || newType === 'income') {
-      this.fromWallet = ''
-      this.toWallet = ''
-      const current = config.wallets.find(w => w.name === this.wallet)
-      if (!current || (newType === 'income' && current.type === 'creditCard')) {
-        this.wallet = resolveDefaultWallet(config, newType)
-      }
-    } else {
-      this.wallet = ''
-    }
-    const validCategories = getCategoryOptionsFromState(config, newType)
-    if (this.category && !validCategories.some(c => c.key === this.category)) {
-      this.category = ''
-    }
   }
 
   protected getCategoryOptions(config: PennyWalletConfig): { key: string; label: string }[] {

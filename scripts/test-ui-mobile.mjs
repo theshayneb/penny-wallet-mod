@@ -370,8 +370,8 @@ section('Mobile transaction modal')
 
 openAddModal()
 assert('Mobile modal opens', count('.pw-mobile-content') > 0)
-assert('Mobile type tabs render', count('.pw-mobile-tab') >= 3)
-assert('Mobile picker rows render', count('.pw-mobile-bottom-sheet-row') >= 2)
+assert('No mobile type tabs', count('.pw-mobile-tab') === 0)
+assert('Mobile picker rows render', count('.pw-mobile-bottom-sheet-row') >= 1)
 assert('Calculator hidden by default', count('.pw-mobile-calculator-pad') === 0)
 assert('Calculator opens from amount display', openCalculator())
 

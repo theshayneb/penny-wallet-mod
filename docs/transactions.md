@@ -2,6 +2,8 @@
 
 PennyWallet has three transaction types. Each is designed for a specific real-world scenario.
 
+> The Add Transaction form only adds **expenses**: it has no type selector and no refund checkbox. Income and transfers created earlier (or through a `penny-wallet-mod` link with `type=`) can still be edited; the form title shows their type. Editing an existing refund keeps it a refund.
+
 ---
 
 ## Transaction Types
@@ -24,13 +26,10 @@ Money leaving one of your accounts for a purchase or payment.
 **Effect on balance:**
 - Cash / Bank account → balance decreases
 - Credit Card → outstanding debt increases
-- Refund toggle → amount is stored as a negative expense; credit card debt or cash/bank spending is reduced
+- Refund (negative amount, from older entries or edited in the Markdown file) → credit card debt or cash/bank spending is reduced
 
 **Example:** Paid NT$280 for lunch with cash
 → Category: `Food`, Amount: `280` (default account: `Cash`)
-
-**Example:** Returned a NT$320 purchase on Visa Platinum
-→ Category: `Shopping`, Amount: `320`, Refund enabled (default account: `Visa Platinum`)
 
 ---
 
@@ -126,7 +125,7 @@ Editing supports changing the **date** (including moving the transaction to a di
 ### Transfer
 `Account Transfer` · `Credit Card Payment` · `Investment Trade`
 
-Refunds are no longer a transfer category. Use **Expense** with the refund toggle instead.
+Refunds are no longer a transfer category; they are stored as an **Expense** with a negative amount.
 
 If a transaction has no category, it is shown as **Uncategorized**. This is a display-only label — nothing is stored.
 

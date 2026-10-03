@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.28] - 2026-10-03
+
+### Changed
+- Add/Edit Transaction (desktop and mobile): removed the Expense / Income / Transfer buttons and the "This is a refund" checkbox. New transactions are always expenses. Editing an existing income or transfer keeps its type (shown in the title), and editing an existing refund keeps it a refund.
+
 ## [0.0.27] - 2026-10-03
 
 ### Added

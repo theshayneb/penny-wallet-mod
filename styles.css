@@ -258,63 +258,6 @@ canvas {
   height: 14px;
 }
 
-/* Type tabs */
-.pw-mobile-tabs {
-  display: flex;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--background-modifier-border);
-}
-
-/* Doubled .pw-transaction-modal-container so .pw-mobile-tab beats Obsidian's
-   body.is-phone .modal-container button:hover (0,3,2) without !important. */
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab {
-  flex: 1;
-  background: none;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  outline: none;
-  padding: 14px 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-  cursor: pointer;
-  position: relative;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab:hover,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab:active,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab:focus,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab:focus-visible {
-  background: none;
-  outline: none;
-  box-shadow: none;
-  color: var(--text-muted);
-}
-
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab.is-active,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab.is-active:hover,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab.is-active:active,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab.is-active:focus,
-.pw-transaction-modal-container.pw-transaction-modal-container .pw-mobile-tab.is-active:focus-visible {
-  background: none;
-  outline: none;
-  box-shadow: none;
-  color: var(--interactive-accent);
-  font-weight: 600;
-}
-
-.pw-mobile-tab.is-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  background: var(--interactive-accent);
-  border-radius: 1px;
-}
-
 /* Amount display */
 .pw-mobile-amount-area {
   padding: 10px 20px 8px;
@@ -367,19 +310,6 @@ canvas {
   height: 48px;
   border-bottom: 1px solid var(--background-modifier-border);
   position: relative;
-}
-
-.pw-mobile-refund-hint-row {
-  padding: 6px 20px 8px 0;
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  border-bottom: 1px solid var(--background-modifier-border);
-}
-
-.pw-refund-block .pw-mobile-row {
-  padding-left: 0;
-  gap: 10px;
 }
 
 .pw-mobile-row-label {
@@ -940,41 +870,6 @@ button.pw-mobile-calculator-done {
   gap: 6px;
 }
 
-.pw-type-tabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.pw-type-tab {
-  padding: 4px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--background-modifier-border);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.15s, color 0.15s;
-  outline: none;
-  box-shadow: none;
-}
-
-.pw-type-tab:hover {
-  background: var(--background-modifier-hover);
-  color: var(--text-normal);
-}
-
-.pw-type-tab.is-active {
-  background: var(--background-secondary);
-  color: var(--text-normal);
-  border-color: var(--background-modifier-border-hover, var(--background-modifier-border));
-}
-
-.pw-type-tab.is-active:hover {
-  background: var(--background-secondary);
-}
-
 .pw-fields {
   display: flex;
   flex-direction: column;
@@ -1061,16 +956,6 @@ button.pw-mobile-calculator-done {
   cursor: pointer;
 }
 
-
-.pw-refund-block {
-  margin-left: 24px;
-  padding: 8px 0 8px 12px;
-  border-left: 2px solid var(--background-modifier-border);
-}
-
-.pw-refund-row .pw-field-input[type="checkbox"] {
-  margin-left: 0;
-}
 
 .pw-amount-field-wrapper {
   display: flex;

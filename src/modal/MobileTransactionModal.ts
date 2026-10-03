@@ -1,5 +1,5 @@
 import { Platform, setIcon } from 'obsidian'
-import { TransactionType, PennyWalletConfig } from '../types'
+import { PennyWalletConfig } from '../types'
 import { t } from '../i18n'
 import { TransactionModal } from './TransactionModal'
 import { formatMobileHeroAmount } from '../utils'
@@ -15,7 +15,6 @@ import {
 } from './mobileCalculatorState'
 
 export class MobileTransactionModal extends TransactionModal {
-  private mobileTabsEl!: HTMLElement
   private mobileRowsEl!: HTMLElement
   private mobileAmountEl!: HTMLElement
   private mobileCalculatorState: MobileCalculatorState = createMobileCalculatorState()
@@ -44,7 +43,7 @@ export class MobileTransactionModal extends TransactionModal {
     const cancelBtn = topBar.createEl('button', { cls: 'pw-mobile-top-btn', text: '✕' })
     const titleEl = topBar.createEl('span', {
       cls: 'pw-mobile-top-title',
-      text: this.editingTx ? t('modal.editTitle') : t('modal.addTitle'),
+      text: this.modalTitle(),
     })
     if (this.editingTx) {
       const iconEl = titleEl.createSpan('pw-modal-title-icon')
@@ -60,10 +59,6 @@ export class MobileTransactionModal extends TransactionModal {
     let confirmTouched = false
     confirmBtn.addEventListener('touchend', (e) => { e.preventDefault(); confirmTouched = true; void this.handleConfirm() })
     confirmBtn.addEventListener('click', () => { if (confirmTouched) { confirmTouched = false; return } void this.handleConfirm() })
-
-    // Type tabs
-    this.mobileTabsEl = contentEl.createDiv('pw-mobile-tabs')
-    this.renderMobileTabs(config)
 
     // Amount display
     const amountArea = contentEl.createDiv('pw-mobile-amount-area')
@@ -126,41 +121,9 @@ export class MobileTransactionModal extends TransactionModal {
     }
   }
 
-  private renderMobileTabs(config: PennyWalletConfig) {
-    this.mobileTabsEl.empty()
-    const types: TransactionType[] = ['expense', 'income', 'transfer']
-    for (const tp of types) {
-      const tab = this.mobileTabsEl.createEl('button', {
-        text: t(`label.type.${tp}`),
-        cls: 'pw-mobile-tab' + (this.type === tp ? ' is-active' : ''),
-      })
-      tab.addEventListener('click', () => {
-        this.resetStateForType(tp)
-        this.renderMobileTabs(config)
-        this.renderMobileRows(config)
-      })
-    }
-  }
-
   private renderMobileRows(config: PennyWalletConfig) {
     this.mobileRowsEl.empty()
     const activeWallets = this.getActiveWallets(config)
-
-    // Refund toggle first (expense only) — sub-option of the type tab, visually adjacent.
-    if (this.type === 'expense') {
-      const block = this.mobileRowsEl.createDiv('pw-refund-block')
-      const refundRow = block.createDiv('pw-mobile-row pw-mobile-refund-row')
-      const checkboxId = 'pw-mobile-refund-checkbox'
-      refundRow.createEl('label', { cls: 'pw-mobile-row-label', text: t('modal.isRefund'), attr: { for: checkboxId } })
-      const checkbox = refundRow.createEl('input', { type: 'checkbox' })
-      checkbox.id = checkboxId
-      checkbox.checked = this.isRefund
-      checkbox.addEventListener('change', () => {
-        this.isRefund = checkbox.checked
-        this.updateAmountDisplay()
-      })
-      block.createDiv({ cls: 'pw-mobile-refund-hint-row', text: t('modal.isRefund.hint') })
-    }
 
     // Date Picker
     let dateInput!: HTMLInputElement

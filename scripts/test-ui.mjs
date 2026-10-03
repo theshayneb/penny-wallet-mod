@@ -282,8 +282,8 @@ openAddModal()
 assert('Transaction modal opens',         count('.pw-modal-form, .pw-transaction-form') > 0
                                        || count('.modal-content') > 0)
 
-// Type selector buttons
-assert('Type selector buttons present', count('.pw-type-tab') > 0)
+// No type selector: the form only adds expenses
+assert('No type selector buttons', count('.pw-type-tab') === 0)
 
 // Close modal
 evalJs("document.querySelector('.modal-close-button, .pw-close-btn')?.click()")
@@ -294,10 +294,6 @@ section('Add expense transaction')
 
 openAddModal()
 wait(300)
-
-// Select "expense" type and wait for re-render
-evalJs("document.querySelector('.pw-type-tab[data-type=expense]')?.click()")
-wait(400)
 
 // Fill all selects with the first non-empty option (wallet/category), locale-agnostic
 evalJs("document.querySelectorAll('.modal-content select').forEach(sel => { const opt = Array.from(sel.options).find(o => o.value); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', { bubbles: true })); } })")
@@ -388,7 +384,6 @@ assert('Transaction rows exist before edit', rowsBefore > 0)
 clickEditForRow(desktopTagNote)
 
 assert('Edit modal opens',             count('.modal-content') > 0)
-assert('Edit modal has type tabs',     count('.pw-type-tab') > 0)
 assert('Edit modal has amount field',  count('.modal-content input[type=number]') > 0)
 assert('Edit modal pre-fills tag',     countTagged('tag-chip', DESKTOP_TAG) === 1)
 
