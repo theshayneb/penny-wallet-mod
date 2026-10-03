@@ -1,4 +1,4 @@
-import { setIcon } from 'obsidian'
+import { Platform, setIcon } from 'obsidian'
 import { TransactionType, PennyWalletConfig } from '../types'
 import { t } from '../i18n'
 import { TransactionModal } from './TransactionModal'
@@ -176,7 +176,7 @@ export class MobileTransactionModal extends TransactionModal {
         })
         return dateInput
       },
-      () => dateInput.focus(),
+      () => openDatePicker(dateInput),
     ).addClass('pw-mobile-date-row')
 
     const categories = this.getCategoryOptions(config)
@@ -483,3 +483,21 @@ export class MobileTransactionModal extends TransactionModal {
     super.onClose()
   }
 }
+
+/**
+ * Open the native calendar for the hidden date input. iOS opens it on focus(),
+ * but Android's WebView ignores focus() on a hidden input and needs
+ * showPicker(), which must run inside the tap's user gesture.
+ */
+function openDatePicker(input: HTMLInputElement) {
+  if (Platform.isAndroidApp && typeof input.showPicker === 'function') {
+    try {
+      input.showPicker()
+      return
+    } catch {
+      // fall through to focus()
+    }
+  }
+  input.focus()
+}
+

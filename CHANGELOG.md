@@ -9,6 +9,7 @@ All notable changes to PennyWallet will be documented in this file.
 
 ### Fixed
 - Dropdowns in the transaction form, settings and validation report showed white text on a white list in dark themes; the open list now follows the Obsidian theme.
+- Android: tapping Date in the Add/Edit Transaction form did nothing; it now opens the calendar.
 
 ## [0.0.21] - 2026-10-03
 
