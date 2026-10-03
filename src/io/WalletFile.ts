@@ -260,6 +260,24 @@ export class WalletFile {
     return { ...DEFAULT_CONFIG, ...parsed, options: this.normalizeOptions(parsed) }
   }
 
+  /** Whether the pre-0.0.24 .penny-wallet.json exists on this device. */
+  async hasLegacyConfig(): Promise<boolean> {
+    return (await this.readLegacyConfig()) !== null
+  }
+
+  /**
+   * Replace the current settings with this device's legacy .penny-wallet.json
+   * and save them, so Sync sends them to other devices as the newest version.
+   */
+  async restoreLegacyConfig(): Promise<'restored' | 'missing' | 'malformed'> {
+    const legacy = await this.readLegacyConfig()
+    if (legacy === null) return 'missing'
+    if (legacy === 'malformed') return 'malformed'
+    this.config = this.fromParsed(legacy)
+    await this.saveConfig()
+    return 'restored'
+  }
+
   /** Parsed legacy config, 'malformed' if it exists but isn't valid JSON, null if absent. */
   private async readLegacyConfig(): Promise<Partial<PennyWalletConfig> | 'malformed' | null> {
     const path = ROOT_CONFIG_PATH
