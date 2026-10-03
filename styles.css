@@ -3028,3 +3028,29 @@ select.pw-add-wallet-input {
 .is-mobile .pw-budget-grid {
   grid-template-columns: 1fr;
 }
+
+/* ── Native dropdown lists ──
+   The open list of a <select> is drawn by the OS. Without a color-scheme it
+   stays light while the text inherits the dark theme's light color, which
+   gives white-on-white options. Match the list to the Obsidian theme. */
+.theme-dark .pw-modal select,
+.theme-dark .pw-settings-group select,
+.theme-dark select.pw-add-wallet-input,
+.theme-dark select.pw-validation-remap-select {
+  color-scheme: dark;
+}
+
+.theme-light .pw-modal select,
+.theme-light .pw-settings-group select,
+.theme-light select.pw-add-wallet-input,
+.theme-light select.pw-validation-remap-select {
+  color-scheme: light;
+}
+
+.pw-modal select option,
+.pw-settings-group select option,
+select.pw-add-wallet-input option,
+select.pw-validation-remap-select option {
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+}

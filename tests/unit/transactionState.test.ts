@@ -403,3 +403,29 @@ describe('getBudgetOptions', () => {
     expect(getBudgetOptions({} as PennyWalletConfig, '')).toEqual([])
   })
 })
+
+import { resolveDefaultWallet } from '../../src/modal/transactionState'
+
+describe('resolveDefaultWallet', () => {
+  const wallets: PennyWalletConfig['wallets'] = [
+    { name: 'Visa', type: 'creditCard', status: 'active', initialBalance: 0, includeInNetAsset: true },
+    { name: 'Old', type: 'cash', status: 'archived', initialBalance: 0, includeInNetAsset: true },
+    { name: 'Bank', type: 'bank', status: 'active', initialBalance: 0, includeInNetAsset: true },
+  ]
+  const cfg = (defaultWallet: string) => ({ wallets, defaultWallet } as unknown as PennyWalletConfig)
+
+  it('uses the configured default account', () => {
+    expect(resolveDefaultWallet(cfg('Visa'), 'expense')).toBe('Visa')
+    expect(resolveDefaultWallet(cfg('Bank'), 'income')).toBe('Bank')
+  })
+  it('income skips a credit-card default', () => {
+    expect(resolveDefaultWallet(cfg('Visa'), 'income')).toBe('Bank')
+  })
+  it('falls back to the first active account when the default is missing or archived', () => {
+    expect(resolveDefaultWallet(cfg('Old'), 'expense')).toBe('Visa')
+    expect(resolveDefaultWallet(cfg(''), 'expense')).toBe('Visa')
+  })
+  it('returns empty string with no usable accounts', () => {
+    expect(resolveDefaultWallet({ wallets: [], defaultWallet: '' } as unknown as PennyWalletConfig, 'expense')).toBe('')
+  })
+})

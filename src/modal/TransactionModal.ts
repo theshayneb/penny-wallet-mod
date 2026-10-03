@@ -3,7 +3,7 @@ import { Transaction, TransactionType, TransactionModalParams, PennyWalletConfig
 import { WalletFile } from '../io/WalletFile'
 import { dateToYearMonth } from '../utils'
 import { t } from '../i18n'
-import { parseAmountForEdit, getCategoryOptions as getCategoryOptionsFromState, validateTransactionForm, buildTransactionPayload, getTransferWalletCandidates, getBudgetOptions, type TransactionFormState } from './transactionState'
+import { parseAmountForEdit, getCategoryOptions as getCategoryOptionsFromState, validateTransactionForm, buildTransactionPayload, getTransferWalletCandidates, getBudgetOptions, resolveDefaultWallet, type TransactionFormState } from './transactionState'
 import { buildTagInput } from './TagInput'
 import { ConfirmModal } from './ConfirmModal'
 
@@ -81,10 +81,7 @@ export class TransactionModal extends Modal {
     } else {
       this.type = (this.params.type as TransactionType) ?? 'expense'
       this.date = this.params.date ?? todayString()
-      const activeWallets = this.getActiveWallets(config)
-      const defaultWallet = activeWallets.find(w => w.name === config.defaultWallet)
-        ?? activeWallets[0]
-      this.wallet = this.params.wallet ?? defaultWallet?.name ?? ''
+      this.wallet = this.params.wallet ?? resolveDefaultWallet(config, this.type)
       this.fromWallet = this.params.fromWallet ?? ''
       this.toWallet = this.params.toWallet ?? ''
       this.category = this.params.category ?? ''
@@ -221,18 +218,8 @@ export class TransactionModal extends Modal {
         onCategoryChange
       ), true)
 
+    // No account field for expense / income: they use the default account (see resolveDefaultWallet).
     if (this.type === 'expense' || this.type === 'income') {
-      this.addField(this.fieldsEl, t('modal.wallet'), () => {
-        const walletOptions = this.type === 'income'
-          ? activeWallets.filter(w => w.type !== 'creditCard')
-          : activeWallets
-        return this.buildSelect(
-          walletOptions.map(w => ({ value: w.name, label: w.name })),
-          this.wallet,
-          val => { this.wallet = val }
-        )
-      }, true)
-
       const budgetOptions = getBudgetOptions(config, this.budget)
       if (this.type === 'expense' && budgetOptions.length > 0) {
         this.addField(this.fieldsEl, t('modal.budget'), () =>
@@ -380,6 +367,7 @@ export class TransactionModal extends Modal {
   }
 
   protected resetStateForType(newType: TransactionType): void {
+    const config = this.walletFile.getConfig()
     this.type = newType
     if (newType !== 'expense') {
       this.isRefund = false
@@ -388,10 +376,13 @@ export class TransactionModal extends Modal {
     if (newType === 'expense' || newType === 'income') {
       this.fromWallet = ''
       this.toWallet = ''
+      const current = config.wallets.find(w => w.name === this.wallet)
+      if (!current || (newType === 'income' && current.type === 'creditCard')) {
+        this.wallet = resolveDefaultWallet(config, newType)
+      }
     } else {
       this.wallet = ''
     }
-    const config = this.walletFile.getConfig()
     const validCategories = getCategoryOptionsFromState(config, newType)
     if (this.category && !validCategories.some(c => c.key === this.category)) {
       this.category = ''

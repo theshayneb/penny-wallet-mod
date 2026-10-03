@@ -222,20 +222,7 @@ export class MobileTransactionModal extends TransactionModal {
         true,
       )
     } else {
-      const walletOptions = this.type === 'income'
-        ? activeWallets.filter(w => w.type !== 'creditCard')
-        : activeWallets
-
-      this.addMobileBottomSheetRow(
-        this.mobileRowsEl,
-        t('modal.wallet'),
-        this.wallet || '—',
-        this.withEmptyOption(walletOptions.map(w => ({ key: w.name, label: w.name }))),
-        () => this.wallet,
-        (key) => { this.wallet = key },
-        true,
-      )
-
+      // No account row for expense / income: they use the default account.
       const budgetOptions = getBudgetOptions(config, this.budget)
       if (this.type === 'expense' && budgetOptions.length > 0) {
         this.addMobileBottomSheetRow(

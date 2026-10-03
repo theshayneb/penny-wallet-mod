@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.22] - 2026-10-03
+
+### Changed
+- Add/Edit Transaction: the Account field is gone for expenses and income (desktop and mobile). They are recorded against the Default Account from Settings; income skips a credit-card default and uses the first cash/bank account. Transfers keep their From / To accounts, and editing keeps a transaction's existing account.
+
+### Fixed
+- Dropdowns in the transaction form, settings and validation report showed white text on a white list in dark themes; the open list now follows the Obsidian theme.
+
 ## [0.0.21] - 2026-10-03
 
 ### Added

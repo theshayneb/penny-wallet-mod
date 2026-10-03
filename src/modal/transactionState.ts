@@ -167,6 +167,17 @@ export function getBudgetOptions(config: PennyWalletConfig, current: string): { 
 }
 
 /**
+ * Account used for expense / income now that the modal has no account field:
+ * the configured default account, else the first active one. Income can't go
+ * to a credit card, so credit cards are skipped for income.
+ */
+export function resolveDefaultWallet(config: PennyWalletConfig, type: TransactionType): string {
+  const active = config.wallets.filter(w => w.status === 'active')
+  const candidates = type === 'income' ? active.filter(w => w.type !== 'creditCard') : active
+  return (candidates.find(w => w.name === config.defaultWallet) ?? candidates[0])?.name ?? ''
+}
+
+/**
  * Filter active wallets into from/to candidates for transfer category.
  * cc_payment: from excludes creditCard, to only creditCard.
  * Other categories: both from and to use all active wallets.
