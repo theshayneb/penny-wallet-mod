@@ -312,7 +312,7 @@ export class WalletFile {
 
   // ── Month file helpers ───────────────────────────────────────────────────────
 
-  private monthFilePath(yearMonth: string): string {
+  monthFilePath(yearMonth: string): string {
     return normalizePath(`${this.config.folderName}/${yearMonth}.md`)
   }
 

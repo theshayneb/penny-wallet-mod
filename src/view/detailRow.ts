@@ -41,3 +41,28 @@ export function buildLine3Display(tx: Transaction): Line3Display {
     note: tx.note?.trim() ?? '',
   }
 }
+
+export type NoteSegment =
+  | { kind: 'text'; text: string }
+  | { kind: 'link'; target: string; text: string }
+
+const WIKILINK_RE = /\[\[([^[\]]+?)\]\]/g
+
+// Split a note into plain-text and [[wikilink]] segments.
+// Supports [[target]], [[target|alias]] and the table-escaped [[target\|alias]].
+export function parseNoteSegments(note: string): NoteSegment[] {
+  const segments: NoteSegment[] = []
+  let last = 0
+  for (const m of note.matchAll(WIKILINK_RE)) {
+    const inner = m[1]
+    const pipe = inner.search(/\\?\|/)
+    const target = (pipe === -1 ? inner : inner.slice(0, pipe)).trim()
+    if (target === '') continue
+    const alias = pipe === -1 ? '' : inner.slice(pipe).replace(/^\\?\|/, '').trim()
+    if (m.index > last) segments.push({ kind: 'text', text: note.slice(last, m.index) })
+    segments.push({ kind: 'link', target, text: alias || target })
+    last = m.index + m[0].length
+  }
+  if (last < note.length) segments.push({ kind: 'text', text: note.slice(last) })
+  return segments
+}

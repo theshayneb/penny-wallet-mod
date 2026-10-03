@@ -4,6 +4,7 @@ import {
   buildWalletText,
   buildAmountDisplay,
   buildLine3Display,
+  parseNoteSegments,
 } from '../../src/view/detailRow'
 import type { Transaction } from '../../src/types'
 
@@ -95,5 +96,36 @@ describe('buildLine3Display', () => {
   it('undefined tags + empty note → both empty', () => {
     const tx = { ...base, tags: undefined, note: '' }
     expect(buildLine3Display(tx as Transaction)).toEqual({ tags: [], note: '' })
+  })
+})
+
+describe('parseNoteSegments', () => {
+  it('plain text → single text segment', () => {
+    expect(parseNoteSegments('lunch')).toEqual([{ kind: 'text', text: 'lunch' }])
+  })
+  it('empty string → no segments', () => {
+    expect(parseNoteSegments('')).toEqual([])
+  })
+  it('wikilink between text', () => {
+    expect(parseNoteSegments('dinner at [[Cafe]] today')).toEqual([
+      { kind: 'text', text: 'dinner at ' },
+      { kind: 'link', target: 'Cafe', text: 'Cafe' },
+      { kind: 'text', text: ' today' },
+    ])
+  })
+  it('alias with plain and escaped pipe', () => {
+    expect(parseNoteSegments('[[Trips/Japan|Japan]] [[Bob\\|Robert]]')).toEqual([
+      { kind: 'link', target: 'Trips/Japan', text: 'Japan' },
+      { kind: 'text', text: ' ' },
+      { kind: 'link', target: 'Bob', text: 'Robert' },
+    ])
+  })
+  it('heading link keeps full target', () => {
+    expect(parseNoteSegments('[[Note#Section]]')).toEqual([
+      { kind: 'link', target: 'Note#Section', text: 'Note#Section' },
+    ])
+  })
+  it('empty or unclosed brackets stay as text', () => {
+    expect(parseNoteSegments('a [[]] b [[open')).toEqual([{ kind: 'text', text: 'a [[]] b [[open' }])
   })
 })

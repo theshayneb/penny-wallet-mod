@@ -1904,6 +1904,12 @@ button.pw-pill {
   text-overflow: ellipsis;
 }
 
+/* Notes wrap onto multiple lines instead of truncating */
+.pw-tx-row-line3 {
+  white-space: normal;
+  overflow: visible;
+}
+
 .pw-tx-date {
   color: var(--text-normal);
   white-space: nowrap;
@@ -1942,9 +1948,8 @@ button.pw-pill {
   font-size: 12px;
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .pw-tx-empty {

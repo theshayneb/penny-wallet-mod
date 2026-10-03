@@ -1,4 +1,4 @@
-import { Events, ItemView, Platform, ViewStateResult, WorkspaceLeaf } from 'obsidian'
+import { Events, ItemView, Keymap, Platform, ViewStateResult, WorkspaceLeaf } from 'obsidian'
 import { WalletFile } from '../io/WalletFile'
 import { TransactionModal } from '../modal/TransactionModal'
 import { MobileTransactionModal } from '../modal/MobileTransactionModal'
@@ -7,7 +7,7 @@ import { t, translateCategory } from '../i18n'
 import { Transaction, TransactionType } from '../types'
 import { currentYearMonth, formatAmount } from '../utils'
 import { renderSharedHeader } from './SharedHeader'
-import { buildAmountDisplay, buildLine3Display, buildWalletText } from './detailRow'
+import { buildAmountDisplay, buildLine3Display, buildWalletText, parseNoteSegments } from './detailRow'
 
 export const DETAIL_VIEW_TYPE = 'penny-wallet-mod-detail'
 
@@ -756,7 +756,8 @@ export class DetailView extends ItemView {
     const display = buildLine3Display(tx)
     if (display.note !== '') {
       const noteLine = stack.createDiv('pw-tx-row-line3')
-      noteLine.createEl('span', { text: display.note, cls: 'pw-tx-note' })
+      const noteEl = noteLine.createEl('span', { cls: 'pw-tx-note' })
+      this.renderNote(noteEl, display.note)
     }
     if (display.tags.length > 0) {
       const tagsLine = stack.createDiv('pw-tx-row-line4')
@@ -788,5 +789,40 @@ export class DetailView extends ItemView {
         null,
       ).open()
     })
+  }
+
+  private renderNote(el: HTMLElement, note: string) {
+    const sourcePath = this.walletFile.monthFilePath(this.currentYearMonth)
+    for (const seg of parseNoteSegments(note)) {
+      if (seg.kind === 'text') {
+        el.appendText(seg.text)
+        continue
+      }
+      const resolved = this.app.metadataCache.getFirstLinkpathDest(
+        seg.target.split('#')[0] ?? '', sourcePath,
+      )
+      const link = el.createEl('a', {
+        text: seg.text,
+        cls: resolved ? 'internal-link' : 'internal-link is-unresolved',
+        href: seg.target,
+      })
+      link.dataset['href'] = seg.target
+      link.addEventListener('click', (e) => {
+        // Don't open the edit modal when following a link.
+        e.preventDefault()
+        e.stopPropagation()
+        void this.app.workspace.openLinkText(seg.target, sourcePath, Keymap.isModEvent(e))
+      })
+      link.addEventListener('mouseover', (e) => {
+        this.app.workspace.trigger('hover-link', {
+          event: e,
+          source: DETAIL_VIEW_TYPE,
+          hoverParent: this,
+          targetEl: link,
+          linktext: seg.target,
+          sourcePath,
+        })
+      })
+    }
   }
 }
