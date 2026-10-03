@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.23] - 2026-10-03
+
+### Added
+- Add/Edit Transaction: typing `[[` in the Note field suggests matching notes from the vault (fuzzy match on the note name, then the path; recently edited notes when nothing is typed yet). Picking one inserts `[[Note name]]`, using a folder-qualified link only when needed. Works on desktop and mobile.
+
+### Changed
+- Minimum Obsidian version is now 1.6.6 (needed for the note suggestions).
+
 ## [0.0.22] - 2026-10-03
 
 ### Changed

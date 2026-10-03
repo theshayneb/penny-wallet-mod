@@ -1,11 +1,12 @@
 import { App, Modal, Notice, setIcon } from 'obsidian'
 import { Transaction, TransactionType, TransactionModalParams, PennyWalletConfig } from '../types'
 import { WalletFile } from '../io/WalletFile'
-import { dateToYearMonth } from '../utils'
+import { currentYearMonth, dateToYearMonth } from '../utils'
 import { t } from '../i18n'
 import { parseAmountForEdit, getCategoryOptions as getCategoryOptionsFromState, validateTransactionForm, buildTransactionPayload, getTransferWalletCandidates, getBudgetOptions, resolveDefaultWallet, type TransactionFormState } from './transactionState'
 import { buildTagInput } from './TagInput'
 import { ConfirmModal } from './ConfirmModal'
+import { WikilinkSuggest } from './WikilinkSuggest'
 
 export class TransactionModal extends Modal {
   protected walletFile: WalletFile
@@ -34,6 +35,7 @@ export class TransactionModal extends Modal {
   protected errorEl!: HTMLElement
   private amountPrefixEl: HTMLElement | null = null
   private isConfirming = false
+  protected noteSuggest: WikilinkSuggest | null = null
   private isDeleting = false
 
   constructor(
@@ -139,6 +141,7 @@ export class TransactionModal extends Modal {
 
     this.contentEl.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return
+      if (this.noteSuggest?.isOpen) return  // Escape closes the link suggestions first
       e.preventDefault()
       this.close()
     })
@@ -260,11 +263,25 @@ export class TransactionModal extends Modal {
       input.value = this.note
       input.setAttribute('enterkeyhint', 'done')
       input.addEventListener('input', () => { this.note = input.value })
-      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur() })
+      this.attachNoteSuggest(input)
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !this.noteSuggest?.isOpen) input.blur()
+      })
       return input
     })
 
     this.buildAmountRow(autoFocus)
+  }
+
+  /** Suggest vault notes while a [[wikilink]] is being typed in the note. */
+  protected attachNoteSuggest(input: HTMLInputElement) {
+    this.noteSuggest?.close()
+    this.noteSuggest = new WikilinkSuggest(
+      this.app,
+      input,
+      () => this.walletFile.monthFilePath(dateToYearMonth(this.date) || currentYearMonth()),
+      (value) => { this.note = value },
+    )
   }
 
   private buildAmountRow(autoFocus: boolean) {
@@ -478,6 +495,8 @@ export class TransactionModal extends Modal {
   }
 
   onClose() {
+    this.noteSuggest?.close()
+    this.noteSuggest = null
     this.containerEl.removeClass('pw-modal-keyboard-open')
     this.contentEl.empty()
     this.onDismiss?.()

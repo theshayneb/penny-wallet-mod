@@ -6,6 +6,8 @@ PennyWallet has three transaction types. Each is designed for a specific real-wo
 
 ## Transaction Types
 
+> **Linking notes:** in the Note field, type `[[` followed by part of a note's name (e.g. `[[mom`) and a list of matching notes from your vault appears. Pick one with a tap/click, or with the arrow keys and Enter, to insert `[[Note name]]`. Links show as clickable links in the Transactions list.
+
 > The Add Transaction form has no account field for expenses and income: they are recorded against the **Default Account** set in Settings (income skips credit cards and uses the first cash/bank account instead). Transfers still have From / To accounts. A transaction created from a `penny-wallet-mod` link with `wallet=` keeps that account, and editing a transaction keeps its existing account.
 
 ### Expense
@@ -16,7 +18,7 @@ Money leaving one of your accounts for a purchase or payment.
 |-------|----------|-------|
 | Budget | No | Shown when budgets exist; see [Budgets](./settings.md#budgets) |
 | Category | No | e.g. Food, Transport, Shopping |
-| Note | No | Free-text description |
+| Note | No | Free-text description; type `[[` to link a note from your vault |
 | Amount | Yes | Positive number |
 
 **Effect on balance:**
@@ -39,7 +41,7 @@ Money arriving into one of your cash or bank accounts.
 | Field | Required | Notes |
 |-------|----------|-------|
 | Category | No | e.g. Salary, Bonus, Side Income |
-| Note | No | Free-text description |
+| Note | No | Free-text description; type `[[` to link a note from your vault |
 | Amount | Yes | Positive number |
 
 **Effect on balance:**
@@ -59,7 +61,7 @@ Moving money between two of your own accounts — including credit card payments
 | Category | Yes | e.g. Account Transfer, Credit Card Payment |
 | From Account | Yes | Source account |
 | To Account | Yes | Destination account |
-| Note | No | Free-text description |
+| Note | No | Free-text description; type `[[` to link a note from your vault |
 | Amount | Yes | Positive number |
 
 **Transfer categories and their account rules:**

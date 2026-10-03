@@ -290,7 +290,10 @@ export class MobileTransactionModal extends TransactionModal {
     noteInput.setAttribute('enterkeyhint', 'done')
     noteInput.addEventListener('focus', () => this.closeCalculatorPad())
     noteInput.addEventListener('input', () => { this.note = noteInput.value })
-    noteInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') noteInput.blur() })
+    this.attachNoteSuggest(noteInput)
+    noteInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !this.noteSuggest?.isOpen) noteInput.blur()
+    })
 
     this.renderMobileDeleteRow()
   }
