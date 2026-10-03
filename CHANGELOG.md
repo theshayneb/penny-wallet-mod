@@ -2,11 +2,6 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
-## [0.0.26] - 2026-10-03
-
-### Added
-- Settings → Sync → Restore from old settings file: reloads this device's pre-0.0.24 `.penny-wallet.json` and saves it as the newest synced settings. For when another device's migrated settings won the sync after upgrading (e.g. budgets missing on one device). Only shown when the old file exists.
-
 ## [0.0.25] - 2026-10-03
 
 ### Fixed

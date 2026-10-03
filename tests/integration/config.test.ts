@@ -222,36 +222,3 @@ describe('loadConfig with a config store', () => {
     expect(wf.getConfig().defaultWallet).toBe('After')
   })
 })
-
-describe('restoreLegacyConfig', () => {
-  const cfg = (name: string, budgets: { name: string; amount: number }[]) => ({ ...DEFAULT_CONFIG, defaultWallet: name, wallets: [
-    { name, type: 'bank' as const, initialBalance: 1, status: 'active' as const, includeInNetAsset: true },
-  ], budgets })
-
-  it('replaces settings that another device overwrote, and saves them for sync', async () => {
-    let data: unknown = cfg('Phone', [])  // phone's migrated copy won the sync
-    const s = { load: async () => data, save: async (c: unknown) => { data = JSON.parse(JSON.stringify(c)) } }
-    const { app } = createMockApp({ '.penny-wallet.json': JSON.stringify(cfg('Desktop', [{ name: 'Groceries', amount: 500 }])) })
-    const wf = new WalletFile(app, s)
-    await wf.loadConfig()
-    expect(wf.getConfig().budgets).toEqual([])
-    expect(await wf.hasLegacyConfig()).toBe(true)
-
-    expect(await wf.restoreLegacyConfig()).toBe('restored')
-    expect(wf.getConfig().budgets).toEqual([{ name: 'Groceries', amount: 500 }])
-    expect((data as { budgets: unknown[] }).budgets).toEqual([{ name: 'Groceries', amount: 500 }])
-  })
-
-  it('reports a missing or malformed legacy file without touching settings', async () => {
-    const s = { load: async () => cfg('Keep', []), save: async () => { throw new Error('should not save') } }
-    const missing = new WalletFile(createMockApp().app, s)
-    await missing.loadConfig()
-    expect(await missing.hasLegacyConfig()).toBe(false)
-    expect(await missing.restoreLegacyConfig()).toBe('missing')
-
-    const bad = new WalletFile(createMockApp({ '.penny-wallet.json': '{ nope' }).app, s)
-    await bad.loadConfig()
-    expect(await bad.restoreLegacyConfig()).toBe('malformed')
-    expect(bad.getConfig().defaultWallet).toBe('Keep')
-  })
-})

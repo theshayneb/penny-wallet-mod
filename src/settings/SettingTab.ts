@@ -20,7 +20,6 @@ export class PennyWalletSettingTab extends PluginSettingTab {
     containerEl.empty()
 
     void (async () => {
-      const hasLegacyConfig = await this.walletFile.hasLegacyConfig().catch(() => false)
       let walletBalances: WalletBalance[] = []
       let walletsWithTransactions = new Set<string>()
       try {
@@ -35,7 +34,6 @@ export class PennyWalletSettingTab extends PluginSettingTab {
       this.renderAddWallet()
       this.renderBudgets()
       this.renderCategories()
-      if (hasLegacyConfig) this.renderLegacyRestore()
 
       if (restoreScrollTop !== undefined) {
         const scrollEl = containerEl.closest<HTMLElement>('.vertical-tab-content')
@@ -497,30 +495,6 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         if (e.key === 'Enter') { e.preventDefault(); void submit() }
       })
     }
-  }
-
-  private renderLegacyRestore() {
-    const { containerEl } = this
-    new Setting(containerEl).setName(t('settings.sync')).setHeading()
-    const group = containerEl.createDiv('pw-settings-group')
-    new Setting(group)
-      .setName(t('settings.restoreLegacy'))
-      .setDesc(t('settings.restoreLegacyDesc'))
-      .addButton(btn => btn
-        .setButtonText(t('settings.restoreLegacyButton'))
-        .setWarning()
-        .onClick(() => {
-          new ConfirmModal(this.app, t('confirm.restoreLegacy'), async () => {
-            const result = await this.walletFile.restoreLegacyConfig()
-            if (result === 'restored') {
-              new Notice(t('notice.legacyRestored'))
-              this.app.workspace.trigger('penny-wallet-mod:refresh')
-              this.display()
-            } else {
-              new Notice(t('err.legacyUnreadable'))
-            }
-          }).open()
-        }))
   }
 
   private renderCategories() {
