@@ -4,7 +4,6 @@
 .vscode/
 
 # agent
-CLAUDE.md
 AGENTS.md
 .claude/
 .claude_doc/
