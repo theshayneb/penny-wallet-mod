@@ -192,7 +192,7 @@ function clickEditForRow(note) {
 
 function openAddModal() {
   cleanupUiState()
-  obs('command id="penny-wallet:add-transaction"')
+  obs('command id="penny-wallet-mod:add-transaction"')
   wait(500)
 }
 
@@ -202,12 +202,12 @@ function setMobileViewport() {
 }
 
 function openDashboard() {
-  obs('command id="penny-wallet:open-dashboard"')
+  obs('command id="penny-wallet-mod:open-dashboard"')
   wait(700)
 }
 
 function openDetail() {
-  obs('command id="penny-wallet:open-detail"')
+  obs('command id="penny-wallet-mod:open-detail"')
   wait(700)
   click('[data-testid=detail-clear-filters]')
   setInputValue('[data-testid=detail-search]', '')
@@ -215,7 +215,7 @@ function openDetail() {
 }
 
 function openAsset() {
-  obs('command id="penny-wallet:open-asset"')
+  obs('command id="penny-wallet-mod:open-asset"')
   wait(700)
 }
 
@@ -316,7 +316,7 @@ evalJs('app.emulateMobile(true)')
 setMobileViewport()
 cleanupUiState()
 
-const reloadResult = obs('plugin:reload id=penny-wallet')
+const reloadResult = obs('plugin:reload id=penny-wallet-mod')
 wait(800)
 setMobileViewport()
 obs('dev:debug on')
@@ -525,7 +525,7 @@ assert('Mobile delete confirm decreases row count', count('.pw-tx-row') === rows
 section('Mobile settings wallet flow')
 
 closeModal()
-obs('plugin:reload id=penny-wallet')
+obs('plugin:reload id=penny-wallet-mod')
 wait(800)
 setMobileViewport()
 obs('dev:debug on')
@@ -577,7 +577,7 @@ wait(300)
 section('Mobile URI handler')
 
 try {
-  execSync(`open "obsidian://penny-wallet?vault=${VAULT}&type=income&amount=5000&note=MobileURI"`, { timeout: 5000 })
+  execSync(`open "obsidian://penny-wallet-mod?vault=${VAULT}&type=income&amount=5000&note=MobileURI"`, { timeout: 5000 })
 } catch { /* ignore */ }
 wait(900)
 assert('Mobile URI opens transaction modal', count('.pw-mobile-content') > 0)

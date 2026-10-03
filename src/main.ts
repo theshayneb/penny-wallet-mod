@@ -23,7 +23,7 @@ export default class PennyWalletPlugin extends Plugin {
     this.registerView(DETAIL_VIEW_TYPE, (leaf) => new DetailView(leaf, this.walletFile))
     this.registerView(ASSET_VIEW_TYPE, (leaf) => new AssetView(leaf, this.walletFile))
 
-    this.addRibbonIcon('wallet', 'Penny wallet', () => { void this.openDashboard() })
+    this.addRibbonIcon('wallet', 'Penny wallet mod', () => { void this.openDashboard() })
 
     this.addCommand({ id: 'open-dashboard', name: 'Open finance overview', callback: () => { void this.openDashboard() } })
     this.addCommand({ id: 'open-asset', name: 'Open assets', callback: () => { void this.openAssetView() } })
@@ -31,7 +31,7 @@ export default class PennyWalletPlugin extends Plugin {
     this.addCommand({ id: 'add-transaction', name: 'Add transaction', callback: () => this.openTransactionModal() })
     this.addCommand({ id: 'validate-data', name: 'Validate data', callback: () => void this.runValidation(true) })
     this.addCommand({ id: 'refresh', name: 'Refresh views', callback: () => {
-      this.app.workspace.trigger('penny-wallet:refresh')
+      this.app.workspace.trigger('penny-wallet-mod:refresh')
     } })
     this.addCommand({ id: 'open-settings', name: 'Open settings', callback: () => {
       const setting = (this.app as unknown as { setting: { open(): void; openTabById(id: string): void } }).setting
@@ -41,7 +41,7 @@ export default class PennyWalletPlugin extends Plugin {
 
     this.addSettingTab(new PennyWalletSettingTab(this.app, this, this.walletFile))
 
-    this.registerObsidianProtocolHandler('penny-wallet', (params: ObsidianProtocolData) => {
+    this.registerObsidianProtocolHandler('penny-wallet-mod', (params: ObsidianProtocolData) => {
       this.handleURI(params)
     })
 

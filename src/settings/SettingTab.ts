@@ -87,7 +87,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         drop.onChange((value) => {
           this.walletFile.updateConfig({ decimalPlaces: Number(value) as 0 | 2 })
           void this.walletFile.saveConfig()
-          this.app.workspace.trigger('penny-wallet:refresh')
+          this.app.workspace.trigger('penny-wallet-mod:refresh')
         })
       })
 
@@ -149,7 +149,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         this.walletFile.updateConfig({ wallets })
         void this.walletFile.saveConfig().then(() => {
           new Notice(t('notice.walletReordered'))
-          this.app.workspace.trigger('penny-wallet:refresh')
+          this.app.workspace.trigger('penny-wallet-mod:refresh')
         })
       },
     })
@@ -257,7 +257,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         if (updated.name && updated.name !== wallet.name) {
           await this.walletFile.renameWalletInTransactions(wallet.name, updated.name)
         }
-        this.app.workspace.trigger('penny-wallet:refresh')
+        this.app.workspace.trigger('penny-wallet-mod:refresh')
         void this.display(scrollTop)
       }).open()
     })
@@ -405,7 +405,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         const scrollTop = this.getSettingsScrollTop()
         this.walletFile.updateCustomCategories('expense', updated)
         await this.walletFile.saveConfig()
-        this.app.workspace.trigger('penny-wallet:refresh')
+        this.app.workspace.trigger('penny-wallet-mod:refresh')
         this.display(scrollTop)
       },
     )
@@ -422,7 +422,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         const scrollTop = this.getSettingsScrollTop()
         this.walletFile.updateCustomCategories('income', updated)
         await this.walletFile.saveConfig()
-        this.app.workspace.trigger('penny-wallet:refresh')
+        this.app.workspace.trigger('penny-wallet-mod:refresh')
         this.display(scrollTop)
       },
     )
@@ -439,7 +439,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
         const scrollTop = this.getSettingsScrollTop()
         this.walletFile.updateCustomCategories('transfer', updated)
         await this.walletFile.saveConfig()
-        this.app.workspace.trigger('penny-wallet:refresh')
+        this.app.workspace.trigger('penny-wallet-mod:refresh')
         this.display(scrollTop)
       },
     )

@@ -9,7 +9,7 @@ import { renderSharedHeader } from './SharedHeader'
 import { Chart } from 'chart.js'
 import { MonthData, drawIncExpChart, drawPie, getMonthRangeEndingAt } from './charts'
 
-export const DASHBOARD_VIEW_TYPE = 'penny-wallet-dashboard'
+export const DASHBOARD_VIEW_TYPE = 'penny-wallet-mod-dashboard'
 
 export class DashboardView extends ItemView {
   private walletFile: WalletFile
@@ -33,7 +33,7 @@ export class DashboardView extends ItemView {
 
   async onOpen() {
     this.registerEvent(
-      (this.app.workspace as Events).on('penny-wallet:refresh', () => { void this.render() })
+      (this.app.workspace as Events).on('penny-wallet-mod:refresh', () => { void this.render() })
     )
     this.registerEvent(
       (this.app.workspace as Events).on('css-change', () => { void this.render() })

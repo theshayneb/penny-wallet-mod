@@ -2,6 +2,12 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.16] - 2026-10-03
+
+### Changed
+- Fork ("PennyWallet Mod"): plugin id is now `penny-wallet-mod` so it can be installed next to the original PennyWallet. View types, the refresh event and the `obsidian://penny-wallet-mod` URI handler are renamed to avoid clashing with the original. The `.penny-wallet.json` config and the transaction files are intentionally still shared with the original plugin.
+- Transactions list: line 3 of each row now shows tags and the note together instead of tags or note.
+
 ## [0.0.15] - 2026-05-24
 
 ### Fixed

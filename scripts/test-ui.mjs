@@ -98,22 +98,22 @@ function wait(ms = 400) {
 // ─── Obsidian helpers ─────────────────────────────────────────────────────────
 
 function openDashboard() {
-  obs('command id="penny-wallet:open-dashboard"')
+  obs('command id="penny-wallet-mod:open-dashboard"')
   wait(600)
 }
 
 function openDetail() {
-  obs('command id="penny-wallet:open-detail"')
+  obs('command id="penny-wallet-mod:open-detail"')
   wait(600)
 }
 
 function openAsset() {
-  obs('command id="penny-wallet:open-asset"')
+  obs('command id="penny-wallet-mod:open-asset"')
   wait(600)
 }
 
 function openAddModal() {
-  obs('command id="penny-wallet:add-transaction"')
+  obs('command id="penny-wallet-mod:add-transaction"')
   wait(400)
 }
 
@@ -200,7 +200,7 @@ function ensureDesktopMode() {
   const emulateResult = evalJs('app.emulateMobile(false); true')
   setDesktopViewport()
 
-  const reloadResult = obs('plugin:reload id=penny-wallet')
+  const reloadResult = obs('plugin:reload id=penny-wallet-mod')
   wait(800)
   const state = setDesktopViewport()
   obs('dev:debug on')
@@ -559,7 +559,7 @@ section('URI handler — open modal with pre-filled fields')
 
 // Use macOS `open` to trigger the obsidian:// protocol handler
 try {
-  execSync(`open "obsidian://penny-wallet?vault=${VAULT}&type=income&amount=5000&note=TestURI"`, { timeout: 5000 })
+  execSync(`open "obsidian://penny-wallet-mod?vault=${VAULT}&type=income&amount=5000&note=TestURI"`, { timeout: 5000 })
 } catch { /* ignore */ }
 wait(900)
 
