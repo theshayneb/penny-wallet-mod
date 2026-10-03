@@ -134,6 +134,7 @@ describe('validateTransactionForm', () => {
     decimalPlaces: 0,
     tags: [],
     budgets: [],
+    chartExcludedTags: [],
     folderName: 'PennyWallet',
     autoValidateOnLoad: true,
     options: {} as never,

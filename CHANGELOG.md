@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.31] - 2026-10-03
+
+### Added
+- Settings → General → Tags hidden from the tag chart (default: `follow-up`). The Overview's Expenses by tag chart ignores these tags; expenses with only hidden tags count as Untagged.
+
 ## [0.0.30] - 2026-10-03
 
 ### Changed

@@ -71,6 +71,9 @@ const translations = {
     'dash.expenseByCategory': '支出分類',
     'dash.expenseByTag': '支出標籤',
     'dash.untagged': '未加標籤',
+    'settings.chartExcludedTags': '標籤圖表略過的標籤',
+    'settings.chartExcludedTagsDesc': '總覽「支出標籤」圖表不計入這些標籤，以逗號分隔。只有這些標籤的支出會算作未加標籤。',
+    'settings.chartExcludedTagsPlaceholder': '例如 follow-up, reimbursable',
     'dash.noData': '本月無資料',
 
     // Detail view
@@ -322,6 +325,9 @@ const translations = {
     'dash.expenseByCategory': 'Expense by category',
     'dash.expenseByTag': 'Expenses by tag',
     'dash.untagged': 'Untagged',
+    'settings.chartExcludedTags': 'Tags hidden from the tag chart',
+    'settings.chartExcludedTagsDesc': 'Comma-separated tags that the expenses-by-tag chart ignores. Expenses with only these tags count as untagged.',
+    'settings.chartExcludedTagsPlaceholder': 'e.g. follow-up, reimbursable',
     'dash.noData': 'No data this month',
 
     'detail.title': 'Transactions',

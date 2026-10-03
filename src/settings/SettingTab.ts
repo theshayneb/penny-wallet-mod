@@ -103,6 +103,19 @@ export class PennyWalletSettingTab extends PluginSettingTab {
           await this.walletFile.saveConfig()
         }),
       )
+
+    new Setting(group)
+      .setName(t('settings.chartExcludedTags'))
+      .setDesc(t('settings.chartExcludedTagsDesc'))
+      .addText(text => {
+        text.setPlaceholder(t('settings.chartExcludedTagsPlaceholder')).setValue((config.chartExcludedTags ?? []).join(', '))
+        text.inputEl.addEventListener('change', () => {
+          const tags = [...new Set(text.getValue().split(',').map(s => s.trim().replace(/^#/, '')).filter(Boolean))]
+          text.setValue(tags.join(', '))
+          this.walletFile.updateConfig({ chartExcludedTags: tags })
+          void this.walletFile.saveConfig().then(() => this.app.workspace.trigger('penny-wallet-mod:refresh'))
+        })
+      })
   }
 
   private renderActiveWallets(walletBalances: WalletBalance[], walletsWithTransactions: Set<string>) {

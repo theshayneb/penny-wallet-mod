@@ -281,3 +281,17 @@ describe('groupExpensesByTag', () => {
     expect([...map]).toEqual([['a', 60]])
   })
 })
+
+describe('groupExpensesByTag — excluded tags', () => {
+  const wf = makeWalletFile([])
+  const tx = (amount: number, tags?: string[]): Transaction =>
+    ({ date: '04/01', type: 'expense', wallet: 'Cash', category: 'food', note: '', amount, tags })
+
+  it('ignores excluded tags (case-insensitive); expenses left without tags are untagged', () => {
+    const map = wf.groupExpensesByTag(
+      [tx(100, ['follow-up']), tx(50, ['work', 'Follow-Up']), tx(20)],
+      ['follow-up'],
+    )
+    expect([...map]).toEqual([['', 120], ['work', 50]])
+  })
+})

@@ -103,7 +103,7 @@ export class DashboardView extends ItemView {
     const gridRight = grid2.createDiv('pw-grid-right')
 
     const expenseMap = this.walletFile.groupByCategory(transactions, 'expense')
-    const tagMap     = this.walletFile.groupExpensesByTag(transactions)
+    const tagMap     = this.walletFile.groupExpensesByTag(transactions, this.walletFile.getConfig().chartExcludedTags ?? [])
 
     const expCard = renderCard(gridRight, { title: t('dash.expenseByCategory') })
     if (expenseMap.size > 0) this.charts.push(drawPie(expCard, expenseMap, dp, (cat) => { void this.openDetailWithFilter('expense', cat) }, 200))

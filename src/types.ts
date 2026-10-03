@@ -63,6 +63,7 @@ export interface PennyWalletConfig {
   tags: string[]
   budgets: Budget[]
   autoValidateOnLoad: boolean
+  chartExcludedTags: string[]  // tags left out of the Overview's tag chart
 }
 
 export interface TransactionModalParams {
@@ -132,6 +133,7 @@ export const DEFAULT_CONFIG: PennyWalletConfig = {
   tags: [],
   budgets: [],
   autoValidateOnLoad: true,
+  chartExcludedTags: ['follow-up'],
 }
 
 export interface FrontmatterIssue {

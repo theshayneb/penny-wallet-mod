@@ -39,7 +39,7 @@ Appears when you have two or more active cash/bank accounts with positive balanc
 
 Two pie charts break down this month's spending:
 - **Expenses by category**
-- **Expenses by tag**: one slice per tag (shown as `#tag`), plus **Untagged** for expenses without tags. A transaction with several tags counts in full toward each of them, so the tag slices can add up to more than total spending. Clicking a tag opens the Transactions view filtered to that tag.
+- **Expenses by tag**: one slice per tag (shown as `#tag`), plus **Untagged** for expenses without tags. Tags listed in **Settings → Tags hidden from the tag chart** (default: `follow-up`) are left out. A transaction with several tags counts in full toward each of them, so the tag slices can add up to more than total spending. Clicking a tag opens the Transactions view filtered to that tag.
 
 Each legend entry shows the name, amount, and percentage. Small categories are grouped into **Others**; select that slice to drill into the grouped items. Hover over a slice or legend item to highlight it.
 
