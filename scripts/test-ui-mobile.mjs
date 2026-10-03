@@ -214,8 +214,8 @@ function openDetail() {
   wait(300)
 }
 
-function openAsset() {
-  obs('command id="penny-wallet-mod:open-asset"')
+function openBudgets() {
+  obs('command id="penny-wallet-mod:open-budgets"')
   wait(700)
 }
 
@@ -343,16 +343,10 @@ click('.pw-nav-btn', '(_el, i) => i === 1')
 wait(600)
 assert('Next button returns to current month', text('.pw-month-label') === monthBefore)
 
-section('Mobile assets')
+section('Mobile budgets')
 
-openAsset()
-assert('Asset view opens', count('.pw-asset') > 0)
-assert('Range selector present', count('.pw-range-btn') > 0)
-assert('Credit card rows render', count('.pw-badge-creditCard') > 0)
-click('.pw-range-btn', "(el) => el.textContent?.includes('6')")
-wait(600)
-assert('6M range button clickable', count('.pw-range-btn.is-active') > 0)
-assert('Asset canvas chart renders', count('canvas') > 0)
+openBudgets()
+assert('Budgets view opens', count('.pw-budget-view') > 0)
 
 section('Mobile detail')
 

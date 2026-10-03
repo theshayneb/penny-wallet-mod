@@ -9,7 +9,7 @@ import {
   Tooltip, Legend,
   type ChartConfiguration,
 } from 'chart.js'
-import ChartDataLabels, { type Context as DatalabelsContext } from 'chartjs-plugin-datalabels'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 
 Chart.register(
   BarElement, BarController,
@@ -23,9 +23,7 @@ Chart.register(
 export interface MonthData {
   monthLabel: string
   tooltipLabel: string
-  income: number
   expense: number
-  net: number | null
 }
 
 // ─── Color helpers ────────────────────────────────────────────────────────────
@@ -67,31 +65,15 @@ export function getMonthRangeEndingAt(endYearMonth: string, count: number): stri
   return result
 }
 
-/** Returns the last `count` months ending at current month. */
-export function getMonthRange(count: number): string[] {
-  const result: string[] = []
-  const now = new Date()
-  for (let i = count - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    result.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
-  }
-  return result
-}
+// ─── Monthly expense bar chart ────────────────────────────────────────────────
 
-// ─── Income / Expense bar chart ───────────────────────────────────────────────
-
-export function drawIncExpChart(
+/** Monthly expense bars (income is not tracked on the Overview). */
+export function drawExpenseChart(
   container: HTMLElement,
   data: MonthData[],
   dp: 0 | 2 = 0,
 ): Chart {
   const colors = getThemeColors()
-
-  const maxInc = Math.max(...data.map(d => d.income), 1)
-  const maxExp = Math.max(...data.map(d => d.expense), 1)
-  const yMax = Math.ceil(maxInc * 1.1 / 10000) * 10000
-  const yMin = -Math.ceil(maxExp * 1.1 / 10000) * 10000
-
   const canvas = container.createEl('canvas')
 
   const cfg: ChartConfiguration<'bar'> = {
@@ -100,51 +82,32 @@ export function drawIncExpChart(
       labels: data.map(d => d.monthLabel),
       datasets: [
         {
-          label: t('dash.income'),
-          data: data.map(d => d.income),
-          backgroundColor: colors.income,
-          borderWidth: 0,
-          maxBarThickness: 56,
-          stack: 'cf',
-        },
-        {
           label: t('dash.expense'),
-          data: data.map(d => -d.expense),
+          data: data.map(d => d.expense),
           backgroundColor: colors.expense,
           borderWidth: 0,
           maxBarThickness: 56,
-          stack: 'cf',
         },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      // Room above the tallest bar for its value label
+      layout: { padding: { top: 18 } },
       plugins: {
-        legend: {
-          position: 'top',
-          align: 'start',
-          labels: { color: colors.label, boxWidth: 12, boxHeight: 12, padding: 12 },
-        },
+        legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (ctx) => {
-              const label = ctx.dataset.label ?? ''
-              return `${label}: ${formatK(ctx.raw as number, dp)}`
-            },
+            title: (items) => data[items[0].dataIndex].tooltipLabel,
+            label: (ctx) => `${t('dash.expense')}: ${formatK(ctx.raw as number, dp)}`,
           },
         },
         datalabels: {
           color: colors.label,
           clip: false,
-          anchor: (ctx: DatalabelsContext) => {
-            const val = ctx.chart.data.datasets[ctx.datasetIndex].data[ctx.dataIndex] as number
-            return val >= 0 ? 'end' : 'start'
-          },
-          align: (ctx: DatalabelsContext) => {
-            const val = ctx.chart.data.datasets[ctx.datasetIndex].data[ctx.dataIndex] as number
-            return val >= 0 ? 'top' : 'bottom'
-          },
+          anchor: 'end',
+          align: 'top',
           offset: 2,
           formatter: (v: number) => v !== 0 ? formatK(v, dp) : '',
           font: { size: 10, weight: 'bold' },
@@ -152,97 +115,21 @@ export function drawIncExpChart(
       },
       scales: {
         x: {
-          stacked: true,
           border: { display: false },
           grid: { display: false },
           ticks: { color: colors.muted },
         },
         y: {
-          stacked: true,
-          min: yMin,
-          max: yMax,
-          border: { display: false },
-          grid: {
-            color: (ctx) =>
-              ctx.tick.value === 0 ? colors.grid.replace('0.07', '0.14') : colors.grid,
-          },
-          ticks: {
-            color: colors.muted,
-            callback: (v) => {
-              const n = v as number
-              if (n === 0) return '0'
-              return formatK(n, dp)
-            },
-          },
-        },
-      },
-    },
-  }
-
-  return new Chart(canvas, cfg)
-}
-
-// ─── Net asset line chart ─────────────────────────────────────────────────────
-
-export function drawNetChart(
-  container: HTMLElement,
-  data: MonthData[],
-  dp: 0 | 2 = 0,
-): Chart {
-  const colors = getThemeColors()
-
-  const canvas = container.createEl('canvas')
-
-  const cfg: ChartConfiguration<'line'> = {
-    type: 'line',
-    data: {
-      labels: data.map(d => d.monthLabel),
-      datasets: [
-        {
-          label: t('dash.netAsset'),
-          data: data.map(d => d.net),
-          borderColor: colors.net,
-          pointBackgroundColor: colors.net,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: false,
-          tension: 0.3,
-          spanGaps: false,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        datalabels: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => {
-              const idx = items[0].dataIndex
-              return data[idx].tooltipLabel
-            },
-            label: (ctx) => {
-              const v = ctx.raw as number | null
-              if (v === null) return ''
-              return `${t('dash.netAsset')}: ${v.toLocaleString(undefined, { minimumFractionDigits: dp, maximumFractionDigits: dp })}`
-            },
-          },
-        },
-      },
-      scales: {
-        x: {
-          border: { display: false },
-          grid: { display: false },
-          ticks: { color: colors.muted },
-        },
-        y: {
+          beginAtZero: true,
           border: { display: false },
           grid: { color: colors.grid },
           ticks: {
             color: colors.muted,
-            callback: (v) => formatK(v as number, dp),
+            maxTicksLimit: 6,
+            callback: (v) => {
+              const n = v as number
+              return n === 0 ? '0' : formatK(n, dp)
+            },
           },
         },
       },

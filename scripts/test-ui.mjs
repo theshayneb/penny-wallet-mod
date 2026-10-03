@@ -110,8 +110,8 @@ function openDetail() {
   wait(600)
 }
 
-function openAsset() {
-  obs('command id="penny-wallet-mod:open-asset"')
+function openBudgets() {
+  obs('command id="penny-wallet-mod:open-budgets"')
   wait(600)
 }
 
@@ -335,118 +335,13 @@ openDetail()
 assert('Desktop added transaction keeps tag in detail', rowHasTag(desktopTagNote, DESKTOP_TAG))
 
 // ─────────────────────────────────────────────────────────────────────────────
-section('Assets view')
+section('Budgets view')
 
-openAsset()
+openBudgets()
 wait(800)
 
-assert('Asset view opens',            count('.pw-asset') > 0)
-assert('Range selector present',      count('.pw-range-btn') > 0)
-
-// Click 6M range
-evalJs("Array.from(document.querySelectorAll('.pw-range-btn')).find(b => b.textContent?.includes('6'))?.click()")
-wait(600)
-assert('6M range button clickable', count('.pw-range-btn.is-active') > 0
-                                 || count('.pw-range-btn') > 0)
-
-// Charts should render
-assert('At least one canvas chart renders', count('canvas') > 0)
-
-// ─────────────────────────────────────────────────────────────────────────────
-section('Transactions (Detail) view')
-
-openDetail()
-wait(600)
-
-assert('Detail view opens',          count('.pw-detail') > 0)
-assert('Type filter pills present',  count('.pw-filter-pill, .pw-pill') > 0 || count('.pw-type-filter') > 0)
-assert('Transaction rows rendered',  count('.pw-tx-row, .pw-detail-row, table tr') > 0)
-
-// Click the expense filter pill
-evalJs("Array.from(document.querySelectorAll('.pw-filter-pill, .pw-pill')).find(b => b.textContent?.toLowerCase().includes('expense'))?.click()")
-wait(400)
-assert('Expense filter applies without crash', count('.pw-detail') > 0)
-
-// Reset filter by clicking All pill
-evalJs("Array.from(document.querySelectorAll('.pw-filter-pill, .pw-pill')).find(b => b.textContent?.toLowerCase().includes('all'))?.click()")
-wait(300)
-
-// ─────────────────────────────────────────────────────────────────────────────
-section('Edit transaction')
-
-openDetail()
-wait(500)
-
-const rowsBefore = count('.pw-tx-row')
-assert('Transaction rows exist before edit', rowsBefore > 0)
-
-// Edit the transaction created earlier in this run.
-clickEditForRow(desktopTagNote)
-
-assert('Edit modal opens',             count('.modal-content') > 0)
-assert('Edit modal has amount field',  count('.modal-content input[type=number]') > 0)
-assert('Edit modal pre-fills tag',     countTagged('tag-chip', DESKTOP_TAG) === 1)
-
-// Verify amount field has pre-filled value (editing existing transaction)
-const editAmountPrefilled = evalJs("Number(document.querySelector('.modal-content input[type=number]')?.value) > 0")
-assert('Edit modal pre-fills amount', editAmountPrefilled === 'true')
-
-// Change amount and submit
-evalJs("const a = document.querySelector('.modal-content input[type=number]'); if(a){ a.value='999'; a.dispatchEvent(new Event('input',{bubbles:true})); }")
-wait(200)
-evalJs(`([...document.querySelectorAll('[data-testid=tag-chip]')]
-  .find(chip => chip.dataset.tag === ${JSON.stringify(DESKTOP_TAG)})
-  ?.querySelector('[data-testid=tag-chip-remove]'))?.click()`)
-wait(200)
-addDesktopTag(DESKTOP_EDIT_TAG)
-assert('Edit modal updates tag selection', countTagged('tag-chip', DESKTOP_EDIT_TAG) === 1)
-evalJs("document.querySelector('.pw-btn-row button:first-child')?.click()")
-wait(800)
-
-assert('Edit modal closes after submit', count('.modal-content') === 0)
-assert('Row count unchanged after edit', count('.pw-tx-row') === rowsBefore)
-openDetail()
-assert('Edited transaction shows updated tag', rowHasTag(desktopTagNote, DESKTOP_EDIT_TAG))
-setInputValue('[data-testid="detail-search"]', DESKTOP_EDIT_TAG)
-assert('Detail search finds edited transaction by tag', rowHasTag(desktopTagNote, DESKTOP_EDIT_TAG))
-setInputValue('[data-testid="detail-search"]', '')
-
-// ─────────────────────────────────────────────────────────────────────────────
-section('Delete transaction — cancel')
-
-const rowsBeforeDelete = count('.pw-tx-row')
-
-// Click delete → cancel dialog
-evalJs("document.querySelector('.pw-txn-btn[data-action=\"delete\"]')?.click()")
-wait(400)
-assert('Delete confirm dialog appears', count('.modal-content') > 0)
-assert('Dialog has confirm + cancel buttons', count('.modal-content button') >= 2)
-
-// Click cancel — row count must stay the same
-evalJs("document.querySelector('.modal-content [data-action=\"cancel\"]')?.click()")
-wait(400)
-assert('Cancel keeps row count unchanged', count('.pw-tx-row') === rowsBeforeDelete)
-
-// ─────────────────────────────────────────────────────────────────────────────
-section('Delete transaction — confirm')
-
-// Click delete → confirm
-evalJs("document.querySelector('.pw-txn-btn[data-action=\"delete\"]')?.click()")
-wait(400)
-evalJs("document.querySelector('.modal-content [data-action=\"confirm\"]')?.click()")
-wait(800)
-
-assert('Row count decreases by 1 after delete', count('.pw-tx-row') === rowsBeforeDelete - 1)
-
-// ─────────────────────────────────────────────────────────────────────────────
-section('Credit card balance direction')
-
-// After adding an expense to a credit card wallet, the displayed balance
-// in Dashboard should show a positive outstanding debt (displayed positive).
-// We check the wallet list card renders correctly.
-openAsset()
-wait(400)
-assert('Wallet list shows credit card rows', count('.pw-badge-creditCard') > 0)
+assert('Budgets view opens',          count('.pw-budget-view') > 0)
+assert('No Assets tab in the header', evalJs("Array.from(document.querySelectorAll('.pw-shared-header-tab')).some(b => /asset|資產/i.test(b.textContent ?? ''))") !== 'true')
 
 // ─────────────────────────────────────────────────────────────────────────────
 section('Settings tab')

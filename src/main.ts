@@ -4,7 +4,6 @@ import { TransactionModal } from './modal/TransactionModal'
 import { MobileTransactionModal } from './modal/MobileTransactionModal'
 import { DashboardView, DASHBOARD_VIEW_TYPE } from './view/DashboardView'
 import { DetailView, DETAIL_VIEW_TYPE } from './view/DetailView'
-import { AssetView, ASSET_VIEW_TYPE } from './view/AssetView'
 import { BudgetView, BUDGET_VIEW_TYPE } from './view/BudgetView'
 import { PennyWalletSettingTab } from './settings/SettingTab'
 import { ValidationModal } from './modal/ValidationModal'
@@ -27,13 +26,11 @@ export default class PennyWalletPlugin extends Plugin {
     // ── All synchronous registrations FIRST (so ribbon/commands survive restart) ──
     this.registerView(DASHBOARD_VIEW_TYPE, (leaf) => new DashboardView(leaf, this.walletFile))
     this.registerView(DETAIL_VIEW_TYPE, (leaf) => new DetailView(leaf, this.walletFile))
-    this.registerView(ASSET_VIEW_TYPE, (leaf) => new AssetView(leaf, this.walletFile))
     this.registerView(BUDGET_VIEW_TYPE, (leaf) => new BudgetView(leaf, this.walletFile))
 
     this.addRibbonIcon('wallet', 'Penny wallet mod', () => { void this.openDashboard() })
 
     this.addCommand({ id: 'open-dashboard', name: 'Open finance overview', callback: () => { void this.openDashboard() } })
-    this.addCommand({ id: 'open-asset', name: 'Open assets', callback: () => { void this.openAssetView() } })
     this.addCommand({ id: 'open-detail', name: 'Open transactions', callback: () => { void this.openDetailView() } })
     this.addCommand({ id: 'open-budgets', name: 'Open budgets', callback: () => { void this.openOrRevealView(BUDGET_VIEW_TYPE) } })
     this.addCommand({ id: 'add-transaction', name: 'Add transaction', callback: () => this.openTransactionModal() })
@@ -99,10 +96,6 @@ export default class PennyWalletPlugin extends Plugin {
     await this.openOrRevealView(DETAIL_VIEW_TYPE, yearMonth ? { yearMonth } : undefined)
   }
 
-  async openAssetView() {
-    await this.openOrRevealView(ASSET_VIEW_TYPE)
-  }
-
   openTransactionModal(params: TransactionModalParams = {}) {
     const ModalClass = Platform.isMobile ? MobileTransactionModal : TransactionModal
     new ModalClass(
@@ -145,9 +138,6 @@ export default class PennyWalletPlugin extends Plugin {
     })
     this.app.workspace.getLeavesOfType(DETAIL_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
       void (leaf.view as DetailView).render()
-    })
-    this.app.workspace.getLeavesOfType(ASSET_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
-      void (leaf.view as AssetView).render()
     })
     this.app.workspace.getLeavesOfType(BUDGET_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
       void (leaf.view as BudgetView).render()

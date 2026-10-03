@@ -62,7 +62,7 @@ The **Budget** column is an optional 11th column. It is only written for rows th
 
 ### Frontmatter Cache
 
-The `income`, `expense`, and `netAsset` fields at the top are a cache used for fast loading in the Finance Overview and Assets views. They are recomputed automatically whenever a transaction is added, edited, or deleted.
+The `income`, `expense`, and `netAsset` fields at the top are a cache used for fast loading in the Finance Overview. They are recomputed automatically whenever a transaction is added, edited, or deleted.
 
 > Do not edit the frontmatter manually — it will be overwritten on the next transaction write.
 

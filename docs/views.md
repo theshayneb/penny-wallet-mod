@@ -1,6 +1,6 @@
 # Views
 
-PennyWallet has four views. The **Finance Overview** can be opened from the ribbon icon; the others are accessible from the header tabs inside Finance Overview, or via the Command Palette.
+PennyWallet has three views. The **Finance Overview** can be opened from the ribbon icon; the others are accessible from the header tabs inside Finance Overview, or via the Command Palette.
 
 ---
 
@@ -10,10 +10,7 @@ The main dashboard. Open it by clicking the **PennyWallet icon** in the left rib
 
 ![Finance overview](/finance-overview.png)
 
-The header also contains two navigation buttons:
-- **Transactions** — switch to the Transactions list view
-- **Assets** — switch to the assets view
-- **+ Add Transaction** — open the transaction form
+The header has three tabs (**Overview**, **Transactions**, **Budgets**) and a **+ Add Transaction** button that opens the transaction form.
 
 ### Month Navigation
 
@@ -21,19 +18,7 @@ Use `‹` / `›` to move between months. Future months are disabled.
 
 ### Layout
 
-The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) with the **Monthly income & expense** bar chart for the last three months (ending at the selected month) under it; the expense pie charts are on the right.
-
-### Account Balances
-
-Shows the **current running balance** of every active account, calculated from all transactions since the initial balance was set — not just the current month.
-
-Credit card balances are shown as negative values (outstanding debt).
-
-**Net Assets** at the bottom is the sum of all cash/bank balances minus all credit card debt.
-
-### Asset Allocation Pie
-
-Appears when you have two or more active cash/bank accounts with positive balances. Shows how your liquid assets are distributed across accounts. Each legend entry shows the account name, balance amount, and percentage.
+The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) with the **Monthly expenses** bar chart for the last six months (ending at the selected month) under it; the expense pie charts are on the right.
 
 ### Expense Pie Charts
 
@@ -68,41 +53,6 @@ On desktop, hover a row to reveal the **✏** edit action. On mobile, the edit a
 ### Subtotals
 
 A fixed bar at the bottom always shows **Expense Subtotal** and **Income Subtotal** for the currently filtered transactions. The list scrolls independently without affecting the header or subtotals.
-
----
-
-## Assets
-
-An assets-focused view for medium-term financial tracking. Open it from the **Assets** button in the Finance Overview header, or run **PennyWallet: Open assets** from the Command Palette.
-
-![Assets view](/asset-view.png)
-
-### Range Selector
-
-Choose **3 months**, **6 months**, or **12 months**.
-
-### Account Balances
-
-Shows the current running balance for each active account. Credit card balances are shown as negative values.
-
-**Net Assets** at the bottom is the sum of all cash/bank balances minus all credit card debt.
-
-### Cashflow Metrics
-
-| Metric | Description |
-|--------|-------------|
-| Income | Total income within the selected range |
-| Expense | Total expense within the selected range |
-| Balance | Income minus Expense within the selected range |
-| Savings Rate | `Balance / Income` (shown as 0% when income is 0) |
-
-### Net Asset Trend Chart
-
-A line chart showing your net asset over the selected range. Hover near a data point to see the value. Missing months (no data) create a gap in the line.
-
-### Asset Allocation Pie
-
-Appears when you have two or more active cash/bank accounts with positive balances. Shows the distribution of liquid assets across those accounts.
 
 ---
 

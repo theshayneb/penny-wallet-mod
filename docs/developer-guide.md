@@ -30,7 +30,7 @@ penny-wallet/
 │   ├── view/
 │   │   ├── DashboardView.ts     ← Finance Overview
 │   │   ├── DetailView.ts        ← Transactions list
-│   │   └── AssetView.ts         ← Assets view
+│   │   └── BudgetView.ts        ← Budgets tab
 │   └── settings/
 │       └── SettingTab.ts        ← plugin settings UI
 ├── scripts/
@@ -193,12 +193,6 @@ Before opening a PR, verify the following:
 - [ ] Type filter pills work
 - [ ] Category dropdown appears and filters correctly
 - [ ] Subtotals match filtered transactions
-
-**Assets View**
-- [ ] 3 / 6 / 12-month range selector switches data
-- [ ] Account balances and net assets are correct
-- [ ] Net asset trend chart renders and tooltip shows on hover
-- [ ] Asset allocation pie appears with two or more positive cash/bank accounts
 
 **Settings**
 - [ ] Folder name change persists

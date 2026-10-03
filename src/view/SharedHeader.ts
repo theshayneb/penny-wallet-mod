@@ -5,11 +5,10 @@ import { MobileTransactionModal } from '../modal/MobileTransactionModal'
 import { t } from '../i18n'
 import { stepMonth, isAfterCurrentMonth } from '../utils'
 import { DASHBOARD_VIEW_TYPE } from './DashboardView'
-import { ASSET_VIEW_TYPE } from './AssetView'
 import { DETAIL_VIEW_TYPE } from './DetailView'
 import { BUDGET_VIEW_TYPE } from './BudgetView'
 
-export type ActiveView = 'dashboard' | 'asset' | 'detail' | 'budget'
+export type ActiveView = 'dashboard' | 'detail' | 'budget'
 
 export type SharedHeaderOptions = {
   view: ItemView
@@ -48,7 +47,6 @@ export function renderSharedHeader(container: HTMLElement, opts: SharedHeaderOpt
   const tabsCell = root.createDiv('pw-shared-header-tabs')
   const tabs: { id: ActiveView; label: string; targetType: string; state?: Record<string, unknown> }[] = [
     { id: 'dashboard', label: t('ui.overview'), targetType: DASHBOARD_VIEW_TYPE },
-    { id: 'asset',     label: t('ui.asset'),    targetType: ASSET_VIEW_TYPE },
     { id: 'detail',    label: t('ui.detail'),   targetType: DETAIL_VIEW_TYPE,
       state: opts.yearMonth ? { yearMonth: opts.yearMonth } : undefined },
     { id: 'budget',    label: t('ui.budgets'),  targetType: BUDGET_VIEW_TYPE,

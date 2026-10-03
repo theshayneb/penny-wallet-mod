@@ -9,7 +9,7 @@ import { Transaction, TransactionType } from '../types'
 import { DETAIL_VIEW_TYPE } from './DetailView'
 import { renderSharedHeader } from './SharedHeader'
 import { Chart } from 'chart.js'
-import { MonthData, drawIncExpChart, drawPie, getMonthRangeEndingAt } from './charts'
+import { MonthData, drawExpenseChart, drawPie, getMonthRangeEndingAt } from './charts'
 
 export const DASHBOARD_VIEW_TYPE = 'penny-wallet-mod-dashboard'
 
@@ -55,12 +55,11 @@ export class DashboardView extends ItemView {
     contentEl.empty()
     contentEl.addClass('pw-dashboard')
 
-    const months = getMonthRangeEndingAt(this.currentYearMonth, 3)
+    const months = getMonthRangeEndingAt(this.currentYearMonth, 6)
 
-    const [transactions, summaries, netTimeline] = await Promise.all([
+    const [transactions, summaries] = await Promise.all([
       this.walletFile.readMonth(this.currentYearMonth),
       this.walletFile.getMonthSummaries(months),
-      this.walletFile.getNetAssetTimeline(months),
     ])
 
     renderSharedHeader(contentEl, {
@@ -73,13 +72,11 @@ export class DashboardView extends ItemView {
 
     const dp = this.walletFile.getConfig().decimalPlaces ?? 0
 
-    // ── 3-month bar chart ────────────────────────────────────────────────────
+    // ── 6-month expense chart ────────────────────────────────────────────────
     const data: MonthData[] = months.map(ym => ({
       monthLabel: formatMonthLabel(ym),
       tooltipLabel: formatYearMonth(ym, 'short'),
-      income: summaries.get(ym)?.income ?? 0,
       expense: summaries.get(ym)?.expense ?? 0,
-      net: netTimeline.get(ym) ?? null,
     }))
 
     // ── 2-column grid: budgets + bar chart left, pie charts right ───────────
@@ -91,11 +88,11 @@ export class DashboardView extends ItemView {
     }
 
     const incExpCard = renderCard(gridLeft, {
-      title: t('trend.monthlyIncomeExpense'),
+      title: t('trend.monthlyExpense'),
       className: 'pw-inc-exp-card',
     })
     const incExpChartWrap = incExpCard.createDiv('pw-chart-wrap')
-    this.charts.push(drawIncExpChart(incExpChartWrap, data, dp))
+    this.charts.push(drawExpenseChart(incExpChartWrap, data, dp))
 
     // ── Category pies ────────────────────────────────────────────────────────
     const gridRight = grid2.createDiv('pw-grid-right')

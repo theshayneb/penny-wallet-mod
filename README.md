@@ -6,9 +6,9 @@ A personal finance tracker plugin for [Obsidian](https://obsidian.md). Log expen
 
 ## Features
 
-- **Finance overview** — monthly income / expense summary, 6-month income/expense chart, and category pie charts
+- **Finance overview** — budgets, 6-month expense chart, and expense pie charts by category and by tag
 - **Transactions** — multi-select type and wallet filters, category and account dropdowns, date range, keyword search, and sticky subtotals
-- **Assets** — 3 / 6 / 12-month range selector, account balances, net asset trend, savings rate, and asset allocation pie
+- **Budgets** — monthly budgets with progress, pace marker and recent transactions
 - **Multiple account types** — cash, bank account, credit card (with debt tracking)
 - **Custom categories** — add your own expense and income categories
 - **Mobile-friendly entry** — touch-optimized transaction form with bottom-sheet pickers and an on-screen calculator
@@ -77,12 +77,6 @@ Monthly summary with income, expense, and balance metrics, plus a 6-month income
 Full transaction list with multi-select type and wallet filters (tinted pills), category and account dropdowns, date-range pickers, and keyword search. On mobile, the dropdowns and date range collapse into a **Filter ▾** sheet next to the search box. Edit via hover (desktop) or row tap (mobile); delete lives inside the edit modal. Header and subtotals stay fixed while the list scrolls.
 
 ![Transactions](images/transactions-view.png)
-
-### Assets
-
-Medium-term financial view with a 3 / 6 / 12-month range selector, account balances, net asset trend, savings rate, and asset allocation pie.
-
-![Assets](images/asset-view.png)
 
 ### Settings
 

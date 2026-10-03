@@ -97,10 +97,7 @@ const translations = {
     'detail.filterDone': '完成',
 
     // Trend view
-    'trend.3m': '3 個月',
-    'trend.6m': '6 個月',
-    'trend.12m': '12 個月',
-    'trend.monthlyIncomeExpense': '每月收支',
+    'trend.monthlyExpense': '每月支出',
 
     // Date formatting
     'date.yearMonthNumeric': '{year} 年 {month} 月',
@@ -221,11 +218,8 @@ const translations = {
 
     'ui.unarchive': '取消封存',
 
-    // Asset view
-    'asset.title': '資產',
-    'ui.asset': '資產',
+    // Header tabs
     'ui.overview': '總覽',
-    'asset.netAssetTrend': '淨資產趨勢',
 
     // Budgets
     'modal.budget': '預算',
@@ -349,10 +343,7 @@ const translations = {
     'detail.filterClearAll': 'Clear all',
     'detail.filterDone': 'Done',
 
-    'trend.3m': '3 Months',
-    'trend.6m': '6 Months',
-    'trend.12m': '12 Months',
-    'trend.monthlyIncomeExpense': 'Monthly income & expense',
+    'trend.monthlyExpense': 'Monthly expenses',
 
     'date.yearMonthNumeric': '{month}/{year}',
     'date.yearMonthShort': '{monthName} {year}',
@@ -464,11 +455,8 @@ const translations = {
 
     'ui.unarchive': 'Unarchive',
 
-    // Asset view
-    'asset.title': 'Assets',
-    'ui.asset': 'Assets',
+    // Header tabs
     'ui.overview': 'Overview',
-    'asset.netAssetTrend': 'Net asset trend',
 
     // Budgets
     'modal.budget': 'Budget',

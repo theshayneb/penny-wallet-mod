@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.33] - 2026-10-03
+
+### Changed
+- Overview: the bar chart is now "Monthly expenses" for the last six months, expenses only (no income), with bars going up and an axis scaled to the actual amounts.
+
+### Removed
+- The Assets tab, its view and the "Open assets" command.
+
 ## [0.0.32] - 2026-10-03
 
 ### Changed
