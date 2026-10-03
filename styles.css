@@ -1894,7 +1894,8 @@ button.pw-pill {
   gap: 2px;
 }
 
-.pw-tx-row-line3 {
+.pw-tx-row-line3,
+.pw-tx-row-line4 {
   display: flex;
   gap: 4px;
   align-items: baseline;

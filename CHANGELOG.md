@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.17] - 2026-10-03
+
+### Changed
+- Transactions list: each row now shows the note on its own line, followed by the tags on a separate line below it (replaces the single shared line from 0.0.16). Rows with neither still show an em dash.
+
 ## [0.0.16] - 2026-10-03
 
 ### Changed

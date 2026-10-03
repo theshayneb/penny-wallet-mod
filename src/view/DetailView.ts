@@ -745,7 +745,7 @@ export class DetailView extends ItemView {
       cls: `pw-type-badge pw-type-${tx.type}`,
     })
 
-    // col3: 3-row stack — category / wallet / tags-or-note
+    // col3: stack — category / wallet / note / tags (note and tags each on their own line)
     const stack = row.createDiv('pw-tx-row-stack')
     stack.createEl('div', {
       text: translateCategory(tx.category ?? ''),
@@ -753,21 +753,23 @@ export class DetailView extends ItemView {
     })
     stack.createEl('div', { text: buildWalletText(tx), cls: 'pw-tx-wallet' })
 
-    const line3 = stack.createDiv('pw-tx-row-line3')
     const display = buildLine3Display(tx)
+    if (display.note !== '') {
+      const noteLine = stack.createDiv('pw-tx-row-line3')
+      noteLine.createEl('span', { text: display.note, cls: 'pw-tx-note' })
+    }
     if (display.tags.length > 0) {
-      const tagsEl = line3.createSpan('pw-tx-tags')
+      const tagsLine = stack.createDiv('pw-tx-row-line4')
+      const tagsEl = tagsLine.createSpan('pw-tx-tags')
       for (const tag of display.tags) {
         const chip = tagsEl.createSpan({ text: `#${tag}`, cls: 'pw-tx-tag-chip' })
         chip.dataset['testid'] = 'tx-tag-chip'
         chip.dataset['tag'] = tag
       }
     }
-    if (display.note !== '') {
-      line3.createEl('span', { text: display.note, cls: 'pw-tx-note' })
-    }
-    if (display.tags.length === 0 && display.note === '') {
-      line3.createEl('span', { text: '—', cls: 'pw-tx-empty' })
+    if (display.note === '' && display.tags.length === 0) {
+      const emptyLine = stack.createDiv('pw-tx-row-line3')
+      emptyLine.createEl('span', { text: '—', cls: 'pw-tx-empty' })
     }
 
     // col4: amount (V-center, large)
