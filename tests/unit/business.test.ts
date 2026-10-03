@@ -252,3 +252,32 @@ describe('groupByCategory', () => {
     expect(map.size).toBe(0)
   })
 })
+
+// ── groupExpensesByTag ────────────────────────────────────────────────────────
+
+describe('groupExpensesByTag', () => {
+  const wf = makeWalletFile([])
+  const tx = (amount: number, tags?: string[], type: Transaction['type'] = 'expense'): Transaction =>
+    ({ date: '04/01', type, wallet: 'Cash', category: 'food', note: '', amount, tags })
+
+  it('sums expenses per tag, with "" for untagged', () => {
+    const map = wf.groupExpensesByTag([tx(100, ['friends_family']), tx(50, ['friends_family']), tx(30)])
+    expect([...map]).toEqual([['friends_family', 150], ['', 30]])
+  })
+
+  it('counts a multi-tag transaction in full toward each tag', () => {
+    const map = wf.groupExpensesByTag([tx(80, ['work', 'travel'])])
+    expect(map.get('work')).toBe(80)
+    expect(map.get('travel')).toBe(80)
+  })
+
+  it('ignores income and transfers', () => {
+    const map = wf.groupExpensesByTag([tx(1000, ['work'], 'income'), tx(500, ['work'], 'transfer')])
+    expect(map.size).toBe(0)
+  })
+
+  it('refunds reduce a tag; tags at or below zero are dropped', () => {
+    const map = wf.groupExpensesByTag([tx(100, ['a']), tx(-40, ['a']), tx(-20, ['b'])])
+    expect([...map]).toEqual([['a', 60]])
+  })
+})

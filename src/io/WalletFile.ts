@@ -726,6 +726,22 @@ export class WalletFile {
     return map
   }
 
+  /**
+   * Expense totals per tag ('' = untagged). A transaction with several tags
+   * counts in full toward each, so slices can add up to more than total
+   * spending. Tags whose refunds outweigh spending (total <= 0) are dropped.
+   */
+  groupExpensesByTag(transactions: Transaction[]): Map<string, number> {
+    const map = new Map<string, number>()
+    for (const tx of transactions) {
+      if (tx.type !== 'expense') continue
+      const tags = tx.tags?.length ? tx.tags : ['']
+      for (const tag of new Set(tags)) map.set(tag, (map.get(tag) ?? 0) + tx.amount)
+    }
+    for (const [tag, total] of map) if (total <= 0) map.delete(tag)
+    return map
+  }
+
   /** Per-wallet balance at each target month end — cash + bank only */
   async getWalletBalanceTrend(targetMonths: string[]): Promise<Map<string, Map<string, number>>> {
     const trackedWallets = this.config.wallets.filter(

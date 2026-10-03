@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.29] - 2026-10-03
+
+### Added
+- Overview: "Expenses by tag" pie chart for the selected month, with an Untagged slice. A transaction with several tags counts toward each. Clicking a tag opens the Transactions list filtered to it (removable filter chip).
+
+### Removed
+- Overview: the "Income by category" pie chart (replaced by the tag chart).
+
 ## [0.0.28] - 2026-10-03
 
 ### Changed

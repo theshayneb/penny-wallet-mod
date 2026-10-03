@@ -69,7 +69,8 @@ const translations = {
     'dash.walletBalances': '帳戶餘額',
     'dash.assetAllocation': '資金占比',
     'dash.expenseByCategory': '支出分類',
-    'dash.incomeByCategory': '收入分類',
+    'dash.expenseByTag': '支出標籤',
+    'dash.untagged': '未加標籤',
     'dash.noData': '本月無資料',
 
     // Detail view
@@ -230,6 +231,7 @@ const translations = {
     'dash.budgetRemaining': '剩餘 {amount}',
     'dash.budgetOver': '超支 {amount}',
     'detail.budgetFilter': '預算：{name}',
+    'detail.tagFilter': '標籤：#{name}',
     'settings.budgets': '預算',
     'settings.budgetsDesc': '設定每月預算金額。支出交易可指定預算，每月從預算金額中扣除，次月重新計算。',
     'settings.noBudgets': '尚未建立預算',
@@ -318,7 +320,8 @@ const translations = {
     'dash.walletBalances': 'Account balances',
     'dash.assetAllocation': 'Asset allocation',
     'dash.expenseByCategory': 'Expense by category',
-    'dash.incomeByCategory': 'Income by category',
+    'dash.expenseByTag': 'Expenses by tag',
+    'dash.untagged': 'Untagged',
     'dash.noData': 'No data this month',
 
     'detail.title': 'Transactions',
@@ -468,6 +471,7 @@ const translations = {
     'dash.budgetRemaining': '{amount} left',
     'dash.budgetOver': '{amount} over',
     'detail.budgetFilter': 'Budget: {name}',
+    'detail.tagFilter': 'Tag: #{name}',
     'settings.budgets': 'Budgets',
     'settings.budgetsDesc': 'Set a monthly amount for each budget. Expense transactions assigned to a budget are deducted from it; budgets reset every month.',
     'settings.noBudgets': 'No budgets yet',

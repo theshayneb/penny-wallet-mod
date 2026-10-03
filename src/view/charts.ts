@@ -279,6 +279,7 @@ export function drawPie(
   dp: 0 | 2 = 0,
   onSegmentClick?: (categoryKey: string) => void,
   size = 200,
+  labelFor: (key: string) => string = translateCategory,
 ): Chart {
   const filtered = filterPieData(data)
   const total = [...filtered.values()].reduce((a, b) => a + b, 0)
@@ -287,7 +288,7 @@ export function drawPie(
   for (const [key, value] of filtered) {
     segments.push({
       key,
-      label: key === '__other__' ? t('label.cat.other') : translateCategory(key),
+      label: key === '__other__' ? t('label.cat.other') : labelFor(key),
       value,
     })
   }

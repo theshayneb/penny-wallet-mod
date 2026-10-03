@@ -112,15 +112,19 @@ export class DashboardView extends ItemView {
     const gridRight = grid2.createDiv('pw-grid-right')
 
     const expenseMap = this.walletFile.groupByCategory(transactions, 'expense')
-    const incomeMap  = this.walletFile.groupByCategory(transactions, 'income')
+    const tagMap     = this.walletFile.groupExpensesByTag(transactions)
 
     const expCard = renderCard(gridRight, { title: t('dash.expenseByCategory') })
     if (expenseMap.size > 0) this.charts.push(drawPie(expCard, expenseMap, dp, (cat) => { void this.openDetailWithFilter('expense', cat) }, 200))
     else expCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
 
-    const incCard = renderCard(gridRight, { title: t('dash.incomeByCategory') })
-    if (incomeMap.size > 0) this.charts.push(drawPie(incCard, incomeMap, dp, (cat) => { void this.openDetailWithFilter('income', cat) }, 200))
-    else incCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
+    const tagCard = renderCard(gridRight, { title: t('dash.expenseByTag') })
+    if (tagMap.size > 0) {
+      this.charts.push(drawPie(tagCard, tagMap, dp, (tag) => { void this.openDetailWithTag(tag) }, 200,
+        (tag) => tag ? `#${tag}` : t('dash.untagged')))
+    } else {
+      tagCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
+    }
 
     this.renderBudgets(contentEl, transactions, dp)
   }
@@ -147,6 +151,13 @@ export class DashboardView extends ItemView {
         open()
       })
     }
+  }
+
+  /** '' (untagged or "Other") opens all of the month's expenses. */
+  private async openDetailWithTag(tag: string) {
+    await this.openOrRevealView(DETAIL_VIEW_TYPE, {
+      state: { yearMonth: this.currentYearMonth, filterType: 'expense', ...(tag ? { filterTag: tag } : {}), resetFilters: true },
+    })
   }
 
   private async openDetailWithBudget(budget: string) {
