@@ -413,7 +413,7 @@ export class TransactionModal extends Modal {
   }
 
   protected getCategoryOptions(config: PennyWalletConfig): { key: string; label: string }[] {
-    return getCategoryOptionsFromState(config, this.type)
+    return getCategoryOptionsFromState(config, this.type, this.category)
   }
 
   protected showError(msg: string) {

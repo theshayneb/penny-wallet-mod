@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.27] - 2026-10-03
+
+### Added
+- Settings → Categories: built-in categories can be removed (hidden from the Add Transaction category list) with ×, and restored from the Removed list. Transactions that already use a removed category keep it.
+
 ## [0.0.25] - 2026-10-03
 
 ### Fixed

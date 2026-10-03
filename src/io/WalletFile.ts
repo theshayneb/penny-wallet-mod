@@ -17,6 +17,12 @@ const ROOT_CONFIG_PATH = normalizePath('.penny-wallet.json')
 const TABLE_HEADER = `| Date | Type | Wallet | From | To | Category | Note | Tags | Amount | CreatedAt | Budget |
 |------|------|--------|------|----|----------|------|------|--------|-----------|--------|`
 
+/** Hidden built-in category keys, dropping anything that isn't a built-in key. */
+function keepKnown(hidden: unknown, defaults: readonly string[]): string[] {
+  if (!Array.isArray(hidden)) return []
+  return (hidden as unknown[]).filter((k): k is string => typeof k === 'string' && defaults.includes(k))
+}
+
 // ─── Markdown Table Parsing ───────────────────────────────────────────────────
 
 export function parseRow(line: string): Transaction | null {
@@ -283,6 +289,20 @@ export class WalletFile {
     return this.createdDefaultConfigOnLastLoad
   }
 
+  updateHiddenCategories(type: 'expense' | 'income' | 'transfer', hidden: string[]): void {
+    const { options } = this.config
+    this.config = {
+      ...this.config,
+      options: {
+        ...options,
+        categories: {
+          ...options.categories,
+          [type]: { ...options.categories[type], hidden },
+        },
+      },
+    }
+  }
+
   updateCustomCategories(type: 'expense' | 'income' | 'transfer', custom: string[]): void {
     const { options } = this.config
     this.config = {
@@ -305,9 +325,12 @@ export class WalletFile {
         custom: p?.types?.custom ?? [],
       },
       categories: {
-        expense:  { default: [...DEFAULT_EXPENSE_CATEGORIES],  custom: p?.categories?.expense?.custom  ?? [] },
-        income:   { default: [...DEFAULT_INCOME_CATEGORIES],   custom: p?.categories?.income?.custom   ?? [] },
-        transfer: { default: [...DEFAULT_TRANSFER_CATEGORIES], custom: (p?.categories as Record<string, { custom?: string[] }>)?.['transfer']?.custom ?? [] },
+        expense:  { default: [...DEFAULT_EXPENSE_CATEGORIES],  custom: p?.categories?.expense?.custom  ?? [],
+          hidden: keepKnown(p?.categories?.expense?.hidden, DEFAULT_EXPENSE_CATEGORIES) },
+        income:   { default: [...DEFAULT_INCOME_CATEGORIES],   custom: p?.categories?.income?.custom   ?? [],
+          hidden: keepKnown(p?.categories?.income?.hidden, DEFAULT_INCOME_CATEGORIES) },
+        transfer: { default: [...DEFAULT_TRANSFER_CATEGORIES], custom: (p?.categories as Record<string, { custom?: string[] }>)?.['transfer']?.custom ?? [],
+          hidden: keepKnown((p?.categories as Record<string, { hidden?: string[] }>)?.['transfer']?.hidden, DEFAULT_TRANSFER_CATEGORIES) },
       },
     }
   }

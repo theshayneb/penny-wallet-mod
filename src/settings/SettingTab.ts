@@ -5,7 +5,7 @@ import { ConfirmModal } from '../modal/ConfirmModal'
 import { WalletEditModal } from '../modal/WalletEditModal'
 import { Budget, Wallet, WalletBalance, WalletType } from '../types'
 import { validateBudgetName } from '../budget'
-import { t, tn } from '../i18n'
+import { t, tn, translateCategory } from '../i18n'
 
 export class PennyWalletSettingTab extends PluginSettingTab {
   private walletFile: WalletFile
@@ -501,61 +501,39 @@ export class PennyWalletSettingTab extends PluginSettingTab {
     const config = this.walletFile.getConfig()
     const { containerEl } = this
 
-    new Setting(containerEl).setName(t('settings.customCategories')).setHeading()
+    new Setting(containerEl)
+      .setName(t('settings.customCategories'))
+      .setDesc(t('settings.categoriesDesc'))
+      .setHeading()
     const cardEl = containerEl.createDiv('pw-card pw-category-card')
 
-    const expenseCustom = config.options.categories.expense.custom
-    const incomeCustom = config.options.categories.income.custom
-    const transferCustom = config.options.categories.transfer.custom
+    const cats = config.options.categories
+    const sections: { type: 'expense' | 'income' | 'transfer'; title: string; others: string[] }[] = [
+      { type: 'expense',  title: t('settings.expenseCategories'),  others: [...cats.income.custom, ...cats.transfer.custom] },
+      { type: 'income',   title: t('settings.incomeCategories'),   others: [...cats.expense.custom, ...cats.transfer.custom] },
+      { type: 'transfer', title: t('settings.transferCategories'), others: [...cats.expense.custom, ...cats.income.custom] },
+    ]
 
-    this.renderCategorySection(
-      cardEl,
-      t('settings.expenseCategories'),
-      expenseCustom,
-      [...incomeCustom, ...transferCustom],
-      config.options.categories.expense.default,
-      async (updated) => {
+    sections.forEach(({ type, title, others }, i) => {
+      if (i > 0) cardEl.createEl('hr', { cls: 'pw-category-divider' })
+      const save = async (apply: () => void) => {
         const scrollTop = this.getSettingsScrollTop()
-        this.walletFile.updateCustomCategories('expense', updated)
+        apply()
         await this.walletFile.saveConfig()
         this.app.workspace.trigger('penny-wallet-mod:refresh')
         this.display(scrollTop)
-      },
-    )
-
-    cardEl.createEl('hr', { cls: 'pw-category-divider' })
-
-    this.renderCategorySection(
-      cardEl,
-      t('settings.incomeCategories'),
-      incomeCustom,
-      [...expenseCustom, ...transferCustom],
-      config.options.categories.income.default,
-      async (updated) => {
-        const scrollTop = this.getSettingsScrollTop()
-        this.walletFile.updateCustomCategories('income', updated)
-        await this.walletFile.saveConfig()
-        this.app.workspace.trigger('penny-wallet-mod:refresh')
-        this.display(scrollTop)
-      },
-    )
-
-    cardEl.createEl('hr', { cls: 'pw-category-divider' })
-
-    this.renderCategorySection(
-      cardEl,
-      t('settings.transferCategories'),
-      transferCustom,
-      [...expenseCustom, ...incomeCustom],
-      config.options.categories.transfer.default,
-      async (updated) => {
-        const scrollTop = this.getSettingsScrollTop()
-        this.walletFile.updateCustomCategories('transfer', updated)
-        await this.walletFile.saveConfig()
-        this.app.workspace.trigger('penny-wallet-mod:refresh')
-        this.display(scrollTop)
-      },
-    )
+      }
+      this.renderCategorySection(
+        cardEl,
+        title,
+        cats[type].custom,
+        others,
+        cats[type].default,
+        cats[type].hidden ?? [],
+        (updated) => save(() => this.walletFile.updateCustomCategories(type, updated)),
+        (hidden) => save(() => this.walletFile.updateHiddenCategories(type, hidden)),
+      )
+    })
   }
 
   private renderCategorySection(
@@ -564,21 +542,44 @@ export class PennyWalletSettingTab extends PluginSettingTab {
     categories: string[],
     otherCategories: string[],
     defaultKeys: readonly string[],
+    hidden: string[],
     onChange: (updated: string[]) => void | Promise<void>,
+    onHiddenChange: (hidden: string[]) => void | Promise<void>,
   ) {
     container.createEl('div', { text: title, cls: 'pw-setting-input-subtitle' })
 
-    const tagsEl = container.createDiv('pw-category-tags')
-    for (const cat of categories) {
-      const tag = tagsEl.createDiv('pw-category-tag')
-      tag.createEl('span', { text: cat })
+    const addChip = (parent: HTMLElement, label: string, cls: string, onRemove: () => void) => {
+      const tag = parent.createDiv('pw-category-tag ' + cls)
+      tag.createEl('span', { text: label })
       const removeBtn = tag.createEl('button', { cls: 'pw-tag-remove' })
+      removeBtn.setAttribute('aria-label', t('ui.delete'))
       const svg = removeBtn.createSvg('svg', { attr: { viewBox: '0 0 10 10', width: '10', height: '10', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round' } })
       svg.createSvg('line', { attr: { x1: '2', y1: '2', x2: '8', y2: '8' } })
       svg.createSvg('line', { attr: { x1: '8', y1: '2', x2: '2', y2: '8' } })
-      removeBtn.addEventListener('click', () => {
-        void onChange(categories.filter(c => c !== cat))
-      })
+      removeBtn.addEventListener('click', onRemove)
+    }
+
+    const tagsEl = container.createDiv('pw-category-tags')
+    // Built-in categories: removing one hides it from the pickers.
+    for (const key of defaultKeys) {
+      if (hidden.includes(key)) continue
+      addChip(tagsEl, translateCategory(key), 'is-builtin', () => { void onHiddenChange([...hidden, key]) })
+    }
+    for (const cat of categories) {
+      addChip(tagsEl, cat, '', () => { void onChange(categories.filter(c => c !== cat)) })
+    }
+
+    if (hidden.length > 0) {
+      const removedEl = container.createDiv('pw-category-removed')
+      removedEl.createSpan({ text: t('settings.removedCategories'), cls: 'pw-category-removed-label' })
+      for (const key of hidden) {
+        const restoreBtn = removedEl.createEl('button', {
+          text: '↺ ' + translateCategory(key),
+          cls: 'pw-category-restore',
+        })
+        restoreBtn.setAttribute('aria-label', t('settings.restoreCategory'))
+        restoreBtn.addEventListener('click', () => { void onHiddenChange(hidden.filter(k => k !== key)) })
+      }
     }
 
     const addRow = container.createDiv('pw-category-add-row')

@@ -429,3 +429,25 @@ describe('resolveDefaultWallet', () => {
     expect(resolveDefaultWallet({ wallets: [], defaultWallet: '' } as unknown as PennyWalletConfig, 'expense')).toBe('')
   })
 })
+
+describe('getCategoryOptions — hidden built-ins', () => {
+  const config = {
+    options: {
+      categories: {
+        expense: { default: ['food', 'tax', 'fees'], custom: ['Coffee'], hidden: ['tax'] },
+        income: { default: ['salary'], custom: [] },
+        transfer: { default: ['account_transfer'], custom: [] },
+      },
+    },
+  } as unknown as PennyWalletConfig
+
+  it('leaves hidden built-in categories out', () => {
+    expect(getCategoryOptions(config, 'expense').map(c => c.key)).toEqual(['food', 'fees', 'Coffee'])
+  })
+  it('keeps a hidden category that the edited transaction already uses', () => {
+    expect(getCategoryOptions(config, 'expense', 'tax').map(c => c.key)).toEqual(['food', 'tax', 'fees', 'Coffee'])
+  })
+  it('works when hidden is absent (older configs)', () => {
+    expect(getCategoryOptions(config, 'income').map(c => c.key)).toEqual(['salary'])
+  })
+})

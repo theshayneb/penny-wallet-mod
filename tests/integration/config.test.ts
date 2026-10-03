@@ -222,3 +222,21 @@ describe('loadConfig with a config store', () => {
     expect(wf.getConfig().defaultWallet).toBe('After')
   })
 })
+
+describe('hidden built-in categories', () => {
+  it('persist through save and reload, dropping unknown keys', async () => {
+    let data: unknown = null
+    const s = { load: async () => data, save: async (c: unknown) => { data = JSON.parse(JSON.stringify(c)) } }
+    const { app } = createMockApp()
+    const wf = new WalletFile(app, s)
+    await wf.loadConfig()
+    wf.updateHiddenCategories('expense', ['tax', 'not_a_builtin'])
+    await wf.saveConfig()
+
+    const reloaded = new WalletFile(app, s)
+    const config = await reloaded.loadConfig()
+    expect(config.options.categories.expense.hidden).toEqual(['tax'])
+    expect(config.options.categories.expense.default).toContain('tax')
+    expect(config.options.categories.income.hidden).toEqual([])
+  })
+})

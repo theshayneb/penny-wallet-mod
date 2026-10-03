@@ -34,10 +34,13 @@ export function parseAmountForEdit(rawAmount: number): { display: string; isRefu
 /**
  * Build category dropdown options for a given transaction type.
  * Default keys go through i18n translation; custom labels are user strings.
+ * Hidden built-in categories are left out, except `current` (the value of the
+ * transaction being edited) so editing doesn't silently drop it.
  */
 export function getCategoryOptions(
   config: PennyWalletConfig,
   type: TransactionType,
+  current = '',
 ): { key: string; label: string }[] {
   const catOptions = type === 'expense'
     ? config.options.categories.expense
@@ -45,7 +48,8 @@ export function getCategoryOptions(
       ? config.options.categories.income
       : config.options.categories.transfer
 
-  const defaultKeys = catOptions.default
+  const hidden = catOptions.hidden ?? []
+  const defaultKeys = catOptions.default.filter(key => !hidden.includes(key) || key === current)
   const customs = catOptions.custom
 
   return [

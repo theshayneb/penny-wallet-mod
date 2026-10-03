@@ -88,9 +88,11 @@ The **Budgets** card on the Overview shows, for the selected month, how much of 
 
 ---
 
-## Custom Categories
+## Categories
 
-Add your own expense, income, and transfer categories.
+Add your own expense, income, and transfer categories, and remove built-in ones you don't use.
+
+Each section lists the built-in categories followed by your custom ones. Click **×** on a built-in category to remove it from the Add Transaction form; it then appears under **Removed**, where clicking it brings it back. Transactions that already use a removed category keep it (and editing them still shows it).
 
 Three sections are available: **Expense**, **Income**, and **Transfer**. Custom categories are shown **after** the default categories in the Add Transaction form.
 

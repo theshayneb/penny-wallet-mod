@@ -42,6 +42,7 @@ export interface WalletBalance {
 export interface OptionsListGroup {
   default: string[]   // built-in, immutable
   custom: string[]    // user-defined
+  hidden?: string[]   // built-in keys the user removed from pickers
 }
 
 export interface PennyWalletOptions {

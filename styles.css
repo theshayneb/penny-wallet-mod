@@ -3054,3 +3054,37 @@ select.pw-validation-remap-select option {
   background-color: var(--background-primary);
   color: var(--text-normal);
 }
+
+/* ── Categories: built-in chips and removed list ── */
+
+.pw-category-tag.is-builtin {
+  background: transparent;
+}
+
+.pw-category-removed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 10px;
+  font-size: 12px;
+}
+
+.pw-category-removed-label {
+  color: var(--text-muted);
+}
+
+.pw-category-restore {
+  height: auto;
+  padding: 2px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  box-shadow: none;
+}
+
+.pw-category-restore:hover {
+  color: var(--text-normal);
+  text-decoration: none;
+}
