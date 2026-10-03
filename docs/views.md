@@ -1,6 +1,6 @@
 # Views
 
-PennyWallet has three views. The **Finance Overview** can be opened from the ribbon icon; the other two views are accessible from the header buttons inside Finance Overview, or via the Command Palette.
+PennyWallet has four views. The **Finance Overview** can be opened from the ribbon icon; the others are accessible from the header tabs inside Finance Overview, or via the Command Palette.
 
 ---
 
@@ -65,7 +65,7 @@ A full list of all transactions for the selected month, with filters and subtota
 
 ### Transaction Rows
 
-Each row shows: date, type badge, category, note, account (or From → To for transfers), and amount.
+Each row shows: date, type badge, category (with the budget name, if assigned), note, tags, and amount.
 
 On desktop, hover a row to reveal the **✏** edit action. On mobile, the edit affordance stays visible. Delete now lives inside the edit modal (a confirmation dialog appears before deletion). Refund expenses appear as positive expense reversals, visually distinct from income.
 
@@ -107,3 +107,15 @@ A line chart showing your net asset over the selected range. Hover near a data p
 ### Asset Allocation Pie
 
 Appears when you have two or more active cash/bank accounts with positive balances. Shows the distribution of liquid assets across those accounts.
+
+---
+
+## Budgets
+
+Shows where you are with each monthly budget. Open it from the **Budgets** tab in the header, or run **PennyWallet: Open budgets** from the Command Palette. Use the month arrows to look at previous months.
+
+- **Totals:** how much is budgeted across all budgets, how much has been spent, and how much is left (or over).
+- **One card per budget:** spent vs. amount, a progress bar, and how much is left or over. For the current month, a marker on the bar shows how far through the month you are; the bar turns orange when spending is ahead of that pace and red when over budget. The card also shows the percentage used, a suggested daily amount for the rest of the month, and the most recent transactions. **View all** opens the Transactions view filtered to that budget.
+- **Unbudgeted expenses:** expenses this month that have no budget (or a budget that was deleted).
+
+Budgets are set up in **Settings → Budgets**; see [Settings](./settings.md#budgets).

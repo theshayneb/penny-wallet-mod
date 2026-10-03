@@ -10,12 +10,6 @@ export function isRefund(tx: Transaction): boolean {
   return tx.type === 'expense' && tx.amount < 0
 }
 
-export function buildWalletText(tx: Transaction): string {
-  if (tx.wallet) return tx.wallet
-  if (tx.fromWallet && tx.toWallet) return `${tx.fromWallet} → ${tx.toWallet}`
-  return '—'
-}
-
 export function buildAmountDisplay(
   tx: Transaction,
   dp: 0 | 2 = 0,

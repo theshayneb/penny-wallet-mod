@@ -7,8 +7,9 @@ import { stepMonth, isAfterCurrentMonth } from '../utils'
 import { DASHBOARD_VIEW_TYPE } from './DashboardView'
 import { ASSET_VIEW_TYPE } from './AssetView'
 import { DETAIL_VIEW_TYPE } from './DetailView'
+import { BUDGET_VIEW_TYPE } from './BudgetView'
 
-export type ActiveView = 'dashboard' | 'asset' | 'detail'
+export type ActiveView = 'dashboard' | 'asset' | 'detail' | 'budget'
 
 export type SharedHeaderOptions = {
   view: ItemView
@@ -49,6 +50,8 @@ export function renderSharedHeader(container: HTMLElement, opts: SharedHeaderOpt
     { id: 'dashboard', label: t('ui.overview'), targetType: DASHBOARD_VIEW_TYPE },
     { id: 'asset',     label: t('ui.asset'),    targetType: ASSET_VIEW_TYPE },
     { id: 'detail',    label: t('ui.detail'),   targetType: DETAIL_VIEW_TYPE,
+      state: opts.yearMonth ? { yearMonth: opts.yearMonth } : undefined },
+    { id: 'budget',    label: t('ui.budgets'),  targetType: BUDGET_VIEW_TYPE,
       state: opts.yearMonth ? { yearMonth: opts.yearMonth } : undefined },
   ]
   for (const tab of tabs) {

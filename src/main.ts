@@ -5,6 +5,7 @@ import { MobileTransactionModal } from './modal/MobileTransactionModal'
 import { DashboardView, DASHBOARD_VIEW_TYPE } from './view/DashboardView'
 import { DetailView, DETAIL_VIEW_TYPE } from './view/DetailView'
 import { AssetView, ASSET_VIEW_TYPE } from './view/AssetView'
+import { BudgetView, BUDGET_VIEW_TYPE } from './view/BudgetView'
 import { PennyWalletSettingTab } from './settings/SettingTab'
 import { ValidationModal } from './modal/ValidationModal'
 import { TransactionModalParams, TransactionType } from './types'
@@ -22,12 +23,14 @@ export default class PennyWalletPlugin extends Plugin {
     this.registerView(DASHBOARD_VIEW_TYPE, (leaf) => new DashboardView(leaf, this.walletFile))
     this.registerView(DETAIL_VIEW_TYPE, (leaf) => new DetailView(leaf, this.walletFile))
     this.registerView(ASSET_VIEW_TYPE, (leaf) => new AssetView(leaf, this.walletFile))
+    this.registerView(BUDGET_VIEW_TYPE, (leaf) => new BudgetView(leaf, this.walletFile))
 
     this.addRibbonIcon('wallet', 'Penny wallet mod', () => { void this.openDashboard() })
 
     this.addCommand({ id: 'open-dashboard', name: 'Open finance overview', callback: () => { void this.openDashboard() } })
     this.addCommand({ id: 'open-asset', name: 'Open assets', callback: () => { void this.openAssetView() } })
     this.addCommand({ id: 'open-detail', name: 'Open transactions', callback: () => { void this.openDetailView() } })
+    this.addCommand({ id: 'open-budgets', name: 'Open budgets', callback: () => { void this.openOrRevealView(BUDGET_VIEW_TYPE) } })
     this.addCommand({ id: 'add-transaction', name: 'Add transaction', callback: () => this.openTransactionModal() })
     this.addCommand({ id: 'validate-data', name: 'Validate data', callback: () => void this.runValidation(true) })
     this.addCommand({ id: 'refresh', name: 'Refresh views', callback: () => {
@@ -134,6 +137,9 @@ export default class PennyWalletPlugin extends Plugin {
     })
     this.app.workspace.getLeavesOfType(ASSET_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
       void (leaf.view as AssetView).render()
+    })
+    this.app.workspace.getLeavesOfType(BUDGET_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
+      void (leaf.view as BudgetView).render()
     })
   }
 

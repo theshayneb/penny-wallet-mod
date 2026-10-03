@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
   isRefund,
-  buildWalletText,
   buildAmountDisplay,
   buildLine3Display,
   parseNoteSegments,
@@ -26,23 +25,6 @@ describe('isRefund', () => {
   })
   it('income with negative amount → not refund', () => {
     expect(isRefund({ ...base, type: 'income', amount: -100 })).toBe(false)
-  })
-})
-
-describe('buildWalletText', () => {
-  it('returns wallet for expense / income', () => {
-    expect(buildWalletText({ ...base, wallet: 'Richart' })).toBe('Richart')
-  })
-  it('returns "from → to" for transfer', () => {
-    expect(buildWalletText({
-      ...base, type: 'transfer', wallet: undefined,
-      fromWallet: '台新', toWallet: 'Richart',
-    })).toBe('台新 → Richart')
-  })
-  it('returns em-dash when nothing available', () => {
-    expect(buildWalletText({
-      ...base, wallet: undefined, fromWallet: undefined, toWallet: undefined,
-    })).toBe('—')
   })
 })
 

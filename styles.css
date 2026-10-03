@@ -1957,14 +1957,6 @@ button.pw-pill {
   font-size: 12px;
 }
 
-.pw-tx-wallet {
-  color: var(--text-muted);
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .pw-tx-amount {
   margin-left: auto;
   text-align: right;
@@ -2798,10 +2790,13 @@ select.pw-add-wallet-input {
   padding: 0 20px 20px;
 }
 
-.pw-budget-row {
+.pw-budget-progress {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.pw-budget-row {
   padding: 8px 6px;
   border-radius: 6px;
   cursor: pointer;
@@ -2834,6 +2829,7 @@ select.pw-add-wallet-input {
 }
 
 .pw-budget-bar {
+  position: relative;
   height: 6px;
   border-radius: 3px;
   background: var(--background-modifier-border);
@@ -2846,7 +2842,22 @@ select.pw-add-wallet-input {
   background: var(--pw-income);
 }
 
-.pw-budget-row.is-over .pw-budget-bar-fill {
+.pw-budget-bar-fill.is-ahead {
+  background: var(--pw-expense);
+}
+
+/* "Today" marker: how much of the month has passed */
+.pw-budget-bar-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text-normal);
+  opacity: 0.6;
+}
+
+.pw-budget-progress.is-over .pw-budget-bar-fill {
   background: var(--pw-credit);
 }
 
@@ -2855,13 +2866,14 @@ select.pw-add-wallet-input {
   color: var(--text-muted);
 }
 
-.pw-budget-row.is-over .pw-budget-remaining {
+.pw-budget-progress.is-over .pw-budget-remaining {
   color: var(--pw-credit);
   font-weight: 600;
 }
 
 .pw-tx-budget-chip {
   margin-left: 6px;
+  font-weight: normal;
   padding: 0 6px;
   border-radius: 8px;
   font-size: 11px;
@@ -2895,4 +2907,124 @@ select.pw-add-wallet-input {
 
 .pw-budget-row-setting .pw-budget-amount-input {
   width: 120px;
+}
+
+/* ── Budgets tab ── */
+
+.pw-budget-view {
+  padding-bottom: 40px;
+}
+
+.pw-budget-body {
+  padding: 0 20px 20px;
+}
+
+.pw-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pw-budget-grid > .pw-card {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pw-budget-card .pw-budget-name {
+  font-size: 15px;
+}
+
+.pw-budget-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pw-budget-tx-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 6px;
+}
+
+.pw-budget-tx-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.pw-budget-tx-date {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pw-budget-tx-note {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pw-budget-tx-amount {
+  color: var(--pw-expense);
+  font-variant-numeric: tabular-nums;
+}
+
+.pw-budget-tx-amount.is-refund {
+  color: var(--pw-refund);
+}
+
+.pw-budget-muted {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pw-budget-view-all {
+  align-self: flex-start;
+  margin-top: auto;
+  font-size: 12px;
+}
+
+.pw-budget-unbudgeted-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.pw-budget-unbudgeted-amount {
+  font-weight: 600;
+  color: var(--pw-expense);
+}
+
+.pw-budget-empty {
+  max-width: 480px;
+  margin: 24px auto;
+  text-align: center;
+}
+
+/* Four header tabs must still fit on phones */
+.is-mobile .pw-shared-header-tabs .pw-shared-header-tab {
+  min-width: 0;
+  padding: 6px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.is-mobile .pw-budget-body {
+  padding: 0 12px 16px;
+}
+
+.is-mobile .pw-budget-grid {
+  grid-template-columns: 1fr;
 }

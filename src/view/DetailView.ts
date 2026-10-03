@@ -7,7 +7,7 @@ import { t, tn, translateCategory } from '../i18n'
 import { Transaction, TransactionType } from '../types'
 import { currentYearMonth, formatAmount } from '../utils'
 import { renderSharedHeader } from './SharedHeader'
-import { buildAmountDisplay, buildLine3Display, buildWalletText, parseNoteSegments } from './detailRow'
+import { buildAmountDisplay, buildLine3Display, parseNoteSegments } from './detailRow'
 
 export const DETAIL_VIEW_TYPE = 'penny-wallet-mod-detail'
 
@@ -764,15 +764,14 @@ export class DetailView extends ItemView {
       cls: `pw-type-badge pw-type-${tx.type}`,
     })
 
-    // col3: stack — category / wallet / note / tags (note and tags each on their own line)
+    // col3: stack — category (+ budget) / note / tags (note and tags each on their own line)
     const stack = row.createDiv('pw-tx-row-stack')
-    stack.createEl('div', {
+    const categoryLine = stack.createEl('div', {
       text: translateCategory(tx.category ?? ''),
       cls: 'pw-tx-category',
     })
-    const walletLine = stack.createEl('div', { text: buildWalletText(tx), cls: 'pw-tx-wallet' })
     if (tx.budget) {
-      walletLine.createSpan({ text: tx.budget, cls: 'pw-tx-budget-chip' }).dataset['testid'] = 'tx-budget-chip'
+      categoryLine.createSpan({ text: tx.budget, cls: 'pw-tx-budget-chip' }).dataset['testid'] = 'tx-budget-chip'
     }
 
     const display = buildLine3Display(tx)

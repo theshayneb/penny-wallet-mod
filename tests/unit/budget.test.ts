@@ -61,3 +61,39 @@ describe('validateBudgetName', () => {
     expect(validateBudgetName('Fun', ['Fun'])).toBe('err.budgetNameDuplicate')
   })
 })
+
+import { computeBudgetTotals, getMonthProgress } from '../../src/budget'
+
+describe('computeBudgetTotals', () => {
+  const budgets: Budget[] = [{ name: 'Groceries', amount: 500 }, { name: 'Fun', amount: 100 }]
+
+  it('sums budgets and collects unbudgeted expenses (incl. deleted budgets)', () => {
+    const txs = [
+      tx({ amount: 200, budget: 'Groceries' }),
+      tx({ amount: 150, budget: 'Fun' }),
+      tx({ amount: 40 }),
+      tx({ amount: 10, budget: 'Deleted' }),
+      tx({ type: 'income', amount: 1000 }),
+    ]
+    const totals = computeBudgetTotals(computeBudgetUsage(budgets, txs), txs)
+    expect(totals).toEqual({
+      budgeted: 600, spent: 350, remaining: 250, unbudgetedSpent: 50, unbudgetedCount: 2,
+    })
+  })
+})
+
+describe('getMonthProgress', () => {
+  it('returns progress for the current month', () => {
+    // 2026-04 has 30 days; on the 10th, 10/30 elapsed and 21 days left including today
+    const p = getMonthProgress('2026-04', new Date(2026, 3, 10))
+    expect(p?.elapsedRatio).toBeCloseTo(10 / 30)
+    expect(p?.daysLeft).toBe(21)
+  })
+  it('last day of month → ratio 1, 1 day left', () => {
+    expect(getMonthProgress('2026-02', new Date(2026, 1, 28))).toEqual({ elapsedRatio: 1, daysLeft: 1 })
+  })
+  it('returns null for other months', () => {
+    expect(getMonthProgress('2026-03', new Date(2026, 3, 10))).toBeNull()
+    expect(getMonthProgress('2025-04', new Date(2026, 3, 10))).toBeNull()
+  })
+})

@@ -1,8 +1,9 @@
 import { Events, ItemView, WorkspaceLeaf } from 'obsidian'
 import { WalletFile } from '../io/WalletFile'
-import { t, tn, formatMonthLabel, formatYearMonth } from '../i18n'
-import { currentYearMonth, formatAmount } from '../utils'
-import { computeBudgetUsage } from '../budget'
+import { t, formatMonthLabel, formatYearMonth } from '../i18n'
+import { currentYearMonth } from '../utils'
+import { computeBudgetUsage, getMonthProgress } from '../budget'
+import { renderBudgetProgress } from './budgetComponents'
 import { createMetric, renderCard } from './components'
 import { Transaction, TransactionType } from '../types'
 import { DETAIL_VIEW_TYPE } from './DetailView'
@@ -130,32 +131,13 @@ export class DashboardView extends ItemView {
 
     const section = contentEl.createDiv('pw-budget-section')
     const card = renderCard(section, { title: t('dash.budgets'), className: 'pw-budget-card' })
+    const progress = getMonthProgress(this.currentYearMonth)
     for (const usage of computeBudgetUsage(budgets, transactions)) {
-      const over = usage.remaining < 0
-      const row = card.createDiv('pw-budget-row' + (over ? ' is-over' : ''))
+      const row = renderBudgetProgress(card, usage, dp, progress)
+      row.addClass('pw-budget-row')
       row.dataset['testid'] = 'budget-row'
       row.setAttribute('role', 'button')
       row.tabIndex = 0
-
-      const head = row.createDiv('pw-budget-row-head')
-      head.createSpan({ text: usage.budget.name, cls: 'pw-budget-name' })
-      head.createSpan({
-        text: tn('dash.budgetSpentOf', {
-          spent: formatAmount(usage.spent, dp),
-          amount: formatAmount(usage.budget.amount, dp),
-        }),
-        cls: 'pw-budget-spent',
-      })
-
-      const bar = row.createDiv('pw-budget-bar')
-      bar.createDiv('pw-budget-bar-fill').style.width = `${(usage.ratio * 100).toFixed(1)}%`
-
-      row.createDiv({
-        text: over
-          ? tn('dash.budgetOver', { amount: formatAmount(-usage.remaining, dp) })
-          : tn('dash.budgetRemaining', { amount: formatAmount(usage.remaining, dp) }),
-        cls: 'pw-budget-remaining',
-      })
 
       const open = () => { void this.openDetailWithBudget(usage.budget.name) }
       row.addEventListener('click', open)

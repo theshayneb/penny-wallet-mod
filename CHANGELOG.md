@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.21] - 2026-10-03
+
+### Added
+- Budgets tab: a new header tab (and "Open budgets" command) showing, for the selected month, total budgeted / spent / left, a card per budget with a progress bar, a "today" marker for the current month (orange when spending is ahead of pace, red when over), percentage used, a suggested daily amount for the rest of the month, recent transactions with a link to all of them, and the month's unbudgeted expenses.
+
+### Changed
+- Transactions list: rows no longer show the account line; a row's budget is now shown next to its category.
+
 ## [0.0.20] - 2026-10-03
 
 ### Added
