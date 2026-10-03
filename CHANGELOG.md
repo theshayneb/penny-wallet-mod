@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.25] - 2026-10-03
+
+### Fixed
+- Add/Edit Transaction: the Note field (and the Amount field after it) disappeared on desktop in 0.0.23–0.0.24. The note-link suggester defined a property that clashed with Obsidian's internal suggest state and threw while the form was built. If suggestions ever fail again, the plain Note field still appears.
+
 ## [0.0.24] - 2026-10-03
 
 ### Changed

@@ -141,7 +141,7 @@ export class TransactionModal extends Modal {
 
     this.contentEl.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return
-      if (this.noteSuggest?.isOpen) return  // Escape closes the link suggestions first
+      if (this.noteSuggest?.isShowingSuggestions()) return  // Escape closes the link suggestions first
       e.preventDefault()
       this.close()
     })
@@ -265,7 +265,7 @@ export class TransactionModal extends Modal {
       input.addEventListener('input', () => { this.note = input.value })
       this.attachNoteSuggest(input)
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !this.noteSuggest?.isOpen) input.blur()
+        if (e.key === 'Enter' && !this.noteSuggest?.isShowingSuggestions()) input.blur()
       })
       return input
     })
@@ -276,12 +276,18 @@ export class TransactionModal extends Modal {
   /** Suggest vault notes while a [[wikilink]] is being typed in the note. */
   protected attachNoteSuggest(input: HTMLInputElement) {
     this.noteSuggest?.close()
-    this.noteSuggest = new WikilinkSuggest(
-      this.app,
-      input,
-      () => this.walletFile.monthFilePath(dateToYearMonth(this.date) || currentYearMonth()),
-      (value) => { this.note = value },
-    )
+    this.noteSuggest = null
+    // Suggestions are a convenience: if they fail, keep the plain note field.
+    try {
+      this.noteSuggest = new WikilinkSuggest(
+        this.app,
+        input,
+        () => this.walletFile.monthFilePath(dateToYearMonth(this.date) || currentYearMonth()),
+        (value) => { this.note = value },
+      )
+    } catch (e) {
+      console.error('PennyWallet: note link suggestions unavailable', e)
+    }
   }
 
   private buildAmountRow(autoFocus: boolean) {

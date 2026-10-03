@@ -292,7 +292,7 @@ export class MobileTransactionModal extends TransactionModal {
     noteInput.addEventListener('input', () => { this.note = noteInput.value })
     this.attachNoteSuggest(noteInput)
     noteInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !this.noteSuggest?.isOpen) noteInput.blur()
+      if (e.key === 'Enter' && !this.noteSuggest?.isShowingSuggestions()) noteInput.blur()
     })
 
     this.renderMobileDeleteRow()

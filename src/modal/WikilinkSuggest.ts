@@ -6,39 +6,41 @@ const MAX_SUGGESTIONS = 20
 /**
  * Suggests vault notes while typing a [[wikilink]] in a text input, like
  * Obsidian's editor link suggester. Picking one replaces the partial link
- * with [[note]] and reports the new value through `onChange`.
+ * with [[note]] and reports the new value through `onPick`.
  */
 export class WikilinkSuggest extends AbstractInputSuggest<TFile> {
-  private noteInputEl: HTMLInputElement
-  private getSourcePath: () => string
-  private onChange: (value: string) => void
-  private suggestOpen = false
+  // Fields use a pw prefix: Obsidian's suggest base classes keep undocumented
+  // internal state (e.g. `isOpen`), and a same-named member here breaks them.
+  private pwInputEl: HTMLInputElement
+  private pwSourcePath: () => string
+  private pwOnPick: (value: string) => void
+  private pwShowing = false
 
-  constructor(app: App, inputEl: HTMLInputElement, getSourcePath: () => string, onChange: (value: string) => void) {
+  constructor(app: App, inputEl: HTMLInputElement, getSourcePath: () => string, onPick: (value: string) => void) {
     super(app, inputEl)
-    this.noteInputEl = inputEl
-    this.getSourcePath = getSourcePath
-    this.onChange = onChange
+    this.pwInputEl = inputEl
+    this.pwSourcePath = getSourcePath
+    this.pwOnPick = onPick
     this.limit = MAX_SUGGESTIONS
   }
 
   /** True while the suggestion list is showing (so Enter/Escape belong to it). */
-  get isOpen(): boolean {
-    return this.suggestOpen
+  isShowingSuggestions(): boolean {
+    return this.pwShowing
   }
 
   open(): void {
     super.open()
-    this.suggestOpen = true
+    this.pwShowing = true
   }
 
   close(): void {
     super.close()
-    this.suggestOpen = false
+    this.pwShowing = false
   }
 
   protected getSuggestions(): TFile[] {
-    const input = this.noteInputEl
+    const input = this.pwInputEl
     const ctx = findWikilinkQuery(input.value, input.selectionStart ?? input.value.length)
     if (!ctx) return []
 
@@ -68,15 +70,15 @@ export class WikilinkSuggest extends AbstractInputSuggest<TFile> {
   }
 
   selectSuggestion(file: TFile): void {
-    const input = this.noteInputEl
+    const input = this.pwInputEl
     const caret = input.selectionStart ?? input.value.length
     const ctx = findWikilinkQuery(input.value, caret)
     if (ctx) {
-      const linktext = this.app.metadataCache.fileToLinktext(file, this.getSourcePath(), true)
+      const linktext = this.app.metadataCache.fileToLinktext(file, this.pwSourcePath(), true)
       const next = insertWikilink(input.value, caret, ctx.start, linktext)
       input.value = next.value
       input.setSelectionRange(next.caret, next.caret)
-      this.onChange(next.value)
+      this.pwOnPick(next.value)
     }
     this.close()
     input.focus()
