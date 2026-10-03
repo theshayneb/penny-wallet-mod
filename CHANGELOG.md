@@ -2,6 +2,12 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.18] - 2026-10-03
+
+### Changed
+- Transactions list: `[[wikilinks]]` in a transaction's note are now rendered as clickable internal links (with hover preview); clicking one opens the linked note instead of the edit modal. Unresolved links use Obsidian's unresolved-link style.
+- Transactions list: long notes now wrap onto multiple lines instead of being truncated with an ellipsis.
+
 ## [0.0.17] - 2026-10-03
 
 ### Changed
