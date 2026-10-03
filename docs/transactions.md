@@ -6,13 +6,15 @@ PennyWallet has three transaction types. Each is designed for a specific real-wo
 
 ## Transaction Types
 
+> The Add Transaction form has no account field for expenses and income: they are recorded against the **Default Account** set in Settings (income skips credit cards and uses the first cash/bank account instead). Transfers still have From / To accounts. A transaction created from a `penny-wallet-mod` link with `wallet=` keeps that account, and editing a transaction keeps its existing account.
+
 ### Expense
 
 Money leaving one of your accounts for a purchase or payment.
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| Account | Yes | The account the money came from |
+| Budget | No | Shown when budgets exist; see [Budgets](./settings.md#budgets) |
 | Category | No | e.g. Food, Transport, Shopping |
 | Note | No | Free-text description |
 | Amount | Yes | Positive number |
@@ -23,20 +25,19 @@ Money leaving one of your accounts for a purchase or payment.
 - Refund toggle → amount is stored as a negative expense; credit card debt or cash/bank spending is reduced
 
 **Example:** Paid NT$280 for lunch with cash
-→ Account: `Cash`, Category: `Food`, Amount: `280`
+→ Category: `Food`, Amount: `280` (default account: `Cash`)
 
 **Example:** Returned a NT$320 purchase on Visa Platinum
-→ Account: `Visa Platinum`, Category: `Shopping`, Amount: `320`, Refund enabled
+→ Category: `Shopping`, Amount: `320`, Refund enabled (default account: `Visa Platinum`)
 
 ---
 
 ### Income
 
-Money arriving into one of your cash or bank accounts. Credit card accounts are excluded from the income account selector.
+Money arriving into one of your cash or bank accounts.
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| Account | Yes | The account receiving the money |
 | Category | No | e.g. Salary, Bonus, Side Income |
 | Note | No | Free-text description |
 | Amount | Yes | Positive number |
@@ -45,7 +46,7 @@ Money arriving into one of your cash or bank accounts. Credit card accounts are 
 - Any account type → balance increases
 
 **Example:** Monthly salary deposited into HSBC
-→ Account: `HSBC Savings`, Category: `Salary`, Amount: `72000`
+→ Category: `Salary`, Amount: `72000` (default account: `HSBC Savings`)
 
 ---
 
@@ -108,7 +109,7 @@ On phones (`body.is-phone`), the transaction form switches to a touch-friendly l
 
 Open the **Transactions** view, find the entry, and click the **edit (✏)** icon on the right side of the row. **Delete** lives inside the edit modal — open the entry to edit, then use the delete action (a confirmation dialog appears before deletion).
 
-Editing supports changing the **date** (including moving the transaction to a different month), the type, account, category, note, and amount.
+Editing supports changing the **date** (including moving the transaction to a different month), the type, category, budget, note, and amount (and the From / To accounts of transfers).
 
 ---
 

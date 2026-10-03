@@ -16,7 +16,7 @@ The path is relative to the vault root. Change this if you want transactions sto
 
 ### Default Account
 
-The account pre-selected when opening the Add Transaction form. Choose any active account from the dropdown.
+The account every expense and income added from the Add Transaction form is recorded against (the form has no account field). Income can't go to a credit card, so if the default is a credit card, income uses the first active cash/bank account. Choose any active account from the dropdown.
 
 ### Decimal Places
 
