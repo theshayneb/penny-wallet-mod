@@ -2845,3 +2845,80 @@ select.pw-validation-remap-select option {
   color: var(--text-normal);
   text-decoration: none;
 }
+
+/* ── Overview: budgets + follow-ups row ── */
+
+/* Side by side when the left column has room, stacked when it doesn't */
+.pw-left-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.pw-left-top > .pw-card {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.pw-follow-up-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.pw-follow-up-count {
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.pw-follow-up-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.pw-follow-up-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pw-follow-up-row + .pw-follow-up-row {
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.pw-follow-up-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.pw-follow-up-date {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pw-follow-up-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pw-follow-up-note {
+  overflow-wrap: anywhere;
+}
+
+.pw-follow-up-category {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pw-follow-up-row .pw-follow-up-amount {
+  font-size: 13px;
+}

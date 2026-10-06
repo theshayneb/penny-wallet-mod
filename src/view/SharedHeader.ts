@@ -46,7 +46,8 @@ export function renderSharedHeader(container: HTMLElement, opts: SharedHeaderOpt
 
   const tabsCell = root.createDiv('pw-shared-header-tabs')
   const tabs: { id: ActiveView; label: string; targetType: string; state?: Record<string, unknown> }[] = [
-    { id: 'dashboard', label: t('ui.overview'), targetType: DASHBOARD_VIEW_TYPE },
+    { id: 'dashboard', label: t('ui.overview'), targetType: DASHBOARD_VIEW_TYPE,
+      state: opts.yearMonth ? { yearMonth: opts.yearMonth } : undefined },
     { id: 'detail',    label: t('ui.detail'),   targetType: DETAIL_VIEW_TYPE,
       state: opts.yearMonth ? { yearMonth: opts.yearMonth } : undefined },
     { id: 'budget',    label: t('ui.budgets'),  targetType: BUDGET_VIEW_TYPE,
@@ -60,7 +61,7 @@ export function renderSharedHeader(container: HTMLElement, opts: SharedHeaderOpt
     })
     if (!isActive) {
       btn.addEventListener('click', () => {
-        void openOrRevealView(opts.view, tab.targetType, tab.state)
+        void switchView(opts.view, tab.targetType, tab.state)
       })
     }
   }
@@ -80,9 +81,7 @@ export function renderSharedHeader(container: HTMLElement, opts: SharedHeaderOpt
   })
 }
 
-async function openOrRevealView(view: ItemView, type: string, state?: Record<string, unknown>) {
-  const existing = view.app.workspace.getLeavesOfType(type)
-  const leaf = existing[0] ?? view.app.workspace.getLeaf('tab')
-  await leaf.setViewState({ type, active: true, state })
-  void view.app.workspace.revealLeaf(leaf)
+/** Navigate within the plugin by replacing the view in the current tab. */
+export async function switchView(view: ItemView, type: string, state?: Record<string, unknown>) {
+  await view.leaf.setViewState({ type, active: true, state })
 }

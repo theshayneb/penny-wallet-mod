@@ -2,6 +2,15 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.34] - 2026-10-06
+
+### Added
+- Overview: a Follow-ups card beside Budgets listing every transaction tagged `follow_up` (from all months, newest first). Click a row to edit it, the same as in the Transactions tab; `[[links]]` in notes are clickable. The tag is set in Settings → Follow-up tag (empty hides the card).
+
+### Changed
+- The Overview, Transactions and Budgets tabs (and click-throughs from charts and budgets) now switch the current Obsidian tab instead of opening a new one. The Overview tab also keeps the selected month.
+- Tag matching for the tag chart's hidden tags and the follow-ups card ignores case and treats `-` and `_` as the same, so `follow-up` and `follow_up` match.
+
 ## [0.0.33] - 2026-10-03
 
 ### Changed

@@ -11,6 +11,7 @@ import {
   DEFAULT_INCOME_CATEGORIES,
   DEFAULT_TRANSFER_CATEGORIES,
 } from '../types'
+import { tagKey } from '../utils'
 import type { Wallet, FrontmatterIssue, OrphanedWalletIssue, ValidationIssue } from '../types'
 
 const ROOT_CONFIG_PATH = normalizePath('.penny-wallet.json')
@@ -730,20 +731,41 @@ export class WalletFile {
    * Expense totals per tag ('' = untagged). A transaction with several tags
    * counts in full toward each, so slices can add up to more than total
    * spending. Tags whose refunds outweigh spending (total <= 0) are dropped.
-   * `excluded` tags (case-insensitive) are ignored; an expense left with no
+   * `excluded` tags (matched with tagKey) are ignored; an expense left with no
    * other tags counts as untagged.
    */
   groupExpensesByTag(transactions: Transaction[], excluded: readonly string[] = []): Map<string, number> {
-    const skip = new Set(excluded.map(tag => tag.toLowerCase()))
+    const skip = new Set(excluded.map(tagKey))
     const map = new Map<string, number>()
     for (const tx of transactions) {
       if (tx.type !== 'expense') continue
-      const kept = (tx.tags ?? []).filter(tag => !skip.has(tag.toLowerCase()))
+      const kept = (tx.tags ?? []).filter(tag => !skip.has(tagKey(tag)))
       const tags = kept.length ? kept : ['']
       for (const tag of new Set(tags)) map.set(tag, (map.get(tag) ?? 0) + tx.amount)
     }
     for (const [tag, total] of map) if (total <= 0) map.delete(tag)
     return map
+  }
+
+  /**
+   * Every transaction carrying `tag` (matched with tagKey), across all months,
+   * newest first, with the month it lives in (needed to edit it).
+   */
+  async findTransactionsByTag(tag: string): Promise<{ tx: Transaction; yearMonth: string }[]> {
+    const key = tagKey(tag)
+    if (!key) return []
+    const months = this.getAllYearMonths()
+    const perMonth = await Promise.all(months.map(async ym => ({ ym, txs: await this.readMonth(ym) })))
+    const found: { tx: Transaction; yearMonth: string }[] = []
+    for (const { ym, txs } of perMonth) {
+      for (const tx of txs) {
+        if (tx.tags?.some(t => tagKey(t) === key)) found.push({ tx, yearMonth: ym })
+      }
+    }
+    return found.sort((a, b) =>
+      b.yearMonth.localeCompare(a.yearMonth)
+      || b.tx.date.localeCompare(a.tx.date)
+      || (b.tx.createdAt ?? '').localeCompare(a.tx.createdAt ?? ''))
   }
 
   /** Per-wallet balance at each target month end — cash + bank only */

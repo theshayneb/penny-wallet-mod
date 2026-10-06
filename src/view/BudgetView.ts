@@ -6,7 +6,7 @@ import { Transaction } from '../types'
 import { computeBudgetTotals, computeBudgetUsage, getMonthProgress, type BudgetUsage, type MonthProgress } from '../budget'
 import { createMetric, renderCard } from './components'
 import { renderBudgetProgress } from './budgetComponents'
-import { renderSharedHeader } from './SharedHeader'
+import { renderSharedHeader, switchView } from './SharedHeader'
 import { DETAIL_VIEW_TYPE } from './DetailView'
 import { parseNoteSegments } from './detailRow'
 
@@ -158,13 +158,7 @@ export class BudgetView extends ItemView {
   }
 
   private async openDetailWithBudget(budget: string) {
-    const existing = this.app.workspace.getLeavesOfType(DETAIL_VIEW_TYPE)
-    const leaf = existing[0] ?? this.app.workspace.getLeaf('tab')
-    await leaf.setViewState({
-      type: DETAIL_VIEW_TYPE,
-      active: true,
-      state: { yearMonth: this.currentYearMonth, filterBudget: budget, resetFilters: true },
-    })
-    void this.app.workspace.revealLeaf(leaf)
+    await switchView(this, DETAIL_VIEW_TYPE,
+      { yearMonth: this.currentYearMonth, filterBudget: budget, resetFilters: true })
   }
 }

@@ -33,9 +33,13 @@ Controls how amounts are stored and displayed.
 
 > Changing this setting affects new transactions. Existing transactions stored as integers will display without decimals regardless.
 
+### Follow-up Tag
+
+The tag (default `follow_up`) whose transactions the Overview's **Follow-ups** card lists, from all months. Leave it empty to hide the card. Matching ignores case and treats `-` and `_` as the same.
+
 ### Tags Hidden from the Tag Chart
 
-Comma-separated tags that the Overview's **Expenses by tag** chart ignores (default: `follow-up`). An expense whose only tags are hidden ones counts as **Untagged** in the chart. The tags themselves are unchanged and still show and filter everywhere else.
+Comma-separated tags that the Overview's **Expenses by tag** chart ignores (default: `follow-up`). An expense whose only tags are hidden ones counts as **Untagged** in the chart. Matching ignores case and treats `-` and `_` as the same, so `follow-up` also hides `follow_up`. The tags themselves are unchanged and still show and filter everywhere else.
 
 ---
 

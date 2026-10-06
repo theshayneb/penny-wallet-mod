@@ -64,6 +64,7 @@ export interface PennyWalletConfig {
   budgets: Budget[]
   autoValidateOnLoad: boolean
   chartExcludedTags: string[]  // tags left out of the Overview's tag chart
+  followUpTag: string          // tag listed in the Overview's Follow-ups card ('' = hide it)
 }
 
 export interface TransactionModalParams {
@@ -134,6 +135,7 @@ export const DEFAULT_CONFIG: PennyWalletConfig = {
   budgets: [],
   autoValidateOnLoad: true,
   chartExcludedTags: ['follow-up'],
+  followUpTag: 'follow_up',
 }
 
 export interface FrontmatterIssue {

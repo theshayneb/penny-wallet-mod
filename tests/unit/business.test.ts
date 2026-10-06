@@ -294,4 +294,9 @@ describe('groupExpensesByTag — excluded tags', () => {
     )
     expect([...map]).toEqual([['', 120], ['work', 50]])
   })
+
+  it('"-" and "_" spellings of an excluded tag both match', () => {
+    const map = wf.groupExpensesByTag([tx(30, ['follow_up']), tx(5, ['food'])], ['follow-up'])
+    expect([...map]).toEqual([['', 30], ['food', 5]])
+  })
 })

@@ -60,3 +60,8 @@ export function dateToYearMonth(date: string): string {
 export function dateToMonthDay(date: string): string {
   return date.substring(5).replace('-', '/')
 }
+
+/** Tag comparison key: case-insensitive, and "-" / "_" count as the same (follow-up = follow_up). */
+export function tagKey(tag: string): string {
+  return tag.trim().replace(/^#/, '').toLowerCase().replace(/-/g, '_')
+}

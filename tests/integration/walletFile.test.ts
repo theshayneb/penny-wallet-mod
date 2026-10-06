@@ -405,3 +405,40 @@ describe('getLocaleCashName', () => {
     expect(config.defaultWallet).toBe('預設錢包')
   })
 })
+
+// ── findTransactionsByTag ─────────────────────────────────────────────────────
+
+describe('findTransactionsByTag', () => {
+  it('finds tagged transactions across months, newest first, with their month', async () => {
+    const config = {
+      ...DEFAULT_CONFIG,
+      folderName: 'Ledgers',
+      wallets: [{ name: 'Bank', type: 'bank' as const, initialBalance: 0, status: 'active' as const, includeInNetAsset: true }],
+    }
+    const { app } = createMockApp({ '.penny-wallet.json': JSON.stringify(config) })
+    const wf = new WalletFile(app)
+    await wf.loadConfig()
+    const tx = (date: string, note: string, tags?: string[]): Transaction =>
+      ({ date, type: 'expense', wallet: 'Bank', category: 'food', note, amount: 10, tags })
+
+    await wf.writeTransaction(tx('01/05', 'jan', ['follow_up']), '2026-01')
+    await wf.writeTransaction(tx('01/20', 'jan untagged'), '2026-01')
+    await wf.writeTransaction(tx('03/02', 'mar early', ['Follow-Up', 'work']), '2026-03')
+    await wf.writeTransaction(tx('03/09', 'mar late', ['follow_up']), '2026-03')
+    await wf.writeTransaction(tx('02/14', 'feb other tag', ['work']), '2026-02')
+
+    const found = await wf.findTransactionsByTag('follow_up')
+    expect(found.map(f => [f.yearMonth, f.tx.note])).toEqual([
+      ['2026-03', 'mar late'],
+      ['2026-03', 'mar early'],
+      ['2026-01', 'jan'],
+    ])
+  })
+
+  it('returns nothing for an empty tag', async () => {
+    const { app } = createMockApp()
+    const wf = new WalletFile(app)
+    await wf.loadConfig()
+    expect(await wf.findTransactionsByTag('  ')).toEqual([])
+  })
+})

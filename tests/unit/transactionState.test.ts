@@ -135,6 +135,7 @@ describe('validateTransactionForm', () => {
     tags: [],
     budgets: [],
     chartExcludedTags: [],
+    followUpTag: '',
     folderName: 'PennyWallet',
     autoValidateOnLoad: true,
     options: {} as never,

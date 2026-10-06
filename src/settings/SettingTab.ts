@@ -105,6 +105,19 @@ export class PennyWalletSettingTab extends PluginSettingTab {
       )
 
     new Setting(group)
+      .setName(t('settings.followUpTag'))
+      .setDesc(t('settings.followUpTagDesc'))
+      .addText(text => {
+        text.setPlaceholder(t('settings.followUpTagPlaceholder')).setValue(config.followUpTag ?? '')
+        text.inputEl.addEventListener('change', () => {
+          const tag = text.getValue().trim().replace(/^#/, '')
+          text.setValue(tag)
+          this.walletFile.updateConfig({ followUpTag: tag })
+          void this.walletFile.saveConfig().then(() => this.app.workspace.trigger('penny-wallet-mod:refresh'))
+        })
+      })
+
+    new Setting(group)
       .setName(t('settings.chartExcludedTags'))
       .setDesc(t('settings.chartExcludedTagsDesc'))
       .addText(text => {

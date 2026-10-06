@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { stepMonth, isAfterCurrentMonth, formatAmount, validateTag, formatHeroAmount, formatMobileHeroAmount, dateToYearMonth, dateToMonthDay } from '../../src/utils'
+import { tagKey, stepMonth, isAfterCurrentMonth, formatAmount, validateTag, formatHeroAmount, formatMobileHeroAmount, dateToYearMonth, dateToMonthDay } from '../../src/utils'
 
 // ── stepMonth ─────────────────────────────────────────────────────────────────
 
@@ -186,5 +186,15 @@ describe('formatHeroAmount', () => {
 describe('formatMobileHeroAmount', () => {
   it('puts refund plus before currency symbol', () => {
     expect(formatMobileHeroAmount('123', true)).toBe('+ $123')
+  })
+})
+
+describe('tagKey', () => {
+  it('treats case, "#", "-" and "_" as the same tag', () => {
+    expect(tagKey('Follow-Up')).toBe(tagKey('follow_up'))
+    expect(tagKey('#follow_up')).toBe('follow_up')
+  })
+  it('keeps other tags distinct', () => {
+    expect(tagKey('follow_up')).not.toBe(tagKey('followup'))
   })
 })

@@ -1,13 +1,12 @@
-import { Events, ItemView, Keymap, Platform, ViewStateResult, WorkspaceLeaf } from 'obsidian'
+import { Events, ItemView, Platform, ViewStateResult, WorkspaceLeaf } from 'obsidian'
 import { WalletFile } from '../io/WalletFile'
-import { TransactionModal } from '../modal/TransactionModal'
-import { MobileTransactionModal } from '../modal/MobileTransactionModal'
 import { openFilterSheet } from '../modal/BottomSheetPicker'
 import { t, tn, translateCategory } from '../i18n'
 import { Transaction, TransactionType } from '../types'
 import { currentYearMonth, formatAmount } from '../utils'
 import { renderSharedHeader } from './SharedHeader'
-import { buildAmountDisplay, buildLine3Display, parseNoteSegments } from './detailRow'
+import { buildAmountDisplay, buildLine3Display } from './detailRow'
+import { openTransactionEditor, renderNoteWithLinks } from './txShared'
 
 export const DETAIL_VIEW_TYPE = 'penny-wallet-mod-detail'
 
@@ -809,51 +808,16 @@ export class DetailView extends ItemView {
     row.createEl('span', { text: amount.text, cls: amount.className })
 
     row.addEventListener('click', () => {
-      const ModalClass = Platform.isMobile ? MobileTransactionModal : TransactionModal
-      new ModalClass(
-        this.app,
-        this.walletFile,
-        {},
-        tx,
-        this.currentYearMonth,
-        () => (this.app.workspace as Events).trigger('penny-wallet-mod:refresh'),
-        null,
-      ).open()
+      openTransactionEditor(this.app, this.walletFile, tx, this.currentYearMonth)
     })
   }
 
   private renderNote(el: HTMLElement, note: string) {
-    const sourcePath = this.walletFile.monthFilePath(this.currentYearMonth)
-    for (const seg of parseNoteSegments(note)) {
-      if (seg.kind === 'text') {
-        el.appendText(seg.text)
-        continue
-      }
-      const resolved = this.app.metadataCache.getFirstLinkpathDest(
-        seg.target.split('#')[0] ?? '', sourcePath,
-      )
-      const link = el.createEl('a', {
-        text: seg.text,
-        cls: resolved ? 'internal-link' : 'internal-link is-unresolved',
-        href: seg.target,
-      })
-      link.dataset['href'] = seg.target
-      link.addEventListener('click', (e) => {
-        // Don't open the edit modal when following a link.
-        e.preventDefault()
-        e.stopPropagation()
-        void this.app.workspace.openLinkText(seg.target, sourcePath, Keymap.isModEvent(e))
-      })
-      link.addEventListener('mouseover', (e) => {
-        this.app.workspace.trigger('hover-link', {
-          event: e,
-          source: DETAIL_VIEW_TYPE,
-          hoverParent: this,
-          targetEl: link,
-          linktext: seg.target,
-          sourcePath,
-        })
-      })
-    }
+    renderNoteWithLinks(el, note, {
+      app: this.app,
+      sourcePath: this.walletFile.monthFilePath(this.currentYearMonth),
+      hoverParent: this,
+      source: DETAIL_VIEW_TYPE,
+    })
   }
 }
