@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.36] - 2026-10-06
+
+### Changed
+- Overview: the Follow-ups card is narrower (about 3 : 5 next to Budgets), and its rows now use the Transactions tab's layout (date, category and budget, note, tags, amount). The type badge and the `#follow_up` chip are left out there, and the date shows the year when it isn't this year. The Transactions tab and the card share the same row code.
+
 ## [0.0.35] - 2026-10-06
 
 ### Changed

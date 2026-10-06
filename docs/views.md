@@ -18,13 +18,13 @@ Use `‹` / `›` to move between months. Future months are disabled.
 
 ### Layout
 
-The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) and the **Follow-ups** card side by side (stacked when the window is narrow), with the **Monthly expenses** bar chart for the last six months (ending at the selected month) under them; the expense pie charts are on the right.
+The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) and the narrower **Follow-ups** card side by side (stacked when the window is narrow), with the **Monthly expenses** bar chart for the last six months (ending at the selected month) under them; the expense pie charts are on the right.
 
 Switching between the **Overview**, **Transactions** and **Budgets** tabs, or clicking through from a chart or budget, replaces the view in the current Obsidian tab instead of opening a new one.
 
 ### Follow-ups
 
-Lists every transaction tagged with the follow-up tag (default `follow_up`, set in **Settings → Follow-up tag**), from all months, newest first. Each row shows the date, note (with clickable `[[links]]`), category and amount; click a row to edit the transaction, for example to remove the tag once it's dealt with. Tag matching ignores case and treats `-` and `_` as the same. Clear the setting to hide the card.
+Lists every transaction tagged with the follow-up tag (default `follow_up`, set in **Settings → Follow-up tag**), from all months, newest first. Rows look like the Transactions tab: date (with the year when it isn't this year), category and budget, note (with clickable `[[links]]`), other tags, and amount; click a row to edit the transaction, for example to remove the tag once it's dealt with. Tag matching ignores case and treats `-` and `_` as the same. Clear the setting to hide the card.
 
 ### Expense Pie Charts
 

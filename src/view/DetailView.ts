@@ -5,8 +5,7 @@ import { t, tn, translateCategory } from '../i18n'
 import { Transaction, TransactionType } from '../types'
 import { currentYearMonth, formatAmount } from '../utils'
 import { renderSharedHeader } from './SharedHeader'
-import { buildAmountDisplay, buildLine3Display } from './detailRow'
-import { openTransactionEditor, renderNoteWithLinks } from './txShared'
+import { openTransactionEditor, renderNoteWithLinks, renderTransactionRow } from './txShared'
 
 export const DETAIL_VIEW_TYPE = 'penny-wallet-mod-detail'
 
@@ -761,54 +760,10 @@ export class DetailView extends ItemView {
   }
 
   private renderTxRow(container: HTMLElement, tx: Transaction, dp: 0 | 2 = 0) {
-    const row = container.createDiv('pw-tx-row')
-    row.dataset['testid'] = 'tx-row'
-
-    // col1: date (V-center, large)
-    row.createEl('span', { text: tx.date, cls: 'pw-tx-date' })
-
-    // col2: type badge (V-center)
-    row.createEl('span', {
-      text: t(`label.type.${tx.type}`),
-      cls: `pw-type-badge pw-type-${tx.type}`,
-    })
-
-    // col3: stack — category (+ budget) / note / tags (note and tags each on their own line)
-    const stack = row.createDiv('pw-tx-row-stack')
-    const categoryLine = stack.createEl('div', {
-      text: translateCategory(tx.category ?? ''),
-      cls: 'pw-tx-category',
-    })
-    if (tx.budget) {
-      categoryLine.createSpan({ text: tx.budget, cls: 'pw-tx-budget-chip' }).dataset['testid'] = 'tx-budget-chip'
-    }
-
-    const display = buildLine3Display(tx)
-    if (display.note !== '') {
-      const noteLine = stack.createDiv('pw-tx-row-line3')
-      const noteEl = noteLine.createEl('span', { cls: 'pw-tx-note' })
-      this.renderNote(noteEl, display.note)
-    }
-    if (display.tags.length > 0) {
-      const tagsLine = stack.createDiv('pw-tx-row-line4')
-      const tagsEl = tagsLine.createSpan('pw-tx-tags')
-      for (const tag of display.tags) {
-        const chip = tagsEl.createSpan({ text: `#${tag}`, cls: 'pw-tx-tag-chip' })
-        chip.dataset['testid'] = 'tx-tag-chip'
-        chip.dataset['tag'] = tag
-      }
-    }
-    if (display.note === '' && display.tags.length === 0) {
-      const emptyLine = stack.createDiv('pw-tx-row-line3')
-      emptyLine.createEl('span', { text: '—', cls: 'pw-tx-empty' })
-    }
-
-    // col4: amount (V-center, large)
-    const amount = buildAmountDisplay(tx, dp)
-    row.createEl('span', { text: amount.text, cls: amount.className })
-
-    row.addEventListener('click', () => {
-      openTransactionEditor(this.app, this.walletFile, tx, this.currentYearMonth)
+    renderTransactionRow(container, tx, {
+      dp,
+      renderNote: (el, note) => this.renderNote(el, note),
+      onClick: () => openTransactionEditor(this.app, this.walletFile, tx, this.currentYearMonth),
     })
   }
 

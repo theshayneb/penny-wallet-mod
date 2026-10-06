@@ -1,15 +1,14 @@
 import { Events, ItemView, ViewStateResult, WorkspaceLeaf } from 'obsidian'
 import { WalletFile } from '../io/WalletFile'
-import { t, tn, formatMonthLabel, formatYearMonth, translateCategory } from '../i18n'
-import { currentYearMonth } from '../utils'
+import { t, tn, formatMonthLabel, formatYearMonth } from '../i18n'
+import { currentYearMonth, tagKey } from '../utils'
 import { computeBudgetUsage, getMonthProgress } from '../budget'
 import { renderBudgetProgress } from './budgetComponents'
 import { renderCard } from './components'
 import { Transaction, TransactionType } from '../types'
 import { DETAIL_VIEW_TYPE } from './DetailView'
 import { renderSharedHeader, switchView } from './SharedHeader'
-import { buildAmountDisplay } from './detailRow'
-import { openTransactionEditor, renderNoteWithLinks } from './txShared'
+import { openTransactionEditor, renderNoteWithLinks, renderTransactionRow } from './txShared'
 import { Chart } from 'chart.js'
 import { MonthData, drawExpenseChart, drawPie, getMonthRangeEndingAt } from './charts'
 
@@ -168,37 +167,28 @@ export class DashboardView extends ItemView {
     }
 
     const list = card.createDiv('pw-follow-up-list')
+    const thisYear = currentYearMonth().slice(0, 4)
     for (const { tx, yearMonth } of items) {
-      const row = list.createDiv('pw-follow-up-row')
-      row.dataset['testid'] = 'follow-up-row'
-      row.setAttribute('role', 'button')
-      row.tabIndex = 0
-
-      row.createSpan({ text: `${yearMonth.slice(0, 4)}/${tx.date}`, cls: 'pw-follow-up-date' })
-      const body = row.createDiv('pw-follow-up-body')
-      const noteEl = body.createDiv('pw-follow-up-note')
-      if (tx.note.trim()) {
-        renderNoteWithLinks(noteEl, tx.note.trim(), {
+      const year = yearMonth.slice(0, 4)
+      const row = renderTransactionRow(list, tx, {
+        dp,
+        // Follow-ups span months; show the year only when it isn't this year
+        dateText: year === thisYear ? tx.date : `${year}/${tx.date}`,
+        renderNote: (el, note) => renderNoteWithLinks(el, note, {
           app: this.app,
           sourcePath: this.walletFile.monthFilePath(yearMonth),
           hoverParent: this,
           source: DASHBOARD_VIEW_TYPE,
-        })
-      } else {
-        noteEl.setText(translateCategory(tx.category ?? ''))
-      }
-      if (tx.note.trim() && tx.category) {
-        body.createDiv({ text: translateCategory(tx.category), cls: 'pw-follow-up-category' })
-      }
-      const amount = buildAmountDisplay(tx, dp)
-      row.createSpan({ text: amount.text, cls: amount.className + ' pw-follow-up-amount' })
-
-      const open = () => openTransactionEditor(this.app, this.walletFile, tx, yearMonth)
-      row.addEventListener('click', open)
-      row.addEventListener('keydown', (e) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return
-        e.preventDefault()
-        open()
+        }),
+        onClick: () => openTransactionEditor(this.app, this.walletFile, tx, yearMonth),
+      })
+      row.dataset['testid'] = 'follow-up-row'
+      // Every row has the follow-up tag; only show the others
+      row.querySelectorAll<HTMLElement>('.pw-tx-tag-chip').forEach(chip => {
+        if (tagKey(chip.dataset['tag'] ?? '') === tagKey(tag)) chip.remove()
+      })
+      row.querySelectorAll('.pw-tx-row-line4').forEach(line => {
+        if (!line.querySelector('.pw-tx-tag-chip')) line.remove()
       })
     }
   }

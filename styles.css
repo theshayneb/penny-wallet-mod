@@ -2848,17 +2848,27 @@ select.pw-validation-remap-select option {
 
 /* ── Overview: budgets + follow-ups row ── */
 
-/* Side by side when the left column has room, stacked when it doesn't */
+/* Side by side when the left column has room (Budgets 5 : Follow-ups 3),
+   stacked when it doesn't; a card on its own takes the full width */
 .pw-left-top {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .pw-left-top > .pw-card {
   margin-bottom: 0;
-  min-width: 0;
+}
+
+.pw-left-top > .pw-dash-budget-card {
+  flex: 5 1 0;
+  min-width: 260px;
+}
+
+.pw-left-top > .pw-follow-up-card {
+  flex: 3 1 0;
+  min-width: 200px;
 }
 
 .pw-follow-up-title {
@@ -2880,45 +2890,16 @@ select.pw-validation-remap-select option {
   overflow-y: auto;
 }
 
-.pw-follow-up-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 6px 4px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
+.pw-follow-up-list .pw-tx-row {
+  gap: 10px;
+  padding: 8px 4px;
 }
 
-.pw-follow-up-row + .pw-follow-up-row {
-  border-top: 1px solid var(--background-modifier-border);
+.pw-follow-up-list .pw-tx-row:last-child {
+  border-bottom: none;
 }
 
-.pw-follow-up-row:hover {
-  background: var(--background-modifier-hover);
-}
-
-.pw-follow-up-date {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.pw-follow-up-body {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.pw-follow-up-note {
-  overflow-wrap: anywhere;
-}
-
-.pw-follow-up-category {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.pw-follow-up-row .pw-follow-up-amount {
-  font-size: 13px;
+/* Every follow-up is an expense; the badge would only take room in this narrow card */
+.pw-follow-up-list .pw-type-badge {
+  display: none;
 }
