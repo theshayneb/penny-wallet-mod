@@ -8,7 +8,7 @@ A personal fork of the PennyWallet Obsidian plugin. The owner is the only user.
 - Every change that ships gets a new patch version (0.0.x) and a GitHub release:
   1. Bump the version in `manifest.json`, `package.json` and `package-lock.json` (the top-level `version` and `packages[""].version`), and add it to the top of `versions.json` mapped to `manifest.json`'s `minAppVersion`.
   2. Add a `## [x.y.z] - YYYY-MM-DD` entry at the top of `CHANGELOG.md`. The release workflow uses it as the release notes and fails without it.
-  3. Commit, push to `main`, then push the tag `x.y.z` (no `v` prefix) pointing at that commit. `.github/workflows/release.yml` builds the plugin and publishes the release with `main.js`, `manifest.json` and `styles.css`.
+  3. Commit and push to `main`, then publish the release with `.github/workflows/release.yml`, which builds the plugin and attaches `main.js`, `manifest.json` and `styles.css`. Either push the tag `x.y.z` (no `v` prefix) pointing at that commit, or, where tag pushes are blocked (cloud sessions), run the "Release Plugin" workflow on `main` with the input `version: x.y.z`; it creates the tag itself.
   4. Tell the owner the version number. Don't give them git commands; they use the GitHub web interface.
 - Never reuse a version number that was already tagged or released.
 
