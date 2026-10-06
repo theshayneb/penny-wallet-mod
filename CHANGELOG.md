@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.38] - 2026-10-06
+
+### Changed
+- Overview: next to Budgets, the Follow-ups card is now exactly as tall as the Budgets card; its list fills the card and scrolls only when there are more follow-ups than fit.
+
 ## [0.0.37] - 2026-10-06
 
 ### Changed

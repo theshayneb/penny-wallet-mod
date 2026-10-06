@@ -2857,7 +2857,7 @@ select.pw-validation-remap-select option {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .pw-left-top > .pw-card {
@@ -2891,6 +2891,20 @@ select.pw-validation-remap-select option {
   flex-direction: column;
   max-height: 320px;
   overflow-y: auto;
+}
+
+/* Beside Budgets: Budgets sets the row height and Follow-ups matches it. The list
+   gets no height of its own (height: 0) and fills the card, scrolling if needed. */
+.pw-dash-budget-card + .pw-follow-up-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.pw-dash-budget-card + .pw-follow-up-card .pw-follow-up-list {
+  flex: 1 1 0;
+  height: 0;
+  min-height: 160px;
+  max-height: none;
 }
 
 .pw-follow-up-list .pw-tx-row {
