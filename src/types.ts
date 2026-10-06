@@ -134,7 +134,7 @@ export const DEFAULT_CONFIG: PennyWalletConfig = {
   tags: [],
   budgets: [],
   autoValidateOnLoad: true,
-  chartExcludedTags: ['follow-up'],
+  chartExcludedTags: ['follow_up'],
   followUpTag: 'follow_up',
 }
 

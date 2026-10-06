@@ -264,7 +264,12 @@ export class WalletFile {
   }
 
   private fromParsed(parsed: Partial<PennyWalletConfig>): PennyWalletConfig {
-    return { ...DEFAULT_CONFIG, ...parsed, options: this.normalizeOptions(parsed) }
+    const config = { ...DEFAULT_CONFIG, ...parsed, options: this.normalizeOptions(parsed) }
+    // 0.0.31–0.0.34 defaulted to the misspelled "follow-up"; the real tag is follow_up.
+    if (config.chartExcludedTags?.length === 1 && config.chartExcludedTags[0] === 'follow-up') {
+      config.chartExcludedTags = ['follow_up']
+    }
+    return config
   }
 
   /** Parsed legacy config, 'malformed' if it exists but isn't valid JSON, null if absent. */

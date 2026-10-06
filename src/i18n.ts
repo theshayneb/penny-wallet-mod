@@ -78,7 +78,7 @@ const translations = {
     'settings.followUpTagDesc': '總覽的「待追蹤」卡片列出所有帶有此標籤的交易（不分月份）。留空則隱藏卡片。',
     'settings.chartExcludedTags': '標籤圖表略過的標籤',
     'settings.chartExcludedTagsDesc': '總覽「支出標籤」圖表不計入這些標籤，以逗號分隔。只有這些標籤的支出會算作未加標籤。',
-    'settings.chartExcludedTagsPlaceholder': '例如 follow-up, reimbursable',
+    'settings.chartExcludedTagsPlaceholder': '例如 follow_up, reimbursable',
     'dash.noData': '本月無資料',
 
     // Detail view
@@ -331,7 +331,7 @@ const translations = {
     'settings.followUpTagDesc': 'The overview\'s follow-ups card lists every transaction with this tag, from any month. Leave empty to hide the card.',
     'settings.chartExcludedTags': 'Tags hidden from the tag chart',
     'settings.chartExcludedTagsDesc': 'Comma-separated tags that the expenses-by-tag chart ignores. Expenses with only these tags count as untagged.',
-    'settings.chartExcludedTagsPlaceholder': 'e.g. follow-up, reimbursable',
+    'settings.chartExcludedTagsPlaceholder': 'e.g. follow_up, reimbursable',
     'dash.noData': 'No data this month',
 
     'detail.title': 'Transactions',

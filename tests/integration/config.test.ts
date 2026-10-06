@@ -240,3 +240,20 @@ describe('hidden built-in categories', () => {
     expect(config.options.categories.income.hidden).toEqual([])
   })
 })
+
+describe('chartExcludedTags default', () => {
+  const load = async (stored: unknown) => {
+    const s = { load: async () => stored, save: async () => {} }
+    return new WalletFile(createMockApp().app, s).loadConfig()
+  }
+  it('defaults to follow_up', async () => {
+    const { chartExcludedTags: _omit, ...withoutKey } = DEFAULT_CONFIG
+    expect((await load({ ...withoutKey, wallets: DEFAULT_CONFIG.wallets })).chartExcludedTags).toEqual(['follow_up'])
+  })
+  it('replaces the old misspelled default', async () => {
+    expect((await load({ ...DEFAULT_CONFIG, chartExcludedTags: ['follow-up'] })).chartExcludedTags).toEqual(['follow_up'])
+  })
+  it('keeps a list the user edited', async () => {
+    expect((await load({ ...DEFAULT_CONFIG, chartExcludedTags: ['follow-up', 'work'] })).chartExcludedTags).toEqual(['follow-up', 'work'])
+  })
+})

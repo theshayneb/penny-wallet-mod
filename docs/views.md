@@ -24,13 +24,13 @@ Switching between the **Overview**, **Transactions** and **Budgets** tabs, or cl
 
 ### Follow-ups
 
-Lists every transaction tagged with the follow-up tag (default `follow_up`, set in **Settings → Follow-up tag**), from all months, newest first. Each row shows the date, note (with clickable `[[links]]`), category and amount; click a row to edit the transaction, for example to remove the tag once it's dealt with. Tag matching ignores case and treats `-` and `_` as the same, so `follow-up` also matches. Clear the setting to hide the card.
+Lists every transaction tagged with the follow-up tag (default `follow_up`, set in **Settings → Follow-up tag**), from all months, newest first. Each row shows the date, note (with clickable `[[links]]`), category and amount; click a row to edit the transaction, for example to remove the tag once it's dealt with. Tag matching ignores case and treats `-` and `_` as the same. Clear the setting to hide the card.
 
 ### Expense Pie Charts
 
 Two pie charts break down this month's spending:
 - **Expenses by category**
-- **Expenses by tag**: one slice per tag (shown as `#tag`), plus **Untagged** for expenses without tags. Tags listed in **Settings → Tags hidden from the tag chart** (default: `follow-up`) are left out. A transaction with several tags counts in full toward each of them, so the tag slices can add up to more than total spending. Clicking a tag opens the Transactions view filtered to that tag.
+- **Expenses by tag**: one slice per tag (shown as `#tag`), plus **Untagged** for expenses without tags. Tags listed in **Settings → Tags hidden from the tag chart** (default: `follow_up`) are left out. A transaction with several tags counts in full toward each of them, so the tag slices can add up to more than total spending. Clicking a tag opens the Transactions view filtered to that tag.
 
 Each legend entry shows the name, amount, and percentage. Small categories are grouped into **Others**; select that slice to drill into the grouped items. Hover over a slice or legend item to highlight it.
 

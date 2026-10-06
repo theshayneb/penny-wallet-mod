@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.35] - 2026-10-06
+
+### Changed
+- Settings → Tags hidden from the tag chart now defaults to `follow_up` (the actual tag) instead of `follow-up`; settings still on the old default are updated automatically. Matching was already spelling-tolerant, so the chart itself is unchanged.
+
 ## [0.0.34] - 2026-10-06
 
 ### Added
