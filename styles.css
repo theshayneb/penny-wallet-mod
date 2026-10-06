@@ -1747,9 +1747,12 @@ button.pw-pill {
   flex-shrink: 0;
 }
 
-.pw-tx-amount.is-income  { color: var(--pw-income); }
-.pw-tx-amount.is-expense { color: var(--pw-expense); }
-.pw-tx-amount.is-refund  { color: var(--pw-refund); }
+.pw-tx-amount.is-income,
+.pw-tx-date.is-income  { color: var(--pw-income); }
+.pw-tx-amount.is-expense,
+.pw-tx-date.is-expense { color: var(--pw-expense); }
+.pw-tx-amount.is-refund,
+.pw-tx-date.is-refund  { color: var(--pw-refund); }
 
 .pw-subtotal-row {
   display: flex;
@@ -2899,7 +2902,3 @@ select.pw-validation-remap-select option {
   border-bottom: none;
 }
 
-/* Every follow-up is an expense; the badge would only take room in this narrow card */
-.pw-follow-up-list .pw-type-badge {
-  display: none;
-}

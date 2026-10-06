@@ -52,7 +52,7 @@ A full list of all transactions for the selected month, with filters and subtota
 
 ### Transaction Rows
 
-Each row shows: date, type badge, category (with the budget name, if assigned), note, tags, and amount.
+Each row shows: date, category (with the budget name, if assigned), note, tags, and amount. The date takes the amount's color (orange for expenses, a lighter green for refunds). Expenses have no type badge; older income and transfer entries still show one.
 
 On desktop, hover a row to reveal the **✏** edit action. On mobile, the edit affordance stays visible. Delete now lives inside the edit modal (a confirmation dialog appears before deletion). Refund expenses appear as positive expense reversals, visually distinct from income.
 

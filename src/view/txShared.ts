@@ -78,15 +78,19 @@ export function renderTransactionRow(
 ): HTMLElement {
   const row = container.createDiv('pw-tx-row')
   row.dataset['testid'] = 'tx-row'
+  const amount = buildAmountDisplay(tx, opts.dp)
 
-  // col1: date (V-center, large)
-  row.createEl('span', { text: opts.dateText ?? tx.date, cls: 'pw-tx-date' })
+  // col1: date (V-center, large), colored like the amount (is-expense / is-refund / is-income)
+  const amountModifier = amount.className.replace('pw-tx-amount', '').trim()
+  row.createEl('span', { text: opts.dateText ?? tx.date, cls: `pw-tx-date ${amountModifier}`.trim() })
 
-  // col2: type badge (V-center)
-  row.createEl('span', {
-    text: t(`label.type.${tx.type}`),
-    cls: `pw-type-badge pw-type-${tx.type}`,
-  })
+  // col2: type badge (V-center), only for the rarer income / transfer entries
+  if (tx.type !== 'expense') {
+    row.createEl('span', {
+      text: t(`label.type.${tx.type}`),
+      cls: `pw-type-badge pw-type-${tx.type}`,
+    })
+  }
 
   // col3: stack — category (+ budget) / note / tags (note and tags each on their own line)
   const stack = row.createDiv('pw-tx-row-stack')
@@ -119,7 +123,6 @@ export function renderTransactionRow(
   }
 
   // col4: amount (V-center, large)
-  const amount = buildAmountDisplay(tx, opts.dp)
   row.createEl('span', { text: amount.text, cls: amount.className })
 
   row.addEventListener('click', opts.onClick)

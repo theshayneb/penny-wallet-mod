@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.37] - 2026-10-06
+
+### Changed
+- Transactions tab and Overview Follow-ups card: expenses no longer show the "Expense" badge (older income and transfer entries keep theirs), and the date is colored like the amount (orange for expenses, the refund color for refunds).
+
 ## [0.0.36] - 2026-10-06
 
 ### Changed
