@@ -257,3 +257,15 @@ describe('chartExcludedTags default', () => {
     expect((await load({ ...DEFAULT_CONFIG, chartExcludedTags: ['follow-up', 'work'] })).chartExcludedTags).toEqual(['follow-up', 'work'])
   })
 })
+
+describe('removeTag', () => {
+  it('removes a tag from the saved list and persists it', async () => {
+    let data: unknown = { ...DEFAULT_CONFIG, tags: ['follow_up', 'old_tag', 'work'] }
+    const s = { load: async () => data, save: async (c: unknown) => { data = JSON.parse(JSON.stringify(c)) } }
+    const wf = new WalletFile(createMockApp().app, s)
+    await wf.loadConfig()
+    await wf.removeTag('old_tag')
+    expect(wf.getConfig().tags).toEqual(['follow_up', 'work'])
+    expect((data as { tags: string[] }).tags).toEqual(['follow_up', 'work'])
+  })
+})

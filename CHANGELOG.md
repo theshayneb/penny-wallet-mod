@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.40] - 2026-10-09
+
+### Added
+- Settings → Tags: lists the saved tags the transaction form suggests, each with × to remove it. Transactions that use a removed tag keep it; using it again adds it back.
+
 ## [0.0.39] - 2026-10-09
 
 ### Changed

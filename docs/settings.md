@@ -96,6 +96,12 @@ The **Budgets** card on the Overview shows, for the selected month, how much of 
 
 ---
 
+## Tags
+
+Lists the saved tags that the Add Transaction form suggests. Click **×** on a tag to remove it from the suggestions. Transactions that already use it keep the tag, and typing it again on a transaction adds it back to the list.
+
+---
+
 ## Categories
 
 Add your own expense, income, and transfer categories, and remove built-in ones you don't use.

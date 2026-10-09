@@ -33,6 +33,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
       this.renderArchivedWallets()
       this.renderAddWallet()
       this.renderBudgets()
+      this.renderTags()
       this.renderCategories()
 
       if (restoreScrollTop !== undefined) {
@@ -519,6 +520,38 @@ export class PennyWalletSettingTab extends PluginSettingTab {
     for (const el of [nameInput, amountInput]) {
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { e.preventDefault(); void submit() }
+      })
+    }
+  }
+
+  private renderTags() {
+    const { containerEl } = this
+    new Setting(containerEl)
+      .setName(t('settings.tags'))
+      .setDesc(t('settings.tagsDesc'))
+      .setHeading()
+    const cardEl = containerEl.createDiv('pw-card pw-category-card')
+    const tags = this.walletFile.getConfig().tags ?? []
+    if (tags.length === 0) {
+      cardEl.createEl('p', { text: t('settings.noTags'), cls: 'pw-settings-empty' })
+      return
+    }
+    const tagsEl = cardEl.createDiv('pw-category-tags')
+    for (const tag of tags) {
+      const chip = tagsEl.createDiv('pw-category-tag')
+      chip.dataset['testid'] = 'settings-tag'
+      chip.createEl('span', { text: `#${tag}` })
+      const removeBtn = chip.createEl('button', { cls: 'pw-tag-remove' })
+      removeBtn.setAttribute('aria-label', t('ui.delete'))
+      const svg = removeBtn.createSvg('svg', { attr: { viewBox: '0 0 10 10', width: '10', height: '10', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round' } })
+      svg.createSvg('line', { attr: { x1: '2', y1: '2', x2: '8', y2: '8' } })
+      svg.createSvg('line', { attr: { x1: '8', y1: '2', x2: '2', y2: '8' } })
+      removeBtn.addEventListener('click', () => {
+        void (async () => {
+          const scrollTop = this.getSettingsScrollTop()
+          await this.walletFile.removeTag(tag)
+          this.display(scrollTop)
+        })()
       })
     }
   }

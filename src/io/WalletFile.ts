@@ -359,6 +359,15 @@ export class WalletFile {
     return { ok: true }
   }
 
+  /**
+   * Remove a tag from the saved tag list (the suggestions). Transactions that
+   * use it keep it; using it again adds it back.
+   */
+  async removeTag(name: string): Promise<void> {
+    this.config = { ...this.config, tags: this.config.tags.filter(tag => tag !== name) }
+    await this.saveConfig()
+  }
+
   async saveConfig(): Promise<void> {
     if (this.configStore) {
       await this.configStore.save(this.config)
