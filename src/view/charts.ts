@@ -23,7 +23,7 @@ Chart.register(
 export interface MonthData {
   monthLabel: string
   tooltipLabel: string
-  expense: number
+  byCategory: ReadonlyMap<string, number>  // expense total per category key
 }
 
 // ─── Color helpers ────────────────────────────────────────────────────────────
@@ -41,9 +41,33 @@ export function getThemeColors() {
     grid:    dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
     pie: [
       ['--pw-expense', '#EF9F27'], ['--pw-bank', '#378ADD'], ['--pw-payment', '#AFA9EC'], ['--pw-cash', '#1D9E75'],
-      ['--pw-income', '#5DCAA5'], ['--pw-transfer', '#85B7EB'], ['--pw-credit', '#D85A30'], '#888780',
+      ['--pw-income', '#5DCAA5'], ['--pw-transfer', '#85B7EB'], ['--pw-credit', '#D85A30'],
+      '#D4537E', '#E3C34B', '#7F5BD5', '#9C6B3E', OTHER_COLOR,
     ].map(entry => Array.isArray(entry) ? v(entry[0], entry[1]) : entry),
   }
+}
+
+/** Neutral color for the pie's grouped "Other" slice; last in the pie palette. */
+export const OTHER_COLOR = '#888780'
+
+/**
+ * Category keys ordered by total spending across the given months (largest
+ * first, ties by key), so colors and stacking order stay stable across charts.
+ */
+export function rankCategories(perMonth: ReadonlyArray<ReadonlyMap<string, number>>): string[] {
+  const totals = new Map<string, number>()
+  for (const month of perMonth) {
+    for (const [key, value] of month) totals.set(key, (totals.get(key) ?? 0) + Math.max(value, 0))
+  }
+  return [...totals.entries()]
+    .filter(([, total]) => total > 0)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([key]) => key)
+}
+
+/** One color per category, in rank order, cycling through `palette` (which excludes OTHER_COLOR). */
+export function assignCategoryColors(rankedKeys: readonly string[], palette: readonly string[]): Map<string, string> {
+  return new Map(rankedKeys.map((key, i) => [key, palette[i % palette.length]]))
 }
 
 export function formatK(n: number, dp: 0 | 2 = 0): string {
@@ -67,40 +91,56 @@ export function getMonthRangeEndingAt(endYearMonth: string, count: number): stri
 
 // ─── Monthly expense bar chart ────────────────────────────────────────────────
 
-/** Monthly expense bars (income is not tracked on the Overview). */
+/**
+ * Monthly expense bars stacked by category (income is not tracked on the
+ * Overview). `categories` sets the stacking order (bottom first) and colors;
+ * each bar is labelled with its total and the tooltip lists its categories.
+ */
 export function drawExpenseChart(
   container: HTMLElement,
   data: MonthData[],
-  dp: 0 | 2 = 0,
+  dp: 0 | 2,
+  categories: { key: string; label: string; color: string }[],
 ): Chart {
   const colors = getThemeColors()
   const canvas = container.createEl('canvas')
+
+  const values = categories.map(c => data.map(d => Math.max(d.byCategory.get(c.key) ?? 0, 0)))
+  const totals = data.map((_, i) => values.reduce((sum, series) => sum + series[i], 0))
+  // Index of the top (last non-empty) segment of each bar, which carries the total label
+  const topIndex = data.map((_, i) => {
+    for (let c = values.length - 1; c >= 0; c--) if (values[c][i] > 0) return c
+    return -1
+  })
 
   const cfg: ChartConfiguration<'bar'> = {
     type: 'bar',
     data: {
       labels: data.map(d => d.monthLabel),
-      datasets: [
-        {
-          label: t('dash.expense'),
-          data: data.map(d => d.expense),
-          backgroundColor: colors.expense,
-          borderWidth: 0,
-          maxBarThickness: 56,
-        },
-      ],
+      datasets: categories.map((c, ci) => ({
+        label: c.label,
+        data: values[ci],
+        backgroundColor: c.color,
+        borderWidth: 0,
+        maxBarThickness: 56,
+        stack: 'expense',
+      })),
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      // Room above the tallest bar for its value label
+      // Room above the tallest bar for its total label
       layout: { padding: { top: 18 } },
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
         tooltip: {
+          filter: (item) => (item.raw as number) > 0,
+          itemSort: (a, b) => b.datasetIndex - a.datasetIndex,  // top segment first, like the bar
           callbacks: {
             title: (items) => data[items[0].dataIndex].tooltipLabel,
-            label: (ctx) => `${t('dash.expense')}: ${formatK(ctx.raw as number, dp)}`,
+            label: (ctx) => `${ctx.dataset.label ?? ''}: ${formatK(ctx.raw as number, dp)}`,
+            footer: (items) => items.length ? `${t('dash.expense')}: ${formatK(totals[items[0].dataIndex], dp)}` : '',
           },
         },
         datalabels: {
@@ -109,17 +149,20 @@ export function drawExpenseChart(
           anchor: 'end',
           align: 'top',
           offset: 2,
-          formatter: (v: number) => v !== 0 ? formatK(v, dp) : '',
+          display: (ctx) => ctx.datasetIndex === topIndex[ctx.dataIndex],
+          formatter: (_v: number, ctx) => formatK(totals[ctx.dataIndex], dp),
           font: { size: 10, weight: 'bold' },
         },
       },
       scales: {
         x: {
+          stacked: true,
           border: { display: false },
           grid: { display: false },
           ticks: { color: colors.muted },
         },
         y: {
+          stacked: true,
           beginAtZero: true,
           border: { display: false },
           grid: { color: colors.grid },
@@ -167,6 +210,7 @@ export function drawPie(
   onSegmentClick?: (categoryKey: string) => void,
   size = 200,
   labelFor: (key: string) => string = translateCategory,
+  colorFor?: (key: string) => string | undefined,  // fixed per-key colors; otherwise by position
 ): Chart {
   const filtered = filterPieData(data)
   const total = [...filtered.values()].reduce((a, b) => a + b, 0)
@@ -181,7 +225,8 @@ export function drawPie(
   }
 
   const colors = getThemeColors()
-  const segColors = segments.map((_, i) => colors.pie[i % colors.pie.length])
+  const segColors = segments.map((s, i) =>
+    (s.key === '__other__' && colorFor ? OTHER_COLOR : colorFor?.(s.key)) ?? colors.pie[i % colors.pie.length])
 
   const wrap = container.createDiv('pw-pie-wrap')
   // Fixed-size wrapper lets Chart.js use responsive:true while keeping a stable size.

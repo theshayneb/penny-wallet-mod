@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.39] - 2026-10-09
+
+### Changed
+- Overview: the Monthly expenses bars are stacked by category, in the same colors as the Expenses by category pie. Each category keeps one color across both charts (biggest spenders over the six months first, at the bottom of the stack); bars keep their total label, and the tooltip lists the categories. The chart palette has four more colors before any repeat.
+
 ## [0.0.38] - 2026-10-06
 
 ### Changed

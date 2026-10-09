@@ -18,7 +18,7 @@ Use `‹` / `›` to move between months. Future months are disabled.
 
 ### Layout
 
-The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) and the narrower **Follow-ups** card side by side at the same height (stacked when the window is narrow; the follow-up list scrolls if it doesn't fit), with the **Monthly expenses** bar chart for the last six months (ending at the selected month) under them; the expense pie charts are on the right.
+The Overview has no summary chips at the top. The left column shows the **Budgets** card (when budgets are set up) and the narrower **Follow-ups** card side by side at the same height (stacked when the window is narrow; the follow-up list scrolls if it doesn't fit), with the **Monthly expenses** bar chart for the last six months (ending at the selected month) under them. Each bar is stacked by category, using the same color per category as the **Expenses by category** pie (the categories you spend most on over the six months get the first colors and sit at the bottom); hover a bar to see its categories and total; the expense pie charts are on the right.
 
 Switching between the **Overview**, **Transactions** and **Budgets** tabs, or clicking through from a chart or budget, replaces the view in the current Obsidian tab instead of opening a new one.
 

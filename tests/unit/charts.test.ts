@@ -40,6 +40,10 @@ describe('getThemeColors', () => {
       'income-var',
       'transfer-var',
       'credit-var',
+      '#D4537E',
+      '#E3C34B',
+      '#7F5BD5',
+      '#9C6B3E',
       '#888780',
     ])
   })
@@ -133,5 +137,27 @@ describe('filterPieData', () => {
     const data = new Map([['food', 0], ['transport', 0]])
     const result = filterPieData(data)
     expect(result.size).toBe(0)
+  })
+})
+
+import { rankCategories, assignCategoryColors } from '../../src/view/charts'
+
+describe('rankCategories', () => {
+  it('orders categories by total across months, largest first', () => {
+    const ranked = rankCategories([
+      new Map([['food', 100], ['transport', 50]]),
+      new Map([['food', 20], ['shopping', 300]]),
+    ])
+    expect(ranked).toEqual(['shopping', 'food', 'transport'])
+  })
+  it('ignores net refunds and breaks ties by key', () => {
+    expect(rankCategories([new Map([['b', 10], ['a', 10], ['refundOnly', -30]])])).toEqual(['a', 'b'])
+  })
+})
+
+describe('assignCategoryColors', () => {
+  it('gives each ranked category a color, cycling through the palette', () => {
+    const map = assignCategoryColors(['x', 'y', 'z'], ['red', 'blue'])
+    expect([...map]).toEqual([['x', 'red'], ['y', 'blue'], ['z', 'red']])
   })
 })

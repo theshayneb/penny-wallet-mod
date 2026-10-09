@@ -1,6 +1,6 @@
 import { Events, ItemView, ViewStateResult, WorkspaceLeaf } from 'obsidian'
 import { WalletFile } from '../io/WalletFile'
-import { t, tn, formatMonthLabel, formatYearMonth } from '../i18n'
+import { t, tn, formatMonthLabel, formatYearMonth, translateCategory } from '../i18n'
 import { currentYearMonth, tagKey } from '../utils'
 import { computeBudgetUsage, getMonthProgress } from '../budget'
 import { renderBudgetProgress } from './budgetComponents'
@@ -10,7 +10,7 @@ import { DETAIL_VIEW_TYPE } from './DetailView'
 import { renderSharedHeader, switchView } from './SharedHeader'
 import { openTransactionEditor, renderNoteWithLinks, renderTransactionRow } from './txShared'
 import { Chart } from 'chart.js'
-import { MonthData, drawExpenseChart, drawPie, getMonthRangeEndingAt } from './charts'
+import { MonthData, OTHER_COLOR, assignCategoryColors, drawExpenseChart, drawPie, getMonthRangeEndingAt, getThemeColors, rankCategories } from './charts'
 
 export const DASHBOARD_VIEW_TYPE = 'penny-wallet-mod-dashboard'
 
@@ -65,11 +65,12 @@ export class DashboardView extends ItemView {
     const months = getMonthRangeEndingAt(this.currentYearMonth, 6)
 
     const followUpTag = (this.walletFile.getConfig().followUpTag ?? '').trim()
-    const [transactions, summaries, followUps] = await Promise.all([
-      this.walletFile.readMonth(this.currentYearMonth),
-      this.walletFile.getMonthSummaries(months),
+    const [monthTransactions, followUps] = await Promise.all([
+      Promise.all(months.map(ym => this.walletFile.readMonth(ym))),
       followUpTag ? this.walletFile.findTransactionsByTag(followUpTag) : Promise.resolve(null),
     ])
+    // months ends at the selected month
+    const transactions = monthTransactions[monthTransactions.length - 1]
 
     renderSharedHeader(contentEl, {
       view: this,
@@ -81,12 +82,17 @@ export class DashboardView extends ItemView {
 
     const dp = this.walletFile.getConfig().decimalPlaces ?? 0
 
-    // ── 6-month expense chart ────────────────────────────────────────────────
-    const data: MonthData[] = months.map(ym => ({
+    // ── 6-month expense chart, stacked by category ───────────────────────────
+    const byCategory = monthTransactions.map(txs => this.walletFile.groupByCategory(txs, 'expense'))
+    const data: MonthData[] = months.map((ym, i) => ({
       monthLabel: formatMonthLabel(ym),
       tooltipLabel: formatYearMonth(ym, 'short'),
-      expense: summaries.get(ym)?.expense ?? 0,
+      byCategory: byCategory[i],
     }))
+    // One color per category, shared with the category pie (biggest spenders first)
+    const ranked = rankCategories(byCategory)
+    const categoryColors = assignCategoryColors(ranked, getThemeColors().pie.filter(c => c !== OTHER_COLOR))
+    const stackCategories = ranked.map(key => ({ key, label: translateCategory(key), color: categoryColors.get(key)! }))
 
     // ── 2-column grid: budgets + bar chart left, pie charts right ───────────
     const grid2 = contentEl.createDiv('pw-grid-2')
@@ -105,7 +111,7 @@ export class DashboardView extends ItemView {
       className: 'pw-inc-exp-card',
     })
     const incExpChartWrap = incExpCard.createDiv('pw-chart-wrap')
-    this.charts.push(drawExpenseChart(incExpChartWrap, data, dp))
+    this.charts.push(drawExpenseChart(incExpChartWrap, data, dp, stackCategories))
 
     // ── Category pies ────────────────────────────────────────────────────────
     const gridRight = grid2.createDiv('pw-grid-right')
@@ -114,7 +120,10 @@ export class DashboardView extends ItemView {
     const tagMap     = this.walletFile.groupExpensesByTag(transactions, this.walletFile.getConfig().chartExcludedTags ?? [])
 
     const expCard = renderCard(gridRight, { title: t('dash.expenseByCategory') })
-    if (expenseMap.size > 0) this.charts.push(drawPie(expCard, expenseMap, dp, (cat) => { void this.openDetailWithFilter('expense', cat) }, 200))
+    if (expenseMap.size > 0) {
+      this.charts.push(drawPie(expCard, expenseMap, dp, (cat) => { void this.openDetailWithFilter('expense', cat) }, 200,
+        translateCategory, (cat) => categoryColors.get(cat)))
+    }
     else expCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
 
     const tagCard = renderCard(gridRight, { title: t('dash.expenseByTag') })
