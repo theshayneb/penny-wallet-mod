@@ -28,7 +28,7 @@ export default class PennyWalletPlugin extends Plugin {
     this.registerView(DETAIL_VIEW_TYPE, (leaf) => new DetailView(leaf, this.walletFile))
     this.registerView(BUDGET_VIEW_TYPE, (leaf) => new BudgetView(leaf, this.walletFile))
 
-    this.addRibbonIcon('wallet', 'Penny wallet mod', () => { void this.openDashboard() })
+    this.addRibbonIcon('wallet', 'Finance tracker', () => { void this.openDashboard() })
 
     this.addCommand({ id: 'open-dashboard', name: 'Open finance overview', callback: () => { void this.openDashboard() } })
     this.addCommand({ id: 'open-detail', name: 'Open transactions', callback: () => { void this.openDetailView() } })
@@ -64,7 +64,7 @@ export default class PennyWalletPlugin extends Plugin {
         void this.runValidation(false)
       }
     } catch (e) {
-      console.error('PennyWallet: failed to load config', e)
+      console.error('Finance Tracker: failed to load config', e)
       new Notice(t('notice.loadFailed'))
     }
   }
@@ -132,7 +132,7 @@ export default class PennyWalletPlugin extends Plugin {
   // ── Refresh ─────────────────────────────────────────────────────────────────
 
   private refreshViews() {
-    // Refresh all open PennyWallet leaves
+    // Refresh all open plugin leaves
     this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
       void (leaf.view as DashboardView).render()
     })

@@ -255,7 +255,7 @@ export class TransactionModal extends Modal {
         (value) => { this.note = value },
       )
     } catch (e) {
-      console.error('PennyWallet: note link suggestions unavailable', e)
+      console.error('Finance Tracker: note link suggestions unavailable', e)
     }
   }
 

@@ -1,6 +1,6 @@
-# PennyWallet
+# Finance Tracker
 
-A personal finance tracker plugin for [Obsidian](https://obsidian.md). Log expenses, income, transfers, credit card payments, and refunds — all stored as plain Markdown tables in your vault.
+A personal fork of PennyWallet, renamed Finance Tracker (plugin id `penny-wallet-mod`). A personal finance tracker plugin for [Obsidian](https://obsidian.md). Log expenses, income, transfers, credit card payments, and refunds — all stored as plain Markdown tables in your vault.
 
 **Documentation:** [English](https://twrusstw.github.io/penny-wallet/) · [繁體中文](https://twrusstw.github.io/penny-wallet/zh/)
 

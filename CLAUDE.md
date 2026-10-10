@@ -1,6 +1,6 @@
-# PennyWallet Mod: notes for Claude Code
+# Finance Tracker: notes for Claude Code
 
-A personal fork of the PennyWallet Obsidian plugin. The owner is the only user.
+A personal fork of the PennyWallet Obsidian plugin, shown in Obsidian as "Finance Tracker". The owner is the only user. Keep the plugin id `penny-wallet-mod`: changing it would orphan the installed plugin and its synced `data.json`.
 
 ## Workflow
 

@@ -198,7 +198,7 @@ const translations = {
     'confirm.unarchiveWallet': '確定要取消封存此錢包？',
 
     // Onboarding
-    'onboard.welcome': '歡迎使用 PennyWallet！建議先新增您的銀行帳戶與信用卡錢包。',
+    'onboard.welcome': '歡迎使用 Finance Tracker！建議先新增您的銀行帳戶與信用卡錢包。',
 
     // Settings — extra
     'settings.noActiveWallets': '無使用中錢包',
@@ -212,7 +212,7 @@ const translations = {
     'notice.transactionDeleted': '✓ 交易已刪除',
     'notice.transactionAdded': '✓ 交易已新增',
     'notice.transactionUpdated': '✓ 交易已更新',
-    'notice.loadFailed': 'PennyWallet 載入失敗，請檢查插件設定。',
+    'notice.loadFailed': 'Finance Tracker 載入失敗，請檢查插件設定。',
 
     // Errors — extra
     'err.cashBankNegativeBalance': '現金與銀行帳戶餘額不能為負數',
@@ -446,7 +446,7 @@ const translations = {
     'confirm.deleteWallet': 'Delete this wallet?',
     'confirm.unarchiveWallet': 'Unarchive this wallet?',
 
-    'onboard.welcome': 'Welcome to PennyWallet! We recommend adding your bank accounts and credit cards.',
+    'onboard.welcome': 'Welcome to Finance Tracker! We recommend adding your bank accounts and credit cards.',
 
     'settings.noActiveWallets': 'No active wallets',
     'settings.creditDebtPrefix': 'Owed ',
@@ -458,7 +458,7 @@ const translations = {
     'notice.transactionDeleted': '✓ Transaction deleted',
     'notice.transactionAdded': '✓ Transaction added',
     'notice.transactionUpdated': '✓ Transaction updated',
-    'notice.loadFailed': 'PennyWallet failed to load. Please check plugin settings.',
+    'notice.loadFailed': 'Finance Tracker failed to load. Please check plugin settings.',
 
     'err.cashBankNegativeBalance': 'Cash and bank balance cannot be negative',
     'err.creditNegativeBalance': 'Credit card balance cannot be negative, enter positive debt amount',

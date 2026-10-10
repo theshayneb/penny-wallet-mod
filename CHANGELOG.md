@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.41] - 2026-10-10
+
+### Changed
+- Renamed the plugin to **Finance Tracker** (plugin list, settings, ribbon tooltip, welcome and error messages). The plugin id stays `penny-wallet-mod`, so the installed plugin, its synced settings and the PennyWallet transaction folder are unaffected.
+
 ## [0.0.40] - 2026-10-09
 
 ### Added
