@@ -65,10 +65,6 @@ export interface PennyWalletConfig {
   autoValidateOnLoad: boolean
   chartExcludedTags: string[]  // tags left out of the Overview's tag chart
   followUpTag: string          // tag listed in the Overview's Follow-ups card ('' = hide it)
-  journalTag: string               // notes with this tag feed the Journal insights view
-  journalMoodProperty: string      // frontmatter property charted as the mood
-  journalFactorProperties: string[] // properties compared with the mood (e.g. Activities, Weather)
-  journalDateProperty: string      // frontmatter date; falls back to a date in the file name
 }
 
 export interface TransactionModalParams {
@@ -140,10 +136,6 @@ export const DEFAULT_CONFIG: PennyWalletConfig = {
   autoValidateOnLoad: true,
   chartExcludedTags: ['follow_up'],
   followUpTag: 'follow_up',
-  journalTag: 'journal_entry',
-  journalMoodProperty: 'Mood',
-  journalFactorProperties: ['Activities', 'Weather'],
-  journalDateProperty: 'date',
 }
 
 export interface FrontmatterIssue {
