@@ -2,6 +2,12 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.41] - 2026-10-10
+
+### Added
+- Journal insights: a new view (ribbon smiley, or the "Open journal insights" command) laid out like the Overview, for notes tagged `journal_entry`. It charts the Mood property against Activities, Weather, day of week and season: a summary (entries, streaks, most common mood), recent entries (click to open), "What goes with your mood" (groups where a mood shows up clearly more often than usual), mood by month, 100% bars of the mood mix per activity, weather, weekday and season, and pies of how often each value comes up (click a slice to search for those notes). Choose 3 months, 6 months, 12 months or all.
+- Settings → Journal insights: the tag, the mood property, the properties to compare with (comma-separated) and the date property. Without a date property, a date in the file name or the file creation date is used.
+
 ## [0.0.40] - 2026-10-09
 
 ### Added

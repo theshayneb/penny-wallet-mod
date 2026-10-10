@@ -35,6 +35,7 @@ export class PennyWalletSettingTab extends PluginSettingTab {
       this.renderBudgets()
       this.renderTags()
       this.renderCategories()
+      this.renderJournal()
 
       if (restoreScrollTop !== undefined) {
         const scrollEl = containerEl.closest<HTMLElement>('.vertical-tab-content')
@@ -130,6 +131,46 @@ export class PennyWalletSettingTab extends PluginSettingTab {
           void this.walletFile.saveConfig().then(() => this.app.workspace.trigger('penny-wallet-mod:refresh'))
         })
       })
+  }
+
+  private renderJournal() {
+    const config = this.walletFile.getConfig()
+    const { containerEl } = this
+
+    new Setting(containerEl).setName(t('settings.journal')).setHeading()
+    const group = containerEl.createDiv('pw-settings-group')
+
+    // Text settings that save on change and redraw the open views
+    const text = (name: string, desc: string, value: string, placeholder: string, save: (value: string) => string) => {
+      new Setting(group).setName(name).setDesc(desc).addText(input => {
+        input.setPlaceholder(placeholder).setValue(value)
+        input.inputEl.addEventListener('change', () => {
+          input.setValue(save(input.getValue()))
+          void this.walletFile.saveConfig().then(() => this.app.workspace.trigger('penny-wallet-mod:refresh'))
+        })
+      })
+    }
+
+    text(t('settings.journalTag'), t('settings.journalTagDesc'), config.journalTag ?? '', t('settings.journalTagPlaceholder'), (value) => {
+      const tag = value.trim().replace(/^#/, '')
+      this.walletFile.updateConfig({ journalTag: tag })
+      return tag
+    })
+    text(t('settings.journalMood'), t('settings.journalMoodDesc'), config.journalMoodProperty ?? '', 'Mood', (value) => {
+      const prop = value.trim()
+      this.walletFile.updateConfig({ journalMoodProperty: prop })
+      return prop
+    })
+    text(t('settings.journalFactors'), t('settings.journalFactorsDesc'), (config.journalFactorProperties ?? []).join(', '), 'Activities, Weather', (value) => {
+      const props = [...new Set(value.split(',').map(s => s.trim()).filter(Boolean))]
+      this.walletFile.updateConfig({ journalFactorProperties: props })
+      return props.join(', ')
+    })
+    text(t('settings.journalDate'), t('settings.journalDateDesc'), config.journalDateProperty ?? '', 'date', (value) => {
+      const prop = value.trim()
+      this.walletFile.updateConfig({ journalDateProperty: prop })
+      return prop
+    })
   }
 
   private renderActiveWallets(walletBalances: WalletBalance[], walletsWithTransactions: Set<string>) {
