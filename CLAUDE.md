@@ -2,6 +2,8 @@
 
 A personal fork of the PennyWallet Obsidian plugin, shown in Obsidian as "Finance Tracker". The owner is the only user. Keep the plugin id `penny-wallet-mod`: changing it would orphan the installed plugin and its synced `data.json`.
 
+**Scope:** this repository is only the finance plugin. Never add journal, mood, weather or other non-finance features here (a "Journal insights" commit landed here by mistake once and had to be reverted). If a task is about a different project, stop and tell the owner this is the wrong repository instead of making changes.
+
 ## Workflow
 
 - Push finished, checked work straight to `main`. No pull requests, no asking first.
