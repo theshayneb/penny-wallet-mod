@@ -409,7 +409,7 @@ describe('getLocaleCashName', () => {
 // ── findTransactionsByTag ─────────────────────────────────────────────────────
 
 describe('findTransactionsByTag', () => {
-  it('finds tagged transactions across months, newest first, with their month', async () => {
+  it('finds tagged transactions across months, oldest first, with their month', async () => {
     const config = {
       ...DEFAULT_CONFIG,
       folderName: 'Ledgers',
@@ -429,9 +429,9 @@ describe('findTransactionsByTag', () => {
 
     const found = await wf.findTransactionsByTag('follow_up')
     expect(found.map(f => [f.yearMonth, f.tx.note])).toEqual([
-      ['2026-03', 'mar late'],
-      ['2026-03', 'mar early'],
       ['2026-01', 'jan'],
+      ['2026-03', 'mar early'],
+      ['2026-03', 'mar late'],
     ])
   })
 

@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.42] - 2026-10-13
+
+### Changed
+- The Follow-ups card on the Overview now lists transactions from oldest to newest.
+
 ## [0.0.41] - 2026-10-10
 
 ### Changed

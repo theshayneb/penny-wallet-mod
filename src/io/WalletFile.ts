@@ -763,7 +763,7 @@ export class WalletFile {
 
   /**
    * Every transaction carrying `tag` (matched with tagKey), across all months,
-   * newest first, with the month it lives in (needed to edit it).
+   * oldest first, with the month it lives in (needed to edit it).
    */
   async findTransactionsByTag(tag: string): Promise<{ tx: Transaction; yearMonth: string }[]> {
     const key = tagKey(tag)
@@ -777,9 +777,9 @@ export class WalletFile {
       }
     }
     return found.sort((a, b) =>
-      b.yearMonth.localeCompare(a.yearMonth)
-      || b.tx.date.localeCompare(a.tx.date)
-      || (b.tx.createdAt ?? '').localeCompare(a.tx.createdAt ?? ''))
+      a.yearMonth.localeCompare(b.yearMonth)
+      || a.tx.date.localeCompare(b.tx.date)
+      || (a.tx.createdAt ?? '').localeCompare(b.tx.createdAt ?? ''))
   }
 
   /** Per-wallet balance at each target month end — cash + bank only */
