@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.44] - 2026-10-13
+
+### Changed
+- The Overview's pie charts (expenses by category and by tag) and their legends are now sorted from highest to lowest spend, with "Other" last.
+
 ## [0.0.43] - 2026-10-13
 
 ### Fixed

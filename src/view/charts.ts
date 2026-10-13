@@ -223,6 +223,8 @@ export function drawPie(
       value,
     })
   }
+  // Biggest spend first; "Other" stays last
+  segments.sort((a, b) => Number(a.key === '__other__') - Number(b.key === '__other__') || b.value - a.value)
 
   const colors = getThemeColors()
   const segColors = segments.map((s, i) =>
