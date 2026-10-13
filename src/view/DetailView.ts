@@ -20,6 +20,7 @@ export class DetailView extends ItemView {
   private filterSearch: string = ''
   private filterBudget: string | null = null                // set from the overview's budget card
   private filterTag: string | null = null                   // set from the overview's tag chart
+  private filterUntagged = false                            // the tag chart's "Untagged" slice
   private catPanelOpen: boolean = false
   private accountPanelOpen: boolean = false
 
@@ -52,12 +53,14 @@ export class DetailView extends ItemView {
       this.filterSearch = ''
       this.filterBudget = null
       this.filterTag = null
+      this.filterUntagged = false
     }
     if (state?.yearMonth) this.currentYearMonth = state.yearMonth as string
     if (state?.filterType) this.filterTypes = new Set([state.filterType as TransactionType])
     if (state?.filterCategory) this.filterCategories = new Set([state.filterCategory as string])
     if (state?.filterBudget) this.filterBudget = state.filterBudget as string
     if (state?.filterTag) this.filterTag = state.filterTag as string
+    if (state?.filterUntagged) this.filterUntagged = true
     await super.setState(state, result)
     await this.render()
   }
@@ -124,6 +127,9 @@ export class DetailView extends ItemView {
     }
     if (this.filterTag !== null) {
       this.renderFilterChip(filtersWrap, tn('detail.tagFilter', { name: this.filterTag }), () => { this.filterTag = null })
+    }
+    if (this.filterUntagged) {
+      this.renderFilterChip(filtersWrap, t('dash.untagged'), () => { this.filterUntagged = false })
     }
 
     const listWrap = contentEl.createDiv('pw-detail-list-wrap')
@@ -490,6 +496,7 @@ export class DetailView extends ItemView {
     this.filterSearch = ''
     this.filterBudget = null
     this.filterTag = null
+    this.filterUntagged = false
     void this.render()
   }
 
@@ -718,6 +725,7 @@ export class DetailView extends ItemView {
        && !this.filterWallets.has(tx.toWallet ?? '')) return false
       if (this.filterBudget !== null && tx.budget !== this.filterBudget) return false
       if (this.filterTag !== null && !(tx.tags ?? []).includes(this.filterTag)) return false
+      if (this.filterUntagged && (tx.tags ?? []).length > 0) return false
       if (this.filterDateFrom || this.filterDateTo) {
         const txDay = tx.date.split('/')[1] ?? ''
         const txFullDate = `${this.currentYearMonth}-${txDay}`

@@ -287,16 +287,16 @@ describe('groupExpensesByTag — excluded tags', () => {
   const tx = (amount: number, tags?: string[]): Transaction =>
     ({ date: '04/01', type: 'expense', wallet: 'Cash', category: 'food', note: '', amount, tags })
 
-  it('ignores excluded tags (case-insensitive); expenses left without tags are untagged', () => {
+  it('ignores excluded tags (case-insensitive); expenses with only excluded tags are left out', () => {
     const map = wf.groupExpensesByTag(
       [tx(100, ['follow-up']), tx(50, ['work', 'Follow-Up']), tx(20)],
       ['follow-up'],
     )
-    expect([...map]).toEqual([['', 120], ['work', 50]])
+    expect([...map]).toEqual([['work', 50], ['', 20]])
   })
 
   it('"-" and "_" spellings of an excluded tag both match', () => {
     const map = wf.groupExpensesByTag([tx(30, ['follow_up']), tx(5, ['food'])], ['follow-up'])
-    expect([...map]).toEqual([['', 30], ['food', 5]])
+    expect([...map]).toEqual([['food', 5]])
   })
 })

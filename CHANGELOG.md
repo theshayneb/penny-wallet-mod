@@ -2,6 +2,12 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.43] - 2026-10-13
+
+### Fixed
+- Expenses by tag: expenses whose only tag is a hidden one (like `follow_up`) are no longer counted as **Untagged**; they are left out of the chart. Untagged now means expenses with no tags at all.
+- Clicking **Untagged** in the tag chart now shows only the month's expenses with no tags, instead of every expense.
+
 ## [0.0.42] - 2026-10-13
 
 ### Changed

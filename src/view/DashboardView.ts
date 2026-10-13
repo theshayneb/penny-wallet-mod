@@ -14,6 +14,9 @@ import { MonthData, OTHER_COLOR, assignCategoryColors, drawExpenseChart, drawPie
 
 export const DASHBOARD_VIEW_TYPE = 'penny-wallet-mod-dashboard'
 
+/** Tag-pie key for expenses with no tags. */
+const UNTAGGED_KEY = '__untagged__'
+
 export class DashboardView extends ItemView {
   private walletFile: WalletFile
   private currentYearMonth: string
@@ -117,7 +120,9 @@ export class DashboardView extends ItemView {
     const gridRight = grid2.createDiv('pw-grid-right')
 
     const expenseMap = this.walletFile.groupByCategory(transactions, 'expense')
-    const tagMap     = this.walletFile.groupExpensesByTag(transactions, this.walletFile.getConfig().chartExcludedTags ?? [])
+    // '' (untagged) gets its own key: the pie reports its "Other" slice as ''
+    const tagMap = new Map([...this.walletFile.groupExpensesByTag(transactions, this.walletFile.getConfig().chartExcludedTags ?? [])]
+      .map(([tag, total]) => [tag || UNTAGGED_KEY, total]))
 
     const expCard = renderCard(gridRight, { title: t('dash.expenseByCategory') })
     if (expenseMap.size > 0) {
@@ -129,7 +134,7 @@ export class DashboardView extends ItemView {
     const tagCard = renderCard(gridRight, { title: t('dash.expenseByTag') })
     if (tagMap.size > 0) {
       this.charts.push(drawPie(tagCard, tagMap, dp, (tag) => { void this.openDetailWithTag(tag) }, 200,
-        (tag) => tag ? `#${tag}` : t('dash.untagged')))
+        (tag) => tag === UNTAGGED_KEY ? t('dash.untagged') : `#${tag}`))
     } else {
       tagCard.createEl('p', { text: t('dash.noData'), cls: 'pw-no-data' })
     }
@@ -202,9 +207,10 @@ export class DashboardView extends ItemView {
     }
   }
 
-  /** '' (untagged or "Other") opens all of the month's expenses. */
+  /** UNTAGGED_KEY shows expenses with no tags; '' ("Other") opens all of the month's expenses. */
   private async openDetailWithTag(tag: string) {
-    await switchView(this, DETAIL_VIEW_TYPE, { yearMonth: this.currentYearMonth, filterType: 'expense', ...(tag ? { filterTag: tag } : {}), resetFilters: true })
+    const tagFilter = tag === UNTAGGED_KEY ? { filterUntagged: true } : tag ? { filterTag: tag } : {}
+    await switchView(this, DETAIL_VIEW_TYPE, { yearMonth: this.currentYearMonth, filterType: 'expense', ...tagFilter, resetFilters: true })
   }
 
   private async openDetailWithBudget(budget: string) {

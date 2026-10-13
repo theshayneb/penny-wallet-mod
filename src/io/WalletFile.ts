@@ -745,15 +745,17 @@ export class WalletFile {
    * Expense totals per tag ('' = untagged). A transaction with several tags
    * counts in full toward each, so slices can add up to more than total
    * spending. Tags whose refunds outweigh spending (total <= 0) are dropped.
-   * `excluded` tags (matched with tagKey) are ignored; an expense left with no
-   * other tags counts as untagged.
+   * `excluded` tags (matched with tagKey) are ignored; an expense whose only
+   * tags are excluded is left out. Only expenses with no tags are untagged.
    */
   groupExpensesByTag(transactions: Transaction[], excluded: readonly string[] = []): Map<string, number> {
     const skip = new Set(excluded.map(tagKey))
     const map = new Map<string, number>()
     for (const tx of transactions) {
       if (tx.type !== 'expense') continue
-      const kept = (tx.tags ?? []).filter(tag => !skip.has(tagKey(tag)))
+      const all = tx.tags ?? []
+      const kept = all.filter(tag => !skip.has(tagKey(tag)))
+      if (all.length && !kept.length) continue
       const tags = kept.length ? kept : ['']
       for (const tag of new Set(tags)) map.set(tag, (map.get(tag) ?? 0) + tx.amount)
     }
