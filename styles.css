@@ -747,6 +747,14 @@ button.pw-mobile-delete-row:active {
   background: var(--pw-mobile-calculator-bg);
 }
 
+/* Android's navigation bar can overlap the bottom of the screen without reporting a
+   safe-area inset, hiding the pad's last row; keep at least 48px clear on touch devices. */
+@media (pointer: coarse) {
+  .pw-bottom-sheet.pw-mobile-calculator-sheet {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px), 48px);
+  }
+}
+
 .pw-mobile-calculator-sheet .pw-bottom-sheet-handle,
 .pw-mobile-calculator-sheet .pw-bottom-sheet-bar {
   background: var(--pw-mobile-calculator-bg);

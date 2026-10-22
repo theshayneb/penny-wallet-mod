@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.45] - 2026-10-22
+
+### Fixed
+- On phones, the number pad in the transaction entry screen now sits above Android's navigation buttons, so its bottom row is no longer covered.
+
 ## [0.0.44] - 2026-10-13
 
 ### Changed
