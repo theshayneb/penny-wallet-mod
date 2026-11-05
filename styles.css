@@ -2639,6 +2639,21 @@ select.pw-add-wallet-input {
   font-weight: 600;
 }
 
+/* finance-budget code block embedded in a note */
+.pw-budget-embed {
+  margin: 4px 0;
+  padding: 4px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-primary);
+}
+
+.pw-budget-embed-error {
+  padding: 4px 6px;
+  color: var(--text-error);
+  font-size: 13px;
+}
+
 .pw-tx-budget-chip {
   margin-left: 6px;
   font-weight: normal;

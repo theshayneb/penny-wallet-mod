@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.46] - 2026-11-05
+
+### Added
+- Budget embeds: put a budget's progress bar in any note with a `finance-budget` code block containing the budget name (for example `Travel`). It shows this month's spending, the amount left and the "today" marker, and updates as you record expenses. Add a second line such as `2026-11` to pin it to one month. Click it to open that budget's transactions.
+
 ## [0.0.45] - 2026-10-22
 
 ### Fixed

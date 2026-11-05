@@ -73,3 +73,14 @@ export function getMonthProgress(yearMonth: string, today: Date = new Date()): M
   const day = today.getDate()
   return { elapsedRatio: day / daysInMonth, daysLeft: daysInMonth - day + 1 }
 }
+
+/**
+ * Parses a `finance-budget` block: the budget name on the first line, and an
+ * optional month ("yyyy-mm") on the next. Without a month it follows the
+ * current month, so a note keeps showing this month's spending.
+ */
+export function parseBudgetEmbed(source: string): { name: string; yearMonth: string | null } {
+  const lines = source.split('\n').map(l => l.trim()).filter(Boolean)
+  const month = lines[1]?.match(/^(\d{4})-(\d{2})$/)
+  return { name: lines[0] ?? '', yearMonth: month ? `${month[1]}-${month[2]}` : null }
+}

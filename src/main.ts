@@ -5,6 +5,7 @@ import { MobileTransactionModal } from './modal/MobileTransactionModal'
 import { DashboardView, DASHBOARD_VIEW_TYPE } from './view/DashboardView'
 import { DetailView, DETAIL_VIEW_TYPE } from './view/DetailView'
 import { BudgetView, BUDGET_VIEW_TYPE } from './view/BudgetView'
+import { BUDGET_EMBED_LANG, BUDGET_EMBED_REFRESH, processBudgetEmbed } from './view/BudgetEmbed'
 import { PennyWalletSettingTab } from './settings/SettingTab'
 import { ValidationModal } from './modal/ValidationModal'
 import { TransactionModalParams, TransactionType } from './types'
@@ -27,6 +28,10 @@ export default class PennyWalletPlugin extends Plugin {
     this.registerView(DASHBOARD_VIEW_TYPE, (leaf) => new DashboardView(leaf, this.walletFile))
     this.registerView(DETAIL_VIEW_TYPE, (leaf) => new DetailView(leaf, this.walletFile))
     this.registerView(BUDGET_VIEW_TYPE, (leaf) => new BudgetView(leaf, this.walletFile))
+
+    // ```finance-budget``` blocks in notes: one budget's progress bar
+    this.registerMarkdownCodeBlockProcessor(BUDGET_EMBED_LANG, processBudgetEmbed(this.app, this.walletFile,
+      (budget, yearMonth) => { void this.openOrRevealView(DETAIL_VIEW_TYPE, { yearMonth, filterBudget: budget, resetFilters: true }) }))
 
     this.addRibbonIcon('wallet', 'Finance tracker', () => { void this.openDashboard() })
 
@@ -132,6 +137,7 @@ export default class PennyWalletPlugin extends Plugin {
   // ── Refresh ─────────────────────────────────────────────────────────────────
 
   private refreshViews() {
+    this.app.workspace.trigger(BUDGET_EMBED_REFRESH)
     // Refresh all open plugin leaves
     this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE).forEach((leaf: WorkspaceLeaf) => {
       void (leaf.view as DashboardView).render()

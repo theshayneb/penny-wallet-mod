@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeBudgetUsage, validateBudgetName } from '../../src/budget'
+import { computeBudgetUsage, parseBudgetEmbed, validateBudgetName } from '../../src/budget'
 import type { Budget, Transaction } from '../../src/types'
 
 const tx = (over: Partial<Transaction>): Transaction => ({
@@ -95,5 +95,20 @@ describe('getMonthProgress', () => {
   it('returns null for other months', () => {
     expect(getMonthProgress('2026-03', new Date(2026, 3, 10))).toBeNull()
     expect(getMonthProgress('2025-04', new Date(2026, 3, 10))).toBeNull()
+  })
+})
+
+describe('parseBudgetEmbed', () => {
+  it('reads the budget name, ignoring blank lines and spaces', () => {
+    expect(parseBudgetEmbed('\n  Travel  \n')).toEqual({ name: 'Travel', yearMonth: null })
+  })
+
+  it('reads an optional yyyy-mm month on the second line', () => {
+    expect(parseBudgetEmbed('Travel\n2026-11')).toEqual({ name: 'Travel', yearMonth: '2026-11' })
+    expect(parseBudgetEmbed('Travel\nNovember')).toEqual({ name: 'Travel', yearMonth: null })
+  })
+
+  it('is empty when the block is empty', () => {
+    expect(parseBudgetEmbed('')).toEqual({ name: '', yearMonth: null })
   })
 })
