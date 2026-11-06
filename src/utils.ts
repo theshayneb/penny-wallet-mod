@@ -65,3 +65,16 @@ export function dateToMonthDay(date: string): string {
 export function tagKey(tag: string): string {
   return tag.trim().replace(/^#/, '').toLowerCase().replace(/-/g, '_')
 }
+
+/** Tags from a comma- or space-separated list such as "#travel, food"; invalid and duplicate tags are dropped. */
+export function parseTagList(list: string): string[] {
+  const tags: string[] = []
+  const seen = new Set<string>()
+  for (const raw of list.split(/[,\s]+/)) {
+    const tag = raw.trim().replace(/^#/, '')
+    if (!validateTag(tag) || seen.has(tagKey(tag))) continue
+    seen.add(tagKey(tag))
+    tags.push(tag)
+  }
+  return tags
+}

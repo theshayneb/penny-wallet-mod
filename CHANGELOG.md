@@ -2,6 +2,14 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.47] - 2026-11-06
+
+### Added
+- `obsidian://penny-wallet-mod` links (and Meta Bind buttons that open them) can pre-fill tags: `tags=travel,trip_paris`.
+
+### Changed
+- In those links, `category` also accepts the category name as shown in the app, and `budget` matches regardless of capital letters.
+
 ## [0.0.46] - 2026-11-05
 
 ### Added

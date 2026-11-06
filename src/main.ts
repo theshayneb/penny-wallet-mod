@@ -9,7 +9,8 @@ import { BUDGET_EMBED_LANG, BUDGET_EMBED_REFRESH, processBudgetEmbed } from './v
 import { PennyWalletSettingTab } from './settings/SettingTab'
 import { ValidationModal } from './modal/ValidationModal'
 import { TransactionModalParams, TransactionType } from './types'
-import { initI18n, t } from './i18n'
+import { initI18n, t, translateCategory } from './i18n'
+import { parseTagList } from './utils'
 
 export default class PennyWalletPlugin extends Plugin {
   walletFile!: WalletFile
@@ -124,14 +125,29 @@ export default class PennyWalletPlugin extends Plugin {
       if (!Number.isNaN(amount)) params.amount = amount
     }
     if (data['note']) params.note = data['note']
-    if (data['category']) params.category = data['category']
+    if (data['tags']) params.tags = parseTagList(data['tags'])
+    if (data['category']) params.category = this.resolveCategory(data['category'], params.type ?? 'expense')
     if (data['wallet']) params.wallet = data['wallet']
     if (data['fromWallet']) params.fromWallet = data['fromWallet']
     if (data['toWallet']) params.toWallet = data['toWallet']
-    if (data['budget']) params.budget = data['budget']
+    if (data['budget']) {
+      const name = data['budget']
+      const budgets = this.walletFile.getConfig().budgets ?? []
+      params.budget = budgets.find(b => b.name.toLowerCase() === name.toLowerCase())?.name ?? name
+    }
     if (data['date']) params.date = data['date']
 
     this.openTransactionModal(params)
+  }
+
+  /** Accepts a category's key or its label as shown in the app (any case). */
+  private resolveCategory(value: string, type: TransactionType): string {
+    const group = this.walletFile.getConfig().options.categories[type]
+    const keys = group ? [...group.default, ...group.custom] : []
+    const wanted = value.trim().toLowerCase()
+    return keys.find(k => k.toLowerCase() === wanted)
+      ?? keys.find(k => translateCategory(k).toLowerCase() === wanted)
+      ?? value
   }
 
   // ── Refresh ─────────────────────────────────────────────────────────────────

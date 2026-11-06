@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { tagKey, stepMonth, isAfterCurrentMonth, formatAmount, validateTag, formatHeroAmount, formatMobileHeroAmount, dateToYearMonth, dateToMonthDay } from '../../src/utils'
+import { tagKey, stepMonth, isAfterCurrentMonth, formatAmount, validateTag, formatHeroAmount, formatMobileHeroAmount, dateToYearMonth, dateToMonthDay, parseTagList } from '../../src/utils'
 
 // ── stepMonth ─────────────────────────────────────────────────────────────────
 
@@ -196,5 +196,15 @@ describe('tagKey', () => {
   })
   it('keeps other tags distinct', () => {
     expect(tagKey('follow_up')).not.toBe(tagKey('followup'))
+  })
+})
+
+describe('parseTagList', () => {
+  it('splits on commas and spaces and strips #', () => {
+    expect(parseTagList('#travel, food  trip_2026')).toEqual(['travel', 'food', 'trip_2026'])
+  })
+
+  it('drops duplicates (- and _ match), empties and invalid tags', () => {
+    expect(parseTagList('follow_up,follow-up,,|bad,' + 'x'.repeat(31))).toEqual(['follow_up'])
   })
 })
