@@ -107,6 +107,29 @@ describe('parseNoteSegments', () => {
       { kind: 'link', target: 'Note#Section', text: 'Note#Section' },
     ])
   })
+  it('markdown link to a website (scheme added to bare domains)', () => {
+    expect(parseNoteSegments('see [site](www.testweb.com) and [docs](https://ex.com/a?b=1)')).toEqual([
+      { kind: 'text', text: 'see ' },
+      { kind: 'url', href: 'https://www.testweb.com', text: 'site' },
+      { kind: 'text', text: ' and ' },
+      { kind: 'url', href: 'https://ex.com/a?b=1', text: 'docs' },
+    ])
+  })
+  it('markdown link to a note opens the note', () => {
+    expect(parseNoteSegments('[trip](Trips/Japan%20Plan.md#Day%201)')).toEqual([
+      { kind: 'link', target: 'Trips/Japan Plan#Day 1', text: 'trip' },
+    ])
+  })
+  it('bare URLs become links, trailing punctuation stays text', () => {
+    expect(parseNoteSegments('order https://shop.com/o/12.')).toEqual([
+      { kind: 'text', text: 'order ' },
+      { kind: 'url', href: 'https://shop.com/o/12', text: 'https://shop.com/o/12' },
+      { kind: 'text', text: '.' },
+    ])
+  })
+  it('unsafe schemes stay as text', () => {
+    expect(parseNoteSegments('[x](javascript:alert(1))')).toEqual([{ kind: 'text', text: '[x](javascript:alert(1))' }])
+  })
   it('empty or unclosed brackets stay as text', () => {
     expect(parseNoteSegments('a [[]] b [[open')).toEqual([{ kind: 'text', text: 'a [[]] b [[open' }])
   })

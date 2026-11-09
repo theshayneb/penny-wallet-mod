@@ -36,6 +36,17 @@ export function renderNoteWithLinks(
       el.appendText(seg.text)
       continue
     }
+    if (seg.kind === 'url') {
+      const link = el.createEl('a', {
+        text: seg.text,
+        cls: 'external-link',
+        href: seg.href,
+        attr: { target: '_blank', rel: 'noopener' },
+      })
+      // Keep the click from also opening the transaction editor
+      link.addEventListener('click', (e) => e.stopPropagation())
+      continue
+    }
     const resolved = app.metadataCache.getFirstLinkpathDest(seg.target.split('#')[0] ?? '', sourcePath)
     const link = el.createEl('a', {
       text: seg.text,

@@ -2,6 +2,11 @@
 
 All notable changes to PennyWallet will be documented in this file.
 
+## [0.0.48] - 2026-11-09
+
+### Added
+- Transaction notes show external links: markdown links such as `[shop](www.example.com)` or `[receipt](https://…)`, and bare `https://` addresses, open in the browser. A markdown link to a note (`[trip](Trips/Japan.md)`) opens that note.
+
 ## [0.0.47] - 2026-11-06
 
 ### Added
